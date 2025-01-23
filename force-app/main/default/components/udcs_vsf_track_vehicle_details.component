@@ -1,0 +1,270 @@
+<apex:component >
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+  <apex:stylesheet value="{!URLFOR($Resource.udcs_connectx,'/libraries/visualforce_style_sheets/vehicleDetails.css')}"> </apex:stylesheet>
+  <div id="vehicleDetails" class="sidebar-body" style="display: none">
+    <div class="sidebar-header">
+      <div class="back_button" id="back_button">
+        <img style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow.svg')}" width="15" height="15" class="left_arrow_back" /> Back
+      </div>
+      <p>{!$Label.ud_vehicles_details}</p>
+      <div id="vehicleDetailsclose">
+        <img class="close_button" style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/cross/dim_10_x_10.svg')}" width="14" height="14" />
+        <img class="location_icon" style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/location.svg')}" width="28" height="28" />
+      </div>
+    </div>
+
+    <div class="trace-history-items trace-history-container disable-touch tracehistory" style="border-bottom: 0.5px solid #a6a6a6; margin: 0px">
+      <div>
+        <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/trace_history.svg')}" />
+      </div>
+      <div class="content-name" id="showtracehistory">{!$Label.ud_tracehistory}</div>
+    </div>
+
+    <div class="scroll-trace-history-items">
+      <div class="trace-history-items">
+        <div class="chassis-id">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/chassis_id/dark_gray_fill.svg')}" width="21" height="21" />
+          </div>
+          <section class="chassisId-tooltip">{!$Label.ud_chassisid}</section>
+        </div>
+        <div class="chassis-id">
+          <div class="content-name toolhere" id="evd_chassisNumber"></div>
+          <section class="chassisId-tooltip">{!$Label.ud_chassisid}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="regn">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/registration/dark_gray_fill.svg')}" />
+          </div>
+          <section class="regn-tooltip">{!$Label.ud_registration_number}</section>
+        </div>
+        <div class="regn">
+          <div class="content-name toolhere" id="registrationNumber">-</div>
+          <section class="regn-tooltip">{!$Label.ud_registration_number}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items japan trace-history-container">
+        <div class="truckID">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/truck_id/dark_gray_fill.svg')}" />
+          </div>
+          <section class="truckID-tooltip">{!$Label.ud_TruckID}</section>
+        </div>
+        <div class="truckID">
+          <div class="content-name toolhere" id="evd_truckID">-</div>
+          <section class="truckID-tooltip">{!$Label.ud_TruckID}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="quester">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/free_search_dark_gray.svg')}" />
+          </div>
+          <section class="quester-tooltip">{!$Label.ud_quester}</section>
+        </div>
+        <div class="quester">
+          <div class="content-name toolhere" id="evd_quester"></div>
+          <section class="quester-tooltip">{!$Label.ud_quester}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="euroeuro">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/emission/dark_gray_fill.svg')}" />
+          </div>
+          <section class="euro-tooltip">{!$Label.ud_euro}</section>
+        </div>
+        <div class="euro">
+          <div class="content-name toolhere" id="evd_euro"></div>
+          <section class="euro-tooltip">{!$Label.ud_euro}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items japan3">
+        <div class="transmission">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/transmission_type_dark_gray_fill.svg')}" />
+          </div>
+          <section class="transmission-tooltip">{!$Label.ud_transmission_type}</section>
+        </div>
+        <div class="transmission">
+          <div class="content-name toolhere" id="evd_transmission"></div>
+          <section class="transmission-tooltip">{!$Label.ud_transmission_type}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items japan trace-history-container" style="border-bottom: 0.5px solid #e1e1e1; word-break: break-word; padding-top: 0px">
+        <div class="d-name">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/driver/dark_gray_fill.svg')}" />
+          </div>
+          <section class="d-nametooltip">{!$Label.ud_driver}</section>
+        </div>
+        <div class="d-name" style="word-break: break-word">
+          <div class="content-name toolhere" id="evd_drivername" style="word-break: break-word"></div>
+          <section class="d-nametooltip">{!$Label.ud_driver}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="date">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/trigger_time_dark_gray_fill.svg')}" />
+          </div>
+          <section class="date-tooltip">{!$Label.ud_date_time}</section>
+        </div>
+        <div class="date">
+          <div class="content-name toolhere" id="evd_triggerTime"></div>
+          <section class="date-tooltip">{!$Label.ud_date_time}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-address">
+        <div class="location">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/address/dark_gray_fill.svg')}" />
+          </div>
+          <section class="location-tooltip">{!$Label.ud_location}</section>
+        </div>
+        <div class="location">
+          <div class="content-name toolhere" id="evd_address"></div>
+          <section class="location-tooltip">{!$Label.ud_location}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items" style="display: flex; justify-content: space-between">
+        <div class="trace_latitude_longitude">
+          <div class="latitude">
+            <div class="iconsize toolhere">
+              <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/longitude_latitude/dark_gray_fill.svg')}" />
+            </div>
+            <section class="latitude-tooltip">{!$Label.ud_latitude_longitude}</section>
+          </div>
+          <div class="latitude">
+            <div class="content-name toolhere" id="evd_latlog"></div>
+            <section class="latitude-tooltip">{!$Label.ud_latitude_longitude}</section>
+          </div>
+        </div>
+
+        <div class="copy-to-clipboard japan trace-history-container" onclick="copyLatLng()">
+          <img src="{!URLFOR($Resource.udcs_connectx,'/icons/common/copy_and_past.svg')}" />
+        </div>
+      </div>
+
+      <div class="trace-history-items japan trace-history-container" style="border-bottom: 0.5px solid #e1e1e1; padding-top: 0px">
+        <div class="altitude">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/altitude_dark_gray_fill.svg')}" />
+          </div>
+          <section class="altitude-tooltip">{!$Label.ud_altitude}</section>
+        </div>
+        <div class="altitude">
+          <div style="margin-bottom: 5%" class="content-name toolhere" id="evd_altitude">-</div>
+          <section class="altitude-tooltip">{!$Label.ud_altitude}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items" style="display: flex">
+        <div class="direction">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/direction_dark_gray_fill.svg')}" />
+          </div>
+          <section class="direction-tooltip">{!$Label.ud_direction}</section>
+        </div>
+        <div class="direction">
+          <div class="content-name toolhere" id="evd_direction"></div>
+          <section class="direction-tooltip">{!$Label.ud_direction}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items japan3 trace-history-container">
+        <div class="trigger-type">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/events_dark_gray_fill.svg')}" />
+          </div>
+          <section class="triggerType-tooltip">{!$Label.ud_trigger_eventtype}</section>
+        </div>
+        <div class="trigger-type">
+          <div class="content-name toolhere" id="evd_IgnitionStatus"></div>
+          <section class="triggerType-tooltip">{!$Label.ud_trigger_eventtype}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="speed">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/speed_dark_gray_fill.svg')}" />
+          </div>
+          <section class="speed-tooltip">{!$Label.ud_speed}</section>
+        </div>
+        <div class="speed">
+          <div class="content-name toolhere" id="evd_wheelBasedSpeed"></div>
+          <section class="speed-tooltip">{!$Label.ud_speed}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items japan1 trace-history-container">
+        <div class="fuel">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/fuel_level_dark_gray_fill.svg')}" />
+          </div>
+          <section class="fuel-tooltip">{!$Label.ud_fuellevel_pr}</section>
+        </div>
+        <div class="fuel">
+          <div class="content-name toolhere" id="evd_fuelLevel"></div>
+          <section class="fuel-tooltip">{!$Label.ud_fuellevel_pr}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items japan2 trace-history-container">
+        <div class="AdBlue">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/ad_blue_dark_gray_fill.svg')}" />
+          </div>
+          <section class="AdBlue-tooltip">{!$Label.ud_adbluelevel_pr}</section>
+        </div>
+        <div class="AdBlue">
+          <div class="content-name toolhere" id="evd_adBlueLevel"></div>
+          <section class="AdBlue-tooltip">{!$Label.ud_adbluelevel_pr}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="odometer">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/odometer_dark_gray_fill.svg')}" />
+          </div>
+          <section class="odometer-tooltip">{!$Label.ud_odometer_km}</section>
+        </div>
+        <div class="odometer">
+          <div class="content-name toolhere" id="evd_totalVehicleDistance"></div>
+          <section class="odometer-tooltip">{!$Label.ud_odometer_km}</section>
+        </div>
+      </div>
+
+      <div class="trace-history-items">
+        <div class="engine">
+          <div class="iconsize toolhere">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/engine_hours_dark_gray_fill.svg')}" />
+          </div>
+          <section class="engine-tooltip">{!$Label.ud_Enginehours_hhmm}</section>
+        </div>
+        <div class="engine">
+          <div class="content-name toolhere" id="evd_totalEngineHours"></div>
+          <section class="engine-tooltip">{!$Label.ud_Enginehours_hhmm}</section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    .sidebar-body {
+      border: 0.5px solid #979797;
+    }
+  </style>
+</apex:component>

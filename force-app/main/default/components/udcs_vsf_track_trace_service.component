@@ -1,0 +1,1656 @@
+<apex:component >
+  <script>
+    //  ----Start:-Variable declaration ----
+    let map;
+    let tracedirection_on = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/tracedirection_on.svg')}";
+    let tracedirection_off = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/tracedirection_off.svg')}";
+    let eventsfilter_on = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/eventsfilter_on.svg')}";
+    let eventsfilter_off = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/eventsfilter_off.svg')}";
+    let position_on = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/position_on.svg')}";
+    let position_off = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/position_off.svg')}";
+
+    let trafficLayer;
+
+    let togglechecked1 = false;
+    let togglechecked2 = false;
+    let togglechecked3 = false;
+    let togglechecked4 = false;
+    let infoWindow;
+    const styles = {
+      default: [],
+      hide: [{ featureType: "all", elementType: "labels", stylers: [{ visibility: "off" }] }]
+    };
+    const mapTypeCont = document.getElementById("maptypecontrol");
+    const openedModal = document.getElementById("opened-modal");
+    const closeModal = document.getElementById("close-modal");
+
+    const on3button = document.getElementById("on3");
+    const off3button = document.getElementById("off3");
+    const on4button = document.getElementById("on4");
+    const off4button = document.getElementById("off4");
+    const defaultradio = document.getElementById("default");
+    const satelliteradio = document.getElementById("satellite");
+    const terrainradio = document.getElementById("terrain");
+
+    const trafficflowbutton = document.getElementById("trafficflowtoggle");
+    const maplabelsbutton = document.getElementById("maplabelstoggle");
+
+    let cameFrom = undefined;
+
+    let isVehicleDetailsShowing = false;
+    let trackCurrentSelectedVehicle = undefined;
+    let trackMarkersLoaded = false;
+
+    let currentZoom = null;
+    let currentBond = null;
+    let currentInfo = null;
+    let all_markers = [];
+    let all_markers_map = new Map();
+    let all_statusicon_markers_map = new Map();
+    let all_statusicon_locations_map = new Map();
+    let all_vehicles = [];
+    let marker_Clusterer = null;
+
+    let trace_history_markers = [];
+    let trace_history_markers_position = [];
+    let trace_history_markers_map = {};
+    let trace_history_polyline = [];
+    let eventhistorylist;
+    let ployline = undefined;
+    let ploylineMarker = undefined;
+    let receivedfromLWC = "";
+    let SelectedvehicleFilter = undefined;
+
+    let newBoundarytrace = undefined;
+    let isTraceLoadingFirstTime = false;
+    let sendTraceSelectedMarkerInfoToLWC = false;
+    let traceInfoWindow = undefined;
+    let isJapan = false;
+    let currentUserCountry = "";
+    let traceAllIconList = [];
+
+    let tracedirectionflag = true;
+    let eventsfilterFlag = true;
+    let positionfilterFlag = false;
+
+    let isDefaultLocationShown = false;
+
+    let utils = {
+      setCenter: (country) => {
+        let geocoder = new google.maps.Geocoder();
+        let countryName = country;
+        geocoder.geocode({ address: countryName }, function (results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            let bounds = results[0].geometry.viewport;
+            map.fitBounds(bounds);
+          } else {
+            console.log("Geocode was not successful for the following reason: " + status);
+          }
+        });
+      }
+    };
+
+    const evtPanelBtn = document.querySelector(".eventdetailspanelshow");
+    const evtDataView = document.querySelector("#evt_dataview");
+
+    const backBtn = document.querySelector(".back_button_evt_details");
+    const locIcon = document.querySelector(".closeIcon");
+
+    let isMobile = isMobileClicked();
+
+    if (isMobile === false) {
+      document.querySelector(".sidebar-header-evt-details").style.display = "none";
+    } else {
+      evtPanelBtn.style.display = "none";
+      evtDataView.style.display = "none";
+      document.querySelector(".dataview-label").style.display = "none";
+      document.querySelector(".eventdetailspaneldata-right").style.display = "none";
+    }
+    //  ----End:-Variable declaration ----
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        labels: true,
+
+        disableDefaultUI: true,
+
+        center: new google.maps.LatLng(0, 0),
+        zoom: Math.ceil(Math.log2($(window).width())) - 8,
+        scaleControl: false,
+        streetViewControl: true,
+        scrollwheel: 0,
+        gestureHandling: "greedy",
+        mapTypeControl: false,
+        mapTypeControlOptions: {
+          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+          position: google.maps.ControlPosition.RIGHT_BOTTOM,
+          mapTypeIds: ["roadmap", "terrain"]
+        },
+        fullscreenControl: true,
+        fullscreenControlOptions: {
+          position: google.maps.ControlPosition.BOTTOM_RIGHT
+        },
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_BOTTOM
+        }
+      });
+      trafficLayer = new google.maps.TrafficLayer();
+      trafficLayer.setMap(map);
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById("maptypecontrol"));
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById("btnReset"));
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById("eventsfilter"));
+      if (isMobile == false) {
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById("positionfilter"));
+      }
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById("tracedirection"));
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("calwidget"));
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("vehicleDetails"));
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById("opened-modal"));
+      infoWindow = new google.maps.InfoWindow();
+      traceInfoWindow = new google.maps.InfoWindow();
+      googleMapEventListeners();
+    }
+    function googleMapEventListeners() {
+      google.maps.event.addListener(infoWindow, "domready", () => {
+        $(".gm-style .gm-style-iw.gm-style-iw-c").css({
+          top: "62px",
+          left: "-145px"
+        });
+      });
+      google.maps.event.addListener(map, "click", closeinfowindow);
+      $("#btnReset").on("click", closeinfowindow);
+      document.getElementById("map").addEventListener("wheel", function (event) {
+        if (event.deltaY && event.deltaY < 0) {
+          map.setZoom(map.getZoom());
+        } else {
+          map.setZoom(map.getZoom());
+        }
+        event.preventDefault();
+      });
+      google.maps.event.addListenerOnce(map, "tilesloaded", function () {
+        window.parent.postMessage({ source: "showtrackMapMarkers" }, window.location.origin);
+        console.log("Google Maps is fully loaded.");
+      });
+    }
+    function closeinfowindow() {
+      if (traceInfoWindow != undefined && traceInfoWindow.close != undefined) {
+        traceInfoWindow.close();
+      }
+      if (infoWindow != undefined && infoWindow.close != undefined) {
+        infoWindow.close();
+      }
+    }
+    function messageEvent1(event) {
+      receivedfromLWC = event.data;
+      console.log("---receivedfromLWC.source---", receivedfromLWC.source);
+      console.time(receivedfromLWC.source);
+      console.table(receivedfromLWC);
+
+      if (receivedfromLWC.source == "eventTraceSummaryData") {
+        try {
+          let result = receivedfromLWC.data;
+          let temp = new Map();
+          for (let a of result.summaries) {
+            temp.set(a.itemName, a);
+          }
+          let data = temp.get("Distance Covered");
+          if (data) {
+            let evd_temp = parseFloat(data.itemValue).toFixed(2);
+            evd_temp = isNaN(evd_temp) ? "-" : evd_temp.toLocaleString() + " " + ` {!$Label.ud_km}`;
+            $("#Distancecovered").text(evd_temp);
+          } else {
+            $("#Distancecovered").text("-");
+          }
+          data = temp.get("Total Fuel Consumed");
+          if (data) {
+            let evd_temp = parseFloat(data.itemValue).toFixed(2);
+            evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + " " + `{!$Label.ud_L}`;
+            $("#Totalfuelconsumed").text(evd_temp);
+          } else {
+            $("#Totalfuelconsumed").text("-");
+          }
+          data = temp.get("Total Engine Hours");
+          if (data) {
+            let evd_temp = data.itemValue.split(":");
+            if (evd_temp?.length == 2) {
+              evd_temp = evd_temp[0] + "{!$Label.ud_h} " + evd_temp[1] + "m";
+              $("#evt_TotalEngineHours").text(evd_temp);
+            } else {
+              $("#evt_TotalEngineHours").text("-");
+            }
+          } else {
+            $("#evt_TotalEngineHours").text("-");
+          }
+          data = temp.get("Total Fuel Efficiency");
+          if (data) {
+            let evd_temp = parseFloat(data.itemValue).toFixed(2);
+            evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + " " + `{!$Label.ud_km_l}`;
+            $("#TotalFuelEfficiency").text(evd_temp);
+          } else {
+            $("#TotalFuelEfficiency").text("-");
+          }
+          data = temp.get("Maximum Speed");
+          if (data) {
+            let evd_temp = parseFloat(data.itemValue).toFixed(0);
+            evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + " " + ` {!$Label.ud_km_h}`;
+            $("#MaximumSpeed").text(evd_temp);
+          } else {
+            $("#MaximumSpeed").text("-");
+          }
+        } catch (e) {
+          console.log(e);
+          $("#Distancecovered").text("-");
+          $("#Totalfuelconsumed").text("-");
+          $("#evt_TotalEngineHours").text("-");
+          $("#TotalFuelEfficiency").text("-");
+        }
+      } else if (receivedfromLWC.source == "eventdetails_mapicons") {
+        eventDetailsMapIcons();
+        $("#tracedirection_img").attr("src", tracedirection_on);
+        $("#eventsfilter_img").attr("src", eventsfilter_on);
+      } else if (receivedfromLWC.source == "eventdetailspanel") {
+        eventhistorylist = JSON.parse(receivedfromLWC.eventhistorylist);
+        traceAllIconList = eventhistorylist;
+        if (traceAllIconList.length === 0) {
+          return;
+        }
+        let eventselected = receivedfromLWC.eventselected;
+        if (receivedfromLWC.firstEvent) {
+          window.parent.postMessage({ source: "SelectedTraceEventhighlight", data: receivedfromLWC.firstEvent }, window.location.origin);
+        }
+        $("#eventdetailspanel").show();
+        $(".eventdetailspanelshow").addClass("rotate");
+        $("#map").removeClass("height135");
+        $("#map").removeClass("height50");
+        $("#map").addClass("height50");
+        $("#evt_dataview").show();
+        $("#eventdetailspaneldata").show();
+        map.setZoom(map.getZoom());
+        let counter = 0;
+        for (let a of traceAllIconList) {
+          if (receivedfromLWC.counter == a.unique_key) {
+            break;
+          }
+          counter++;
+        }
+        let eventData = traceAllIconList[counter];
+        $("#event_prv").off("click");
+        $("#event_nxt").off("click");
+        $("#event_prv").css("cursor", counter == 0 ? "not-allowed" : "pointer");
+        $("#event_nxt").css("cursor", traceAllIconList.length - 1 > counter ? "pointer" : "not-allowed");
+        populateDataonEventPanel(eventselected, eventData);
+        $("#event_prv").on("click", (event) => {
+          event.stopPropagation();
+          eventselected = true;
+          if (counter != 0) {
+            counter--;
+            $("#event_prv").css("cursor", counter == 0 ? "not-allowed" : "pointer");
+            $("#event_nxt").css("cursor", counter == 0 ? "" : "pointer");
+            $("#event_nxt").css("cursor", traceAllIconList.length - 1 > counter ? "pointer" : "not-allowed");
+            if (counter >= 0) {
+              eventData = traceAllIconList[counter];
+              window.parent.postMessage({ source: "SelectedTraceEventhighlight", data: eventData.unique_key }, window.location.origin);
+              populateDataonEventPanel(eventselected, eventData);
+            }
+          }
+        });
+        $("#event_nxt").on("click", (event) => {
+          event.stopPropagation();
+          eventselected = true;
+          counter++;
+          if (traceAllIconList.length == counter) {
+            counter = traceAllIconList.length - 1;
+          }
+          $("#event_prv").css("cursor", counter == 0 ? "not-allowed" : "pointer");
+          $("#event_nxt").css("cursor", traceAllIconList.length - 1 < counter ? "pointer" : "");
+          if (traceAllIconList.length > counter) {
+            eventData = traceAllIconList[counter];
+            $("#event_nxt").css("cursor", traceAllIconList.length - 1 > counter ? "pointer" : "not-allowed");
+            window.parent.postMessage({ source: "SelectedTraceEventhighlight", data: eventData.unique_key }, window.location.origin);
+            populateDataonEventPanel(eventselected, eventData);
+          }
+        });
+      } else if (receivedfromLWC.source == "SelectedvehicleFilter") {
+        SelectedvehicleFilter = receivedfromLWC.data;
+        trackMarkersLoaded = false;
+        fitAllMarkersInMap();
+        $("#vehicleDetails").hide();
+        isVehicleDetailsShowing = false;
+        if (isMobileClicked()) {
+          marker_Clusterer.clearMarkers();
+          marker_Clusterer = null;
+          resetTrackMarkerSize(null, false);
+          clusterAllMarkers(all_markers);
+        }
+      } else if (receivedfromLWC.source == "backToSidebar_SelectedvehicleFilter") {
+        console.log("backToSidebar_SelectedvehicleFilter");
+        SelectedvehicleFilter = receivedfromLWC.data;
+        trackMarkersLoaded = false;
+        fitAllMarkersInMap();
+        $("#vehicleDetails").hide();
+        isVehicleDetailsShowing = false;
+        if (isMobileClicked()) {
+          if (isDefaultLocationShown == false) {
+            setPreviousZoom();
+          }
+          isDefaultLocationShown = false;
+          marker_Clusterer.clearMarkers();
+          marker_Clusterer = null;
+          resetTrackMarkerSize(null, false);
+          clusterAllMarkers(all_markers);
+        }
+      } else if (receivedfromLWC.source == "showtrackMapMarkers") {
+        isJapan = receivedfromLWC.isJapan;
+        initializeTrackMarkers();
+        $("#tracedirection").hide();
+        $("#eventsfilter").hide();
+        $("#positionfilter").hide();
+        trace_history_markers = [];
+      } else if (receivedfromLWC.source == "defaultLocation") {
+        currentUserCountry = receivedfromLWC.data.country;
+      } else if (receivedfromLWC.source == "closeVehicleDetails") {
+        $("#vehicleDetails").hide();
+        isVehicleDetailsShowing = false;
+      } else if (receivedfromLWC.source == "calendarokclicked") {
+        $("#opened-modal").addClass("trace_opened_model");
+        if (isMobileClicked()) {
+          window.parent.postMessage({ source: "opensidebar" }, window.location.origin);
+        }
+      } else if (receivedfromLWC.source == "traceEventsClicked") {
+        document.querySelector(".eventdetailspaneldata").style.display = "block !important";
+        document.querySelector(".evt_container").style.display = "block !important";
+      } else if (receivedfromLWC.source == "openEventDetailsPanel") {
+        document.querySelector(".evt_container").style.display = "block";
+      } else if (receivedfromLWC.source == "mobileokclick") {
+        isDefaultLocationShown = true;
+        document.querySelector(".evt_container").style.display = "none";
+      } else if (receivedfromLWC.source == "hideeventdetailspanel") {
+        document.querySelector(".evt_container").style.display = "none";
+      } else if (receivedfromLWC.source == "closeCalandar") {
+        $("#opened-modal").removeClass("trace_opened_model");
+        $("#eventdetailspanel").hide();
+        $("#calwidget").hide();
+        $("#myModal").hide();
+        try {
+          document.querySelector("#map").classList.remove("height50");
+        } catch (error) {
+          console.log(error);
+        }
+        try {
+          document.querySelector("#map").classList.remove("height135");
+        } catch (error) {
+          console.log(error);
+        }
+        try {
+          trace_history_markers.forEach((a) => a.setMap(null));
+          trace_history_markers_position.forEach((a) => a.setMap(null));
+        } catch (e) {
+          console.log(e);
+        }
+        try {
+          ployline.setMap(null);
+        } catch (error) {
+          console.log(error);
+        }
+        try {
+          ploylineMarker.setMap(null);
+        } catch (error) {
+          console.log(error);
+        }
+      } else if (receivedfromLWC.source == "vehicledashboardsidebar") {
+        cameFrom = receivedfromLWC.cameFrom;
+        if (isMobileClicked()) {
+          document.querySelector(".close_button").classList.add("hidden");
+          document.querySelector(".back_button").classList.remove("hidden");
+          document.querySelector(".location_icon").classList.remove("hidden");
+        } else {
+          document.querySelector(".close_button").classList.remove("hidden");
+          document.querySelector(".back_button").classList.add("hidden");
+          document.querySelector(".location_icon").classList.add("hidden");
+        }
+        vehicledashboardsidebarfn(receivedfromLWC.vechicleData);
+        if (receivedfromLWC.isJapan === true) {
+          document.querySelector(".scroll-trace-history-items").classList.add("trace-history-height");
+          isJapan = true;
+          vehicleDetailsJs();
+        } else {
+          document.querySelector(".scroll-trace-history-items").classList.remove("trace-history-height");
+          isJapan = false;
+        }
+        if (receivedfromLWC.track_trace == false) {
+          $(".tracehistory").hide();
+        }
+      } else if (receivedfromLWC.source == "openvehicledetailssidebar") {
+        $("#vehicleDetails").show();
+      } else if (receivedfromLWC.source == "calendarback") {
+        $("#opened-modal").removeClass("trace_opened_model");
+        $("#vehicleDetails").show();
+        isVehicleDetailsShowing = true;
+      } else if (receivedfromLWC.source == "cleartrackmapicons") {
+        try {
+          marker_Clusterer.clearMarkers();
+        } catch (error) {
+          console.log(error);
+        }
+        try {
+          all_markers.forEach((a) => a.setMap(null));
+        } catch (error) {
+          console.log(error);
+        }
+      } else if (receivedfromLWC.source == "zoomvehicle") {
+        map.setZoom(12);
+      }
+      console.timeEnd(receivedfromLWC.source);
+    }
+    window.addEventListener("message", messageEvent1, false);
+
+    // ---- LWC Event Handlers ----
+    function vehicledashboardsidebarfn(vehicledata) {
+      document.querySelector(".scroll-trace-history-items").scrollTop = 0;
+      let isAlreadyDetailsPanelRendering = $("#evd_chassisNumber").text() === vehicledata.ChassisSeries + "-" + vehicledata.ChassisNumber;
+      document.getElementById("vehicleDetails").style.display = "";
+      isVehicleDetailsShowing = true;
+      trackCurrentSelectedVehicle = vehicledata;
+      $(".sidebar-header").css("border-left-color", vehicledata.backgroundColor || "white");
+      $("#tracedirection").hide();
+      $("#eventsfilter").hide();
+      $("#positionfilter").hide();
+      try {
+        infoWindow.close();
+        infoWindow.setContent("");
+      } catch (e) {
+        console.log(e);
+      }
+      try {
+        $("#evd_chassisNumber").text(vehicledata.ChassisSeries + "-" + vehicledata.ChassisNumber);
+      } catch (e) {
+        $("#evd_chassisNumber").text("-");
+        console.log(e);
+      }
+      try {
+        $("#evd_vin").text(vehicledata.Vin);
+      } catch (error) {
+        $("#evd_vin").text("-");
+        console.log(error);
+      }
+      $("#registrationNumber").text(vehicledata.RegistrationNumber || "-");
+      $("#evd_truckID").text(vehicledata.truckId || "-");
+      try {
+        $("#evd_drivername").text(vehicledata.currentDriverLastName ? vehicledata.currentDriverFirstName + " " + vehicledata.currentDriverLastName : `{!$Label.ud_UnknownDriver}`);
+      } catch (e) {
+        console.log(error);
+        $("#evd_drivername").text(`{!$Label.ud_UnknownDriver}`);
+      }
+      try {
+        $("#evd_quester").text(vehicledata.ModelDescription ? vehicledata.ModelDescription : "-");
+      } catch (e) {
+        console.log(error);
+        $("#evd_quester").text("-");
+      }
+      try {
+        $("#evd_euro").text(vehicledata.EmissionClass ? vehicledata.EmissionClass : "-");
+      } catch (e) {
+        console.log(e);
+        $("#evd_euro").text("-");
+      }
+      try {
+        $("#evd_latlog").text(vehicledata.location);
+
+        if (vehicledata.icon !== "NoData") {
+          if (isAlreadyDetailsPanelRendering == false || isMobile) {
+            map.setZoom(13);
+            focusMarker(vehicledata.PositionLatitude, vehicledata.PositionLongitude);
+          }
+          marker_Clusterer.clearMarkers();
+          let marker = all_markers_map.get(vehicledata.key);
+          resetTrackMarkerSize(marker, true);
+          marker.setIcon(tracksvgIconsZoom[vehicledata.icon]);
+        } else {
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
+      if (vehicledata.icon == "NoData") {
+        $(".copy-to-clipboard").hide();
+        $("#evd_altitude").text("-");
+        $("#evd_direction").text("-");
+        $("#evd_triggerTime").text("-");
+        $("#evd_IgnitionStatus").text("-");
+        $("#evd_latlog").text("-");
+        $("#evd_address").text("-");
+        $("#evd_wheelBasedSpeed").text("-");
+        $("#evd_fuelLevel").text("-");
+        $("#evd_adBlueLevel").text("-");
+        $("#evd_totalVehicleDistance").text("-");
+        $("#evd_totalEngineHours").text("-");
+        $("#evd_transmission").text("-");
+      } else {
+        $("#evd_triggerTime").text(vehicledata.formattedTriggerDateTime || "-");
+        if ($("#evd_triggerTime").text() != "-") {
+          $("#evd_triggerTime").text($("#evd_triggerTime").text());
+        }
+        if (vehicledata.Adblue == "N/A") {
+          $("#evd_adBlueLevel").text("N/A");
+        } else {
+          $("#evd_adBlueLevel").text(vehicledata.Adblue == "-" || vehicledata.Adblue == "undefined" ? "-" : vehicledata.Adblue + "%");
+        }
+        try {
+          let evd_temp = parseFloat(vehicledata.enginehours);
+          let hours = Math.floor(evd_temp / 3600);
+          let minutes = Math.floor((evd_temp % 3600) / 60);
+          if (hours == "0") {
+            hours = "00";
+          } else if (hours <= "9" && hours > "0") {
+            hours = "0" + hours;
+          } else if (hours == "undefined" || hours == "-") {
+            hours = "-";
+          } else {
+            hours = "" + hours;
+          }
+          evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m";
+          $("#evd_totalEngineHours").text(evd_temp);
+        } catch (error) {
+          $("#evd_totalEngineHours").text("-");
+          console.log(error);
+        }
+        try {
+          $("#evd_direction").text(vehicledata.heading_translated == "-" || vehicledata.heading_translated == "undefined" ? "-" : vehicledata.heading_translated);
+        } catch (error) {
+          $("#evd_direction").text("-");
+          console.log(error);
+        }
+        $("#evd_wheelBasedSpeed").text(vehicledata.wheelBasedSpeed == "-" || vehicledata.wheelBasedSpeed == "undefined" ? "-" : vehicledata.wheelBasedSpeed + ` {!$Label.ud_km_h}`);
+        $("#evd_altitude").text(vehicledata.altitude == "-" ? "-" : vehicledata.altitude + ` {!$Label.ud_ft}`);
+        try {
+          $("#evd_IgnitionStatus").text(vehicledata.triggerType_trl == "-" || vehicledata.triggerType_trl == "undefined" ? "-" : vehicledata.triggerType_trl);
+        } catch (e) {
+          $("#evd_IgnitionStatus").text("-");
+          console.log(e);
+        }
+        $("#evd_totalVehicleDistance").text(vehicledata.Odometer == "-" || vehicledata.Odometer == "undefined" ? "-" : vehicledata.Odometer + ` {!$Label.ud_km}`);
+        try {
+          $("#evd_fuelLevel").text((vehicledata.FuelLevelValue = isNaN(vehicledata.FuelLevelValue) ? "-" : parseFloat(vehicledata.FuelLevelValue).toFixed(0) + "%"));
+        } catch (error) {
+          $("#evd_fuelLevel").text("-");
+          console.log(e);
+        }
+        try {
+          $("#evd_transmission").text(vehicledata.TransmissionType ? vehicledata.TransmissionType : "-");
+        } catch (e) {
+          $("#evd_transmission").text("-");
+          console.log(e);
+        }
+      }
+      try {
+        if (vehicledata.location && vehicledata.location != "-") {
+          const geocoder = new google.maps.Geocoder();
+          const latlng = {
+            lat: parseFloat(vehicledata.PositionLatitude),
+            lng: parseFloat(vehicledata.PositionLongitude)
+          };
+          geocoder
+            .geocode({ location: latlng })
+            .then((response) => {
+              if (response.results[0]) {
+                $("#evd_address").text(response.results[0].formatted_address);
+              }
+            })
+            .catch(() => {
+              $("#evd_address").text("-");
+            });
+        } else {
+          $("#evd_address").text("-");
+        }
+      } catch (e) {
+        $("#evd_address").text("-");
+        console.log(e);
+      }
+    }
+    // ------------ DOM Events -------
+    $(window).load(function () {
+      $("#tracedirection").hide();
+      $("#eventsfilter").hide();
+      $("#positionfilter").hide();
+      $("#positionfilter").on("click", () => {
+        positionfilterFlag = !positionfilterFlag;
+        if (positionfilterFlag) {
+          trace_history_markers_position.forEach((a) => a.setMap(map));
+          $("#positionfilter_img").attr("src", position_on);
+        } else {
+          trace_history_markers_position.forEach((a) => a.setMap(null));
+          $("#positionfilter_img").attr("src", position_off);
+        }
+      });
+      $("#eventsfilter").on("click", () => {
+        eventsfilterFlag = !eventsfilterFlag; // Work on this variable
+        try {
+          if (eventsfilterFlag) {
+            for (let trace_event of traceAllIconList) {
+              trace_history_markers_map[trace_event.unique_key]?.setMap(map);
+            }
+            $("#eventsfilter_img").attr("src", eventsfilter_on);
+          } else {
+            trace_history_markers.forEach((a) => a.setMap(null));
+            $("#eventsfilter_img").attr("src", eventsfilter_off);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        if (trace_history_markers && trace_history_markers.length) {
+          trace_history_markers[0].setMap(map);
+          trace_history_markers[trace_history_markers.length - 1].setMap(map);
+        }
+        ploylineHighligher(tracedirectionflag, eventsfilterFlag);
+      });
+
+      $("#tracedirection").on("click", () => {
+        try {
+          tracedirectionflag = !tracedirectionflag;
+          $("#tracedirection_img").attr("src", tracedirectionflag ? tracedirection_on : tracedirection_off);
+          ploylineHighligher(tracedirectionflag, eventsfilterFlag);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    });
+    $("body").on("click", "button.gm-fullscreen-control", function () {
+      const elementToSendFullscreen = map.getDiv().firstChild;
+      const fullscreenControl = document.querySelector(".gm-fullscreen-control");
+      if (isFullscreen(elementToSendFullscreen)) {
+        if ($("#tracedirection").css("display") !== "block") {
+          if (isVehicleDetailsShowing) {
+            $("#vehicleDetails").show();
+            if (isJapan) {
+              vehicleDetailsJs();
+            }
+          }
+        }
+      } else {
+        if ($("#tracedirection").css("display") !== "block") {
+          $("#vehicleDetails").hide();
+        }
+      }
+      document.onwebkitfullscreenchange =
+        document.onmsfullscreenchange =
+        document.onmozfullscreenchange =
+        document.onfullscreenchange =
+          function () {
+            if (isFullscreen(elementToSendFullscreen)) {
+              fullscreenControl.classList.add("is-fullscreen");
+            } else {
+              fullscreenControl.classList.remove("is-fullscreen");
+            }
+          };
+    });
+    backBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      console.log("back Button clicked");
+      document.querySelector(".evt_container").style.display = "none";
+      window.parent.postMessage({ source: "backButtonEventDetailsPanel" }, window.location.origin);
+    });
+    $("#back_button").on("click", () => {
+      $("#vehicleDetails").hide();
+      isVehicleDetailsShowing = false;
+      window.parent.postMessage({ source: "backToSidebar", cameFrom: cameFrom }, window.location.origin);
+    });
+    $("#btnReset").on("click", () => {
+      try {
+        if ($("#tracedirection").css("display") !== "block") {
+          $("#vehicleDetails").hide();
+          isVehicleDetailsShowing = false;
+          trackMarkersLoaded = false;
+          fitAllMarkersInMap();
+        } else {
+          map.fitBounds(newBoundarytrace);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    closeModal.addEventListener("click", () => {
+      openedModal.style.display = "none";
+    });
+    defaultradio.addEventListener("click", () => {
+      defaultradio.checked = true;
+      satelliteradio.checked = false;
+      terrainradio.checked = false;
+      map.setMapTypeId("roadmap");
+
+      maplabelsbutton.checked = true;
+      on4button.style.display = "block";
+      off4button.style.display = "none";
+      map.setOptions({
+        styles: styles.default
+      });
+    });
+    evtPanelBtn.addEventListener("click", () => {
+      evtPanelBtn.classList.toggle("rotate");
+      if (Array.from(evtPanelBtn.classList).indexOf("rotate") !== -1) {
+        document.querySelector("#map").classList.remove("height135");
+        document.querySelector("#map").classList.add("height50");
+        $("#evt_dataview").show();
+        $("#eventdetailspaneldata").show();
+      } else {
+        document.querySelector("#map").classList.add("height135");
+        document.querySelector("#map").classList.remove("height50");
+        $(".eventdetailspanelshow").removeClass("rotate");
+        $("#evt_dataview").hide();
+        $("#eventdetailspaneldata").hide();
+      }
+      window.parent.postMessage({ source: "iframeResize" }, window.location.origin);
+    });
+
+    maplabelsbutton.addEventListener("click", () => {
+      togglechecked4 = !togglechecked4;
+      if (maplabelsbutton.checked === true) {
+        on4button.style.display = "block";
+        off4button.style.display = "none";
+        map.setOptions({
+          styles: styles.default
+        });
+      } else {
+        on4button.style.display = "none";
+        off4button.style.display = "block";
+        map.setOptions({
+          styles: styles.hide
+        });
+      }
+    });
+    mapTypeCont.addEventListener("click", () => {
+      openedModal.style.display = openedModal.style.display === "none" ? "block" : "none";
+    });
+    locIcon.addEventListener("click", (e) => {
+      e.stopPropagation();
+      console.log("Location Button clicked");
+      document.querySelector(".evt_container").style.display = "none";
+      window.parent.postMessage({ source: "locButtonEventDetailsPanel" }, window.location.origin);
+    });
+    $(".scroll-trace-history-items").bind("mousewheel", function (e) {
+      e.stopPropagation();
+    });
+    $("#showtracehistory").on("click", () => {
+      try {
+      } catch (e) {
+        console.log(e);
+      }
+      try {
+        $("#addressinfobtn").trigger("click");
+        $("#clearSearch").trigger("click");
+      } catch (error) {
+        console.log(error);
+      }
+      $("#vehicleDetails").hide();
+      isVehicleDetailsShowing = false;
+
+      // Send message to udcs ffs track trace
+      sendCalendarOpenMsg();
+
+      map.setZoom(map.getZoom());
+      window.parent.postMessage({ source: "showtracehistory" }, window.location.origin);
+      // $("#customsearch").hide();
+
+      try {
+        marker_Clusterer.clearMarkers();
+      } catch (error) {
+        console.log(error);
+      }
+      try {
+        all_markers.forEach((a) => a.setMap(null));
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    satelliteradio.addEventListener("click", () => {
+      defaultradio.checked = false;
+      satelliteradio.checked = true;
+      terrainradio.checked = false;
+      map.setMapTypeId("hybrid");
+
+      if (maplabelsbutton.checked === true) {
+        map.setOptions({
+          styles: styles.default
+        });
+      } else {
+        map.setOptions({
+          styles: styles.hide
+        });
+      }
+    });
+    terrainradio.addEventListener("click", () => {
+      defaultradio.checked = false;
+      satelliteradio.checked = false;
+      terrainradio.checked = true;
+      map.setMapTypeId("terrain");
+
+      maplabelsbutton.checked = true;
+      on4button.style.display = "block";
+      off4button.style.display = "none";
+      map.setOptions({
+        styles: styles.default
+      });
+    });
+    trafficflowbutton.addEventListener("click", () => {
+      togglechecked3 = !togglechecked3;
+      if (trafficflowbutton.checked === true) {
+        on3button.style.display = "block";
+        off3button.style.display = "none";
+        trafficLayer.setMap(map);
+      } else {
+        on3button.style.display = "none";
+        off3button.style.display = "block";
+        trafficLayer.setMap(null);
+      }
+    });
+
+    $("#vehicleDetailsclose").on("click", () => {
+      $("#vehicleDetails").hide();
+      isVehicleDetailsShowing = false;
+      window.parent.postMessage({ source: "closeVehicleDetailsPanel" }, window.location.origin);
+      for (let a of all_markers_map.keys()) {
+        all_markers_map.get(a).setIcon(all_markers_map.get(a).icon);
+      }
+    });
+
+    //---------Helper Functions ------------
+    //Onmouseover tooltip move
+    let tooltip = document.querySelectorAll(".toolhere + section");
+    document.onmousemove = function (e) {
+      var x = e.pageX + 2 + "px",
+        y = e.pageY + 10 + "px";
+      for (let i = 0; i < tooltip.length; i++) {
+        tooltip[i].style.top = y;
+        tooltip[i].style.left = x;
+      }
+    };
+    function populateDataonEventPanel(eventselected, eventData) {
+      try {
+        sendTraceSelectedMarkerInfoToLWC = false;
+        if (eventselected) {
+          google.maps.event.trigger(trace_history_markers_map[eventData.unique_key], "temp_mouseover");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      sendTraceSelectedMarkerInfoToLWC = true;
+      $("#eventtitle").text(eventData.triggerType_trl);
+      if (eventData.position != undefined && eventData.position.latitude != undefined) {
+        focusMarker(parseFloat(eventData.position.latitude), parseFloat(eventData.position.longitude));
+        if (isTraceLoadingFirstTime) {
+          isTraceLoadingFirstTime = false;
+          map.fitBounds(newBoundarytrace);
+        } else {
+        }
+        try {
+          let evd_temp = parseFloat(eventData.position.altitude);
+          if (evd_temp != -1) {
+            evd_temp = isNaN(evd_temp) ? "-" : parseFloat(eventData.position.altitude).toFixed(2) + ` {!$Label.ud_ft}`;
+          } else {
+            evd_temp = "-";
+          }
+
+          $("#altitude").text(evd_temp);
+        } catch (error) {
+          $("#altitude").text("-");
+          console.log(error);
+        }
+        $("#latlng").text(eventData.position.latitude + "," + eventData.position.longitude);
+        if (isNaN(eventData.position.latitude) || isNaN(eventData.position.longitude)) {
+          $("#latlng").text("-");
+        }
+        $("#heading").text(eventData.heading_translated || "");
+        try {
+          const geocoder = new google.maps.Geocoder();
+          const latlng = {
+            lat: parseFloat(eventData.position.latitude),
+            lng: parseFloat(eventData.position.longitude)
+          };
+          geocoder
+            .geocode({ location: latlng })
+            .then((response) => {
+              if (response.results[0]) {
+                let address = response.results[0].formatted_address;
+
+                $("#edp_address").text(address);
+              }
+            })
+            .catch(() => {
+              $("#edp_address").text("-");
+            });
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        $("#edp_address").text("-");
+        $("#heading").text("-");
+        $("#latlng").text("-");
+        $("#altitude").text("-");
+      }
+      try {
+        $("#triggerTime").text(eventData.eventDateTime || "-");
+      } catch (err) {
+        $("#triggerTime").text("-");
+        console.log(err);
+      }
+      let temp = new Map();
+      for (let a of eventData.dataItems) {
+        temp.set(a.dataItemName, a.dataItemValue);
+      }
+      try {
+        let evd_temp = Math.round(temp.get("speed"));
+        evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + ` {!$Label.ud_km_h}`;
+        $("#speed").text(evd_temp);
+      } catch (error) {
+        $("#speed").text("-");
+        console.log(error);
+      }
+      try {
+        let evd_temp = parseFloat(temp.get("totalFuelLevel")).toFixed(0);
+        evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + "%";
+        $("#totalFuelLevel").text(evd_temp);
+      } catch (error) {
+        $("#totalFuelLevel").text("-");
+        console.log(error);
+      }
+      try {
+        let evd_temp = parseFloat(temp.get("lovEngineTime"));
+        let hours = Math.floor(evd_temp / 3600);
+        let minutes = Math.floor((evd_temp % 3600) / 60);
+        if (hours == "0") {
+          hours = "00";
+        } else if (hours <= "9" && hours > "0") {
+          hours = "0" + hours;
+        } else if (hours == "undefined" || hours == "-") {
+          hours = "-";
+        } else {
+          hours = "" + hours;
+        }
+        evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m";
+        $("#lovEngineTime").text(evd_temp);
+      } catch (error) {
+        $("#lovEngineTime").text("-");
+        console.log(error);
+      }
+      try {
+        let evd_temp = parseFloat(temp.get("adBlueLevel")).toFixed(0);
+        evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + "%";
+        $("#evdadBlueLevel").text(evd_temp);
+      } catch (error) {
+        $("#evdadBlueLevel").text("-");
+        console.log(error);
+      }
+      try {
+        let evd_temp = parseFloat(temp.get("lovVehicleDistance") / 1000).toFixed(2);
+        evd_temp = isNaN(evd_temp) ? "-" : new Intl.NumberFormat(navigator.language).format(parseFloat(evd_temp)) + ` {!$Label.ud_km}`;
+        $("#evd_lovVehicleDistance").text(evd_temp);
+      } catch (error) {
+        $("#evd_lovVehicleDistance").text("-");
+        console.log(error);
+      }
+      $("#evd_driverName").text(eventData.driverName || `{!$Label.ud_UnknownDriver}`);
+    }
+    function resetTrackMarkerSize(marker, isMapSet) {
+      for (let tempMarker of all_markers) {
+        if (isMapSet) {
+          tempMarker.setMap(map);
+        }
+      }
+      for (let vStatus of all_statusicon_markers_map.keys()) {
+        for (let tempMarker of all_statusicon_markers_map.get(vStatus)) {
+          if (marker == tempMarker) {
+            continue;
+          }
+          tempMarker.setIcon({ url: tempMarker.icon.url ? tempMarker.icon.url : tempMarker.icon, scaledSize: new google.maps.Size(vStatus === "Moving" ? 50 : 30, vStatus === "Moving" ? 50 : 30) });
+        }
+      }
+    }
+    function addPositionToMap(position, urlIcon, direction_icon) {
+      let marker_image = new google.maps.MarkerImage(urlIcon, null, null, null, new google.maps.Size(direction_icon ? 50 : 30, direction_icon ? 50 : 30));
+      return new google.maps.Marker({
+        position: {
+          lat: position.lat,
+          lng: position.lng
+        },
+        map,
+        icon: marker_image,
+        cursor: "grab"
+      });
+    }
+    let tooltip2 = document.querySelectorAll(".content-section-text + blockquote");
+    window.onmousemove = function (e) {
+      var x = e.pageX + 5 + "px",
+        y = e.pageY + 5 + "px";
+      for (let i = 0; i < tooltip2.length; i++) {
+        tooltip2[i].style.top = y;
+        tooltip2[i].style.left = x;
+      }
+    };
+    function focusMarker(lat, lng) {
+      map.setCenter(new google.maps.LatLng(lat, lng));
+    }
+    function isFullscreen(element) {
+      return (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) == element;
+    }
+    function ploylineHighligher(tracedirectionflag, eventsfilterFlag) {
+      ployline.setMap(null);
+      ployline = new google.maps.Polyline({
+        path: trace_history_polyline,
+        geodesic: true,
+        strokeColor: "#008099",
+        // strokeColor: "black",
+        strokeOpacity: 1.0,
+        strokeWeight: isMobileClicked() ? 10 : 20
+      });
+
+      if ((tracedirectionflag && eventsfilterFlag) || tracedirectionflag) {
+        ploylineMarker.setMap(null);
+        ploylineMarker = new google.maps.Polyline({
+          path: trace_history_polyline,
+          geodesic: true,
+          strokeColor: "#00AFD0",
+          strokeOpacity: 1,
+          strokeWeight: isMobileClicked() ? 4 : 13,
+          icons: [
+            {
+              icon: {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                fillColor: "#FFFFFF",
+                fillOpacity: 0.8,
+                strokeColor: "#FFFFFF",
+                strokeWeight: 1,
+                scale: 3
+              },
+              offset: "100%",
+              repeat: "500px"
+            }
+          ]
+        });
+        ploylineMarker.setMap(map);
+      } else {
+        ploylineMarker.setMap(null);
+        ploylineMarker = new google.maps.Polyline({
+          path: trace_history_polyline,
+          geodesic: true,
+          // strokeColor: "gray",
+          strokeColor: "#00AFD0",
+          strokeOpacity: 1,
+          strokeWeight: isMobileClicked() ? 4 : 13,
+          icons: [
+            {
+              icon: {
+                fillColor: "#FFFFFF",
+                fillOpacity: 0.8,
+                strokeColor: "#FFFFFF",
+                strokeWeight: 1,
+                scale: 3
+              },
+              offset: "100%",
+              repeat: "500px"
+            }
+          ]
+        });
+        ploylineMarker.setMap(map);
+      }
+      ployline.setMap(map);
+    }
+    function getCurrentBound() {
+      console.log("getCurrentBound");
+      try {
+        currentZoom = map.getZoom();
+        currentBond = map.getBounds();
+      } catch (error) {
+        console.log("man not initialized");
+        console.log(error);
+      }
+    }
+    function setPreviousZoom() {
+      if (currentInfo) {
+        currentInfo.close();
+      }
+
+      map.fitBounds(currentBond);
+      map.setZoom(currentZoom);
+    }
+    function vehicleDetailsJs() {
+      try {
+        document.querySelector(".trace-history-container").classList.add("hidden");
+        document.querySelector(".japan").classList.add("hidden");
+        document.querySelector(".japan1").classList.add("hidden");
+        document.querySelector(".japan2").classList.add("hidden");
+        document.querySelector(".AdBlue").classList.add("hidden");
+        document.querySelector(".AdBlue").classList.add("hidden");
+
+        $(".japan3").hide();
+        $(".trigger-type").hide();
+        $("#evd_IgnitionStatus").hide();
+
+        document.querySelector("#evd_adBlueLevel").classList.add("hidden");
+        document.querySelector(".truckID").classList.add("hidden");
+        document.querySelector("#evd_truckID").classList.add("hidden");
+        document.querySelector(".d-name").classList.add("hidden");
+        document.querySelector("#evd_drivername").classList.add("hidden");
+        document.querySelector(".copy-to-clipboard").classList.add("hidden");
+        document.querySelector(".altitude").classList.add("hidden");
+        document.querySelector("#evd_altitude").classList.add("hidden");
+        document.querySelector(".fuel").classList.add("hidden");
+        document.querySelector("#evd_fuelLevel").classList.add("hidden");
+        document.querySelector(".japan3").classList.add("hidden");
+        document.querySelector("#evd_transmission").classList.add("hidden");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    function isMobileClicked() {
+      if (
+        navigator.userAgent.match(/Android/i) ||
+        navigator.userAgent.match(/webOS/i) ||
+        navigator.userAgent.match(/iPhone/i) ||
+        navigator.userAgent.match(/iPad/i) ||
+        navigator.userAgent.match(/iPod/i) ||
+        navigator.userAgent.match(/BlackBerry/i) ||
+        navigator.userAgent.match(/Windows Phone/i)
+      ) {
+        return true;
+      }
+      return false;
+    }
+    function copyLatLng() {
+      navigator.clipboard.writeText(document.getElementById("evd_latlog").innerText);
+      document.querySelector(".copy-to-clipboard").classList.add("scale");
+      setTimeout(() => {
+        document.querySelector(".copy-to-clipboard").classList.remove("scale");
+      }, 0);
+    }
+    // Send message to lwc component to open calendar
+    function sendCalendarOpenMsg() {
+      window.parent.postMessage({ source: "initiateShowCalender", open: true }, window.location.origin);
+    }
+
+    function eventDetailsMapIcons() {
+      eventhistorylist = JSON.parse(receivedfromLWC.eventhistorylist);
+      $("#map").removeClass();
+      $("#eventdetailspanel").hide();
+      $("#tracedirection").attr("src", tracedirection_on);
+      $("#eventsfilter").attr("src", eventsfilter_on);
+      $("#positionfilter").attr("src", position_off);
+      if (eventhistorylist.length != 0) {
+        $("#eventsfilter").show();
+        $("#eventsfilter").attr("src", eventsfilter_on);
+        $("#tracedirection").show();
+        $("#tracedirection").attr("src", tracedirection_on);
+      } else {
+        $("#eventsfilter").hide();
+        $("#tracedirection").hide();
+      }
+      trace_history_polyline = [];
+      let lat = "";
+      let lng = "";
+      try {
+        trace_history_markers.forEach((a) => a.setMap(null));
+        trace_history_markers_position.forEach((a) => a.setMap(null));
+        trace_history_markers_position = [];
+        trace_history_markers = [];
+        trace_history_markers_map = {};
+      } catch (e) {
+        trace_history_markers = [];
+        trace_history_markers_position = [];
+        trace_history_markers_map = {};
+        console.log(e);
+      }
+      try {
+        ployline.setMap(null);
+      } catch (error) {
+        console.log(error);
+      }
+      try {
+        ploylineMarker.setMap(null);
+      } catch (error) {
+        console.log(error);
+      }
+
+      isTraceLoadingFirstTime = true;
+      eventhistorylist.forEach((maplocation) => {
+        if (maplocation.position != undefined && maplocation.position.longitude != undefined) {
+          lat = parseFloat(maplocation.position.latitude);
+          lng = parseFloat(maplocation.position.longitude);
+          let svgImage = "data:image/svg+xml;utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg"  ></svg>');
+          if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
+            svgImage = {
+              anchor: new google.maps.Point(16, 16),
+              url: traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]
+            };
+          } else {
+            svgImage = {
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: "#f3f6f4",
+              fillOpacity: 1,
+              strokeColor: "#4D4E53",
+              strokeWeight: 0,
+              scale: 5
+            };
+          }
+          let marker = new google.maps.Marker({
+            position: { lat, lng },
+            map,
+            icon: svgImage
+          });
+          if (maplocation.show == false) {
+            marker.setMap(null);
+          }
+          trace_history_polyline.push({ lat, lng });
+          if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
+            trace_history_markers.push(marker);
+            trace_history_markers_map[maplocation.unique_key] = marker;
+            traceMarker(marker, maplocation);
+          } else {
+            marker.setMap(null);
+            trace_history_markers_position.push(marker);
+            traceMarker(marker, maplocation);
+          }
+        }
+      });
+      if (trace_history_markers_position.length) {
+        $("#positionfilter").show();
+        positionfilterFlag = false;
+        $("#positionfilter_img").attr("src", position_off);
+      } else {
+        $("#positionfilter").hide();
+      }
+      let newBoundary = new google.maps.LatLngBounds();
+      for (let a of trace_history_polyline) {
+        newBoundary.extend(new google.maps.LatLng(a));
+      }
+      map.fitBounds(newBoundary);
+      newBoundarytrace = newBoundary;
+      trace_history_polyline.reverse();
+      if (lat == "") {
+        utils.setCenter(currentUserCountry);
+      } else {
+        map.setCenter(new google.maps.LatLng(lat, lng));
+      }
+      ployline = new google.maps.Polyline({
+        path: trace_history_polyline,
+        geodesic: true,
+        strokeColor: "#008099",
+        strokeOpacity: 1.0,
+        strokeWeight: isMobileClicked() ? 10 : 20
+      });
+
+      ploylineMarker = new google.maps.Polyline({
+        path: trace_history_polyline,
+        geodesic: true,
+        strokeColor: "#00AFD0",
+        strokeOpacity: 1,
+        strokeWeight: isMobileClicked() ? 4 : 13,
+        icons: [
+          {
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+              fillColor: "#FFFFFF",
+              fillOpacity: 0.8,
+              strokeColor: "#FFFFFF",
+              strokeWeight: 1,
+              scale: 3
+            },
+            offset: "100%",
+            repeat: "100px"
+          }
+        ]
+      });
+      if (trace_history_markers.length) {
+        trace_history_markers[0].setMap(map);
+        trace_history_markers[0].setTitle("Ignition Off");
+        trace_history_markers[trace_history_markers.length - 1].setMap(map);
+        trace_history_markers[trace_history_markers.length - 1].setTitle("Ignition On");
+      }
+      ployline.setMap(map);
+      ploylineMarker.setMap(map);
+    }
+    function traceInfoWindowContent(maplocation) {
+      let tempDataItem = new Map();
+      for (let a of maplocation.dataItems) {
+        tempDataItem.set(a.dataItemName, a.dataItemValue);
+      }
+      let fuelPercent = parseFloat(tempDataItem.get("totalFuelLevel")).toFixed(0);
+      fuelPercent = isNaN(fuelPercent) ? "-" : parseFloat(fuelPercent).toLocaleString() + "%";
+      return `
+<div class="event-popup" style="height:212.5px;width:209px;border-radius: 0px;box-shadow: 0px 0px 10px 0px;background-color: #fff;">
+      <div style="height: 40px;width: 209px;padding-left:15px;padding-top:11px;background-color:#E1E1E1;/*padding-bottom:13px*/">${maplocation.triggerType_trl}</div>
+      <div style="padding-bottom:9px;padding-top:8px; align-items:center;display:flex;">
+              <div style="padding-left:15.71px;padding-right: 14.71px;height:26px; align-items:center;display:flex;">
+                <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/daily_inspection/clock_dark_gray.svg')}" />
+              </div>
+              <div>${maplocation.eventDateTime}</div>
+          </div>
+
+          <div style="padding-bottom:9px;padding-top:1px;">
+              <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                  <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/odometer_dark_gray_fill.svg')}" />
+              </div>
+              <div style="display:inline-block">${maplocation.lovVehicleDistance}</div>
+          </div>
+          <div style="padding-bottom:9px;padding-top:0px;">
+              <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                  <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/speed_dark_gray_fill.svg')}" />
+              </div>
+              <div style="display:inline-block">${maplocation.vehicleSpeed} </div>
+          </div>
+
+          <div style="padding-bottom:12px;padding-top:4px;">
+              <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                  <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/direction_dark_gray_fill.svg')}" />
+              </div>
+              <div style="display:inline-block">${maplocation.heading_translated}</div>
+          </div>
+
+          <div style="padding-bottom:12px;padding-top:4px;">
+              <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                  <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/fuel_level_dark_gray_fill.svg')}" />
+              </div>
+              <div style="display:inline-block">${fuelPercent}</div>
+          </div>
+
+          </div></div>
+          `;
+    }
+    function traceMarker(marker, maplocation) {
+      let infoWidgetContent = traceInfoWindowContent(maplocation);
+      google.maps.event.addListener(marker, "click", function () {
+        if (sendTraceSelectedMarkerInfoToLWC) {
+          if (maplocation.triggerType !== "Position" && maplocation.triggerType !== "No Movement" && maplocation.triggerType !== "Movement") {
+            sendTraceSelectedMarkerInfoToLWC = true;
+            if (isMobile) {
+              window.parent.postMessage(
+                { source: "SelectedTraceEventhighlight_mobile", highlightbottompannel: true, data: { currentTarget: { dataset: { value: maplocation.unique_key } } } },
+                window.location.origin
+              );
+            } else {
+              window.parent.postMessage({ source: "SelectedTraceEventhighlight", highlightbottompannel: true, data: maplocation.unique_key }, window.location.origin);
+            }
+          }
+        }
+        traceInfoWindow.setContent(infoWidgetContent);
+        traceInfoWindow.open(map, marker);
+        for (let tempMarker of trace_history_markers) {
+          if (tempMarker.getTitle() == undefined && marker !== tempMarker) {
+            tempMarker.setIcon({
+              url: tempMarker.getIcon().url,
+              scaledSize: new google.maps.Size(20, 20)
+            });
+          }
+        }
+        if (marker.getTitle() == undefined) {
+          if (maplocation.triggerType !== "Position" && maplocation.triggerType !== "No Movement" && maplocation.triggerType !== "Movement") {
+            marker.setIcon({
+              url: marker.getIcon().url,
+              scaledSize: new google.maps.Size(isMobile ? 30 : 50, isMobile ? 30 : 50)
+            });
+          } else {
+          }
+        }
+      });
+      google.maps.event.addListener(marker, "temp_mouseover", function () {
+        if (sendTraceSelectedMarkerInfoToLWC) {
+          sendTraceSelectedMarkerInfoToLWC = true;
+          window.parent.postMessage({ source: "SelectedTraceEventhighlight", highlightbottompannel: true, data: maplocation.unique_key }, window.location.origin);
+        }
+        for (let tempMarker of trace_history_markers) {
+          if (tempMarker.getTitle() == undefined && marker !== tempMarker) {
+            tempMarker.setIcon({
+              url: tempMarker.getIcon().url,
+              scaledSize: new google.maps.Size(20, 20)
+            });
+          }
+        }
+        if (marker.getTitle() == undefined) {
+          marker.setIcon({
+            url: marker.getIcon().url,
+            scaledSize: new google.maps.Size(isMobile ? 30 : 50, isMobile ? 30 : 50)
+          });
+        }
+      });
+    }
+    // Track related functions
+    function initializeTrackMarkers() {
+      all_markers.forEach((a) => a.setMap(null));
+      all_markers = [];
+      all_markers_map = new Map();
+      all_statusicon_markers_map = new Map();
+      all_statusicon_locations_map = new Map();
+      all_vehicles = [];
+      receivedfromLWC.data["{!$Label.ud_vehicles}"].Connected.vechicles.forEach((vehicle) => {
+        if (vehicle.PositionLatitude && vehicle.icon != "NoData") {
+          let marker = trackMarker(vehicle);
+          all_vehicles.push(vehicle);
+          all_markers.push(marker);
+          all_markers_map.set(vehicle.key, marker);
+          if (!all_statusicon_markers_map.get(vehicle.statusIcon)) {
+            all_statusicon_markers_map.set(vehicle.statusIcon, []);
+            all_statusicon_locations_map.set(vehicle.statusIcon, []);
+          }
+          all_statusicon_markers_map.get(vehicle.statusIcon).push(marker);
+          all_statusicon_locations_map.get(vehicle.statusIcon).push({
+            lat: isNaN(vehicle.PositionLatitude) ? "-" : parseFloat(vehicle.PositionLatitude),
+            lng: isNaN(vehicle.PositionLongitude) ? "-" : parseFloat(vehicle.PositionLongitude)
+          });
+        }
+      });
+      if (all_statusicon_locations_map.size == 0) {
+        isDefaultLocationShown = true;
+        utils.setCenter(currentUserCountry);
+      }
+      // Work on this condition
+      if (isVehicleDetailsShowing) {
+        for (const vehicle of receivedfromLWC.data["{!$Label.ud_vehicles}"].Connected.vechicles) {
+          if (vehicle.key === trackCurrentSelectedVehicle.key) {
+            try {
+              window.parent.postMessage({ source: "SelectedTrackEventhighlight", data: vehicle.key, name: vehicle.name }, window.location.origin);
+            } catch (e) {
+              debugger;
+              console.log(e);
+            }
+          }
+        }
+      }
+      fitAllMarkersInMap();
+    }
+    function trackInfoWindowContent(vehicle) {
+      let backgroundColor = vehicle.backgroundColor;
+      let myTitle = isJapan ? vehicle.marketbasedname : vehicle.longID;
+      let color = backgroundColor != "" ? "#FFFFFF" : "#00000";
+      let infowindowcontent;
+      if (isJapan) {
+        infowindowcontent = `<span style="font-family: 'Roboto';
+                              font-style: normal;
+                              font-weight: 700;
+                              font-size: 18px;
+                              line-height: 20px;
+                              color: ${color};
+                              padding-left: 12px;
+                              padding-right: 12px;
+                              padding-top: 6px;
+                              padding-bottom: 4px;
+                              background-color:  ${backgroundColor};
+                              width: 170px!important;left:-65px;">${myTitle} </span>`;
+      } else {
+        let speed = vehicle.WheelBasedSpeedValue;
+        if (speed) {
+          let evd_temp = parseFloat(speed).toFixed(0);
+          evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + " " + ` {!$Label.ud_km_h}`;
+          speed = evd_temp;
+        } else {
+          speed = "-";
+        }
+        let fuelLevel = isNaN(vehicle.FuelLevelValue) ? "-" : parseFloat(vehicle.FuelLevelValue).toFixed(0) + "%";
+        infowindowcontent = `
+                      <div class="event-popup" style="height:176.5px;width:209px;border-radius: 0px;box-shadow: 0px 0px 10px 0px;background-color: #fff;">
+                              <div style="height: 40px;width: 209px;padding-left:15px;padding-top:11px;background-color:#E1E1E1;font-weight: 700;/*padding-bottom:13px*/">${myTitle}</div>
+                              <div style="padding-bottom:9px;padding-top:8px; align-items:center;display:flex;">
+                                      <div style="padding-left:15.71px;padding-right: 14.71px;height:26px; align-items:center;display:flex;">
+                                        <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/trigger_time_dark_gray_fill.svg')}" />
+                                      </div>
+                                      <div>${vehicle.formattedTriggerDateTime}</div>
+                                  </div>
+
+                                  <div style="padding-bottom:9px;padding-top:1px;">
+                                      <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                                          <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/odometer_dark_gray_fill.svg')}" />
+                                      </div>
+                                      <div style="display:inline-block">${vehicle.Odometer} {!$Label.ud_km}</div>
+                                  </div>
+                                  <div style="padding-bottom:9px;padding-top:0px;">
+                                      <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                                          <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/speed_dark_gray_fill.svg')}" />
+                                      </div>
+                                      <div style="display:inline-block">${speed}</div>
+                                  </div>
+
+                                  <div style="padding-bottom:12px;padding-top:4px;">
+                                      <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
+                                          <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/fuel_level_dark_gray_fill.svg')}" />
+                                      </div>
+                                      <div style="display:inline-block">${fuelLevel}</div>
+                                  </div>
+                      `;
+        infowindowcontent += "</div></div>";
+      }
+      return infowindowcontent;
+    }
+    function trackMarker(vehicle) {
+      let icon = vehicle.icon;
+      let infowindowcontent = trackInfoWindowContent(vehicle);
+      let marker = addPositionToMap(
+        {
+          title: vehicle.name,
+          lat: isNaN(vehicle.PositionLatitude) ? "-" : vehicle.PositionLatitude,
+          lng: isNaN(vehicle.PositionLongitude) ? "-" : vehicle.PositionLongitude,
+          chassisId: vehicle.ChassisNumber
+        },
+        tracksvgIcons[vehicle.icon],
+        vehicle.direction_icon
+      );
+      marker.setCursor("pointer");
+      marker.addListener("mouseover", function () {
+        if (infoWindow.getContent(infowindowcontent) != infowindowcontent) {
+          resetTrackMarkerSize(marker);
+          infoWindow.setContent(infowindowcontent);
+          infoWindow.setOptions({});
+          marker.setIcon(tracksvgIconsZoom[icon]);
+          infoWindow.open(map, marker);
+        }
+      });
+      marker.addListener("click", function () {
+        getCurrentBound(map);
+        if (!isMobileClicked()) {
+          infoWindow.setContent(infowindowcontent);
+          infoWindow.open(map, marker);
+        }
+        try {
+          try {
+            window.parent.postMessage({ source: "SelectedTrackEventhighlight", data: vehicle.key, name: vehicle.name }, window.location.origin);
+          } catch (error) {
+            console.log(error);
+          }
+          currentInfo = infoWindow;
+          marker_Clusterer.clearMarkers();
+          resetTrackMarkerSize(marker, true);
+          marker.setIcon(tracksvgIconsZoom[icon]);
+          map.setZoom(13);
+        } catch (e) {
+          console.log(e);
+        }
+      });
+      return marker;
+    }
+    function fitAllMarkersInMap() {
+      let newBoundary = new google.maps.LatLngBounds();
+      for (let vStatus of all_statusicon_locations_map.keys()) {
+        if (SelectedvehicleFilter != undefined && SelectedvehicleFilter != vStatus) {
+          continue;
+        }
+        for (let location of all_statusicon_locations_map.get(vStatus)) {
+          newBoundary.extend(new google.maps.LatLng(location));
+        }
+      }
+      if (!trackMarkersLoaded) {
+        map.fitBounds(newBoundary);
+      }
+      all_markers.forEach((a) => a.setMap(null));
+      if (marker_Clusterer) {
+        marker_Clusterer.clearMarkers();
+      }
+      let tempMarkers = [];
+      for (let vStatus of all_statusicon_markers_map.keys()) {
+        if (SelectedvehicleFilter != undefined && SelectedvehicleFilter != vStatus) {
+          continue;
+        }
+        for (let marker of all_statusicon_markers_map.get(vStatus)) {
+          tempMarkers.push(marker);
+        }
+      }
+      if (!trackMarkersLoaded) {
+        clusterAllMarkers(tempMarkers);
+      } else {
+        tempMarkers.forEach((a) => a.setMap(map));
+        map.setZoom(map.getZoom());
+      }
+      trackMarkersLoaded = true;
+      all_markers = tempMarkers;
+      if (!tempMarkers.length) {
+        utils.setCenter(currentUserCountry);
+      } else {
+      }
+    }
+    function clusterAllMarkers(all_markers) {
+      const renderer = {
+        render: ({ count, position }) => {
+          const size = count > 10 ? 43 : 35;
+          const svg = window.btoa(`<svg width="${size}" height="${size}" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <g filter="url(#filter0_d_1699_90070)">
+                                          <circle cx="18.9675" cy="17.3776" r="14.5" transform="rotate(-30 18.9675 17.3776)" fill="#00829B"/>
+                                      </g>
+                                      <defs>
+                                          <filter id="filter0_d_1699_90070" x="0.464844" y="0.875183" width="37.0039" height="37.0049" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                          <feOffset dy="2"/>
+                                          <feGaussianBlur stdDeviation="2"/>
+                                          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+                                          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1699_90070"/>
+                                          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1699_90070" result="shape"/>
+                                          </filter>
+                                      </defs>
+                                      </svg>`);
+          return new google.maps.Marker({
+            icon: {
+              url: `data:image/svg+xml;base64,${svg}`,
+              scaledSize: new google.maps.Size(size, size)
+            },
+            label: {
+              color: "white",
+              textAlign: "center",
+              fontSize: "11px",
+              fontWeight: "bold",
+              fontStyle: "normal",
+              fontFamily: "Arial,sans-serif",
+              backgroundPosition: "0 0",
+              text: String(count)
+            },
+            position,
+            zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
+          });
+        }
+      };
+      marker_Clusterer = new markerClusterer.MarkerClusterer({
+        map,
+        markers: all_markers,
+        renderer: renderer
+      });
+    }
+  </script>
+  <style>
+    .gm-style-iw-tc {
+      display: none;
+    }
+  </style>
+</apex:component>

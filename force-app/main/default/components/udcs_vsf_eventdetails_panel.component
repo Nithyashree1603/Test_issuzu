@@ -1,0 +1,170 @@
+<apex:component >
+  <div class="evt_container" id="eventdetailspanel">
+    <div class="sidebar-header-evt-details">
+      <div class="back_button_evt_details" id="back_button">
+        <img style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow.svg')}" width="15" height="15" class="left_arrow_back" /> Back
+      </div>
+      <p>Event Details</p>
+      <div id="vehicleDetailsclose" class="closeIcon">
+        <img class="location_icon" style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/location.svg')}" width="28" height="28" />
+      </div>
+    </div>
+    <div class="row11">
+      <div class="evt_header_container">
+        <div class="first-head">
+          <div class="event_nxt" id="event_nxt">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow/left_arrow_dark_gray.svg')}" />
+          </div>
+          <div id="eventtitle" class="eventtitle"></div>
+          <div id="event_prv" class="event_prv">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/common/right_arrow/right_arrow_dark_gray.svg')}" />
+          </div>
+          <div id="eventdetailspanelshow" class="eventdetailspanelshow">
+            <img src="{!URLFOR($Resource.udcs_connectx,'/icons/common/up_arrow/up_arrow_dark_gray.svg')}" />
+          </div>
+        </div>
+      </div>
+      <div id="evt_dataview">
+        <p class="dataview-label">{!$Label.ud_dataview}</p>
+      </div>
+    </div>
+    <div id="eventdetailspaneldata" class="eventdetailspaneldata">
+      <div class="tab_scroll">
+        <div class="eventdetailspaneldata-left">
+          <div class="eventdetailspaneldata-left-header">
+            {!$Label.ud_eventspecific}
+            <div class="header-line"></div>
+          </div>
+          <div class="eventdetailspaneldata-left-content">
+            <div class="left-content">
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/address/dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_location}</blockquote>
+                <div class="content-section-text" id="edp_address">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_location}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/altitude_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_altitude}</blockquote>
+                <div class="content-section-text" id="altitude">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_altitude}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/longitude_latitude/dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_latitude_longitude}</blockquote>
+                <div class="content-section-text" id="latlng">,</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_latitude_longitude}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/direction_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_direction}</blockquote>
+                <div class="content-section-text" id="heading">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_direction}</blockquote>
+              </div>
+            </div>
+            <div class="left-content">
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/trigger_time_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_date_time}</blockquote>
+                <div class="content-section-text" id="triggerTime">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_date_time}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/speed_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_speed}</blockquote>
+                <div class="content-section-text" id="speed">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_speed}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/fuel_level_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_fuellevel_pr}</blockquote>
+                <div class="content-section-text" id="totalFuelLevel">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_fuellevel_pr}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/ad_blue_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_adbluelevel_pr}</blockquote>
+                <div class="content-section-text" id="evdadBlueLevel">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_adbluelevel_pr}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/odometer_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_odometer_km}</blockquote>
+                <div class="content-section-text" id="evd_lovVehicleDistance">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_odometer_km}</blockquote>
+              </div>
+            </div>
+            <div class="left-content">
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/engine_hours_dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_Enginehours_hhmm}</blockquote>
+                <div class="content-section-text" id="lovEngineTime">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_Enginehours_hhmm}</blockquote>
+              </div>
+              <div class="left-content-section">
+                <div class="content-section-icon content-section-text">
+                  <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/driver/dark_gray_fill.svg')}" />
+                </div>
+                <blockquote class="tooltiptext1">{!$Label.ud_driver}</blockquote>
+                <div class="content-section-text" id="evd_driverName">-</div>
+                <blockquote class="tooltiptext1">{!$Label.ud_driver}</blockquote>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="eventdetailspaneldata-right">
+          <div class="eventdetailspaneldata-right-header">
+            {!$Label.ud_traceroutesummary}
+            <div class="header-line-2"></div>
+          </div>
+          <div class="eventdetailspaneldata-right-content">
+            <div class="right-content-section">
+              <div class="right-section-1">{!$Label.ud_distancecovered_km}</div>
+              <div class="right-section-2" id="Distancecovered">-</div>
+            </div>
+            <div class="right-content-section">
+              <div class="right-section-1">{!$Label.ud_totalfuelconsumed_l}</div>
+              <div class="right-section-2" id="Totalfuelconsumed">-</div>
+            </div>
+            <div class="right-content-section">
+              <div class="right-section-1">{!$Label.ud_maximumspeed_km_h}</div>
+              <div class="right-section-2" id="MaximumSpeed">-</div>
+            </div>
+            <div class="right-content-section">
+              <div class="right-section-1">{!$Label.ud_totalfuelefficiency_km_l}</div>
+              <div class="right-section-2" id="TotalFuelEfficiency">-</div>
+            </div>
+            <div class="right-content-section">
+              <div class="right-section-1">{!$Label.ud_totalenginehours_h}</div>
+              <div class="right-section-2" id="evt_TotalEngineHours">-</div>
+            </div>
+            <div class="header-line-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <apex:stylesheet value="{!URLFOR($Resource.udcs_connectx,'/libraries/visualforce_style_sheets/eventdetailspanel.css')}"> </apex:stylesheet>
+
+  <script></script>
+</apex:component>

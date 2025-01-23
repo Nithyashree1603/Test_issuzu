@@ -1,0 +1,16 @@
+<apex:page showHeader="false" lightningStylesheets="true" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" title="Connect Dashboard">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <c:udcs_vsf_libraries />
+    <c:udcs_vsf_track_trace_svg_icons />
+  </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <c:udcs_vsf_track_vehicle_details />
+  <c:udcs_vsf_track_trace_map />
+  <c:udcs_vsf_track_trace_service />
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxeLHYolT0A5CyjFx0H9XlSNxbaEsnBCo&callback=initMap&libraries=drawing,places,marker" async="true"></script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer@2.5.3/dist/index.min.js"></script>
+  <apex:stylesheet value="{!URLFOR($Resource.udcs_connectx,'/libraries/visualforce_style_sheets/ffs_track_trace_page.css')}"> </apex:stylesheet>
+</apex:page>

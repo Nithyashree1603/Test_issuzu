@@ -1,0 +1,249 @@
+<template>
+    <template if:false={getLoad}>
+        <c-udcs_lwc_spinner></c-udcs_lwc_spinner>
+    </template>
+    <div class="view-list" onclick={openModal}>
+        <img src={icons.common.hamburger.turquoise} width="11" height="10"></img>
+        <div>{label.lbl_fleetstatus}</div>
+    </div>
+    <template if:true={isModalOpen}>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+
+                <span class="close" onclick={closeModal}>
+                    <img src={icons.common.cross.dim_10_x_10} alt=""></img>
+                </span>
+                <div class="fleet-container">
+                    <div class="label-content">
+                        <p style="cursor: default;">{label.lbl_ud_FleetStatusOverview}</p>
+                    </div>
+                    <div class="row-container">
+                        <div class="for-search">
+                            <div class="search-btn">
+                                <img src={icons.common.search.dark_gray} width="16" height="16" alt=""></img>
+                            </div>
+                            <input type="text" onkeyup={trackDataSearch} data-value="trackDataSearch"
+                                class="fleetStatusSearch" id="trackDataSearch" size="45"
+                                placeholder={label.lbl_ud_placeholder} />
+                        </div>
+                        <div class="for-pagination">
+                            <button class="previous">
+                                <template if:true={enablePrv}>
+                                    <img src={icons.common.prev_icon} onclick={prevRecords} alt=""></img>
+                                </template>
+                                <template if:false={enablePrv}>
+                                    <img src={icons.common.prevs_icon} alt=""></img>
+                                </template>
+                            </button>
+                            <p> {labelName}</p>
+                            <button class="next">
+                                <template if:true={enableNxt}>
+                                    <img src={icons.common.next_icon} onclick={nxtRecords} alt=""></img>
+                                </template>
+                                <template if:false={enableNxt}>
+                                    <img src={icons.common.nexts_icon} alt=""></img>
+                                </template>
+                            </button>
+                        </div>
+                        <div class="head2-export">
+                            <div class="export-button" onclick={showExport}>
+                                <div class="backdrop" onclick={closeDrop}></div>
+                                <div class="head2-right-icon">
+                                    <img src={icons.common.export.turquoise} width="20" height="17" alt=""></img>
+                                </div>
+                                <div class="head2-right-text export_text">{label.lbl_ud_export}</div>
+
+                                <div class="head-right-export">
+                                    <div>
+                                        <c-udcs_lwc_fleetstatus_overview_export all-track-events={allTrackEvents_Export}>
+                                        </c-udcs_lwc_fleetstatus_overview_export>
+                                    </div>
+                                    <div class="triangle"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Table contents -->
+                    <div class="table-container">
+                        <table id="myTable" class="myTable">
+                            <thead>
+                                <tr class="header-row">
+                                    <th onclick={customSortVehicleID} class="header-head">
+                                        <p>{label.lbl_ud_vehicleid}
+
+                                            <template if:true={ascending1}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending1}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortTruckID} class="header-head">
+                                        <p>{label.lbl_ud_TruckID}
+
+                                            <template if:true={ascending2}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending2}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortDateTime} style="cursor: pointer;" class="header-head">
+                                        <p>{label.lbl_ud_date_time} (UTC{timezone})
+                                            <template if:true={ascending3}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending3}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortDriver} class="header-head">
+                                        <p>{label.lbl_ud_driver}
+                                            <template if:true={ascending4}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending4}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortFuelLevel} class="header-head">
+                                        <p>{label.lbl_fuellevel_pr}
+                                            <template if:true={ascending5}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending5}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortAdblueLevel} class="header-head">
+                                        <p>{label.lbl_adbluelevel_pr}
+                                            <template if:true={ascending6}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending6}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortSpeed} class="header-head">
+                                        <p>{label.lbl_speed_km_h}
+                                            <template if:true={ascending7}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending7}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortOdometer} class="header-head">
+                                        <p>{label.lbl_ud_odometer_km}
+                                            <template if:true={ascending8}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending8}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortEngineHours} class="header-head">
+                                        <p>{label.lbl_UD_Enginehours_hh_mm}
+                                            <template if:true={ascending9}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending9}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <!-- <th onclick={customSortVehicleStatus} class="header-head header-center">
+                                        <p>{label.lbl_vehiclestatus}<template if:true={ascending10}>
+                                                <img src={ascendingIcon} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending10}>
+                                                <img src={ascendingIcon} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th> -->
+                                    <th class="header-head header-center" onclick={customSortVehicleStatus}>
+                                        <p>{label.lbl_vehiclestatus}
+                                            <template if:true={ascending11}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending11}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th class="header-head header-left">
+                                        <p>{label.lbl_location}</p>
+                                    </th>
+                                    <!-- <th style="text-align:left;">
+                                        <p>{label.lbl_fleetstatus}</p>
+                                    </th> -->
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+                                <template for:each={selectedRows} for:item="vh">
+                                    <tr key={vh.key}>
+                                        <td class="vehicleid">
+                                            {vh.chassisNumber} <br>{vh.registrationNumber}
+                                        </td>
+                                        <!-- <td>{vh.truckID}</td> -->
+                                        <td>{vh.truckId}</td>
+                                        <td>{vh.formattedTriggerDateTime}</td>
+                                        <td><span class="truncate" title={vh.driverName}> {vh.driverName}</span></td>
+                                        <td class="right-align">{vh.diesel}</td>
+                                        <td class="right-align">{vh.Adblue}</td>
+                                        <td class="right-align">{vh.wheelBasedSpeed}</td>
+                                        <td class="right-align">{vh.Odometer}</td>
+                                        <td class="right-align">{vh.enginehours}</td>
+                                        <td class="center-align">
+                                            <template if:false={vh.direction_icon}>
+                                                <div class="content-section-text one-section">
+                                                    <img width="25px" height="25px" src={vh.svgicon}></img>
+                                                    <span class="tooltiptext1 width-ign">{vh.fleetStatusLabel}</span>
+                                                </div>
+                                            </template>
+                                            <template if:true={vh.direction_icon}>
+                                                <div class="content-section-text second-section">
+                                                    <img width="50px" height="50px" src={vh.svgicon}></img>
+                                                    <span class="tooltiptext1 width-moving">{vh.fleetStatusLabel}</span>
+                                                </div>
+                                            </template>
+                                        </td>
+                                        <td class="showaddress">
+                                            <template if:true={vh.showAddress}>
+                                                <span class="reverseaddress" data-value={vh.location}
+                                                    data-key={vh.spanKey}>
+                                                    {vh.reverseGeoAddress}
+                                                </span>
+                                            </template>
+                                            <template if:false={vh.showAddress}>
+                                                -
+                                            </template>
+                                        </td>
+                                        <!-- <td>
+                                            {vh.fleetStatusLabel}
+                                        </td> -->
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <template if:true={fuelChangeDataFlag}>
+                            <div class="no-records" style="padding-top: 10%;">
+                                <img src={icons.common.no_records_found} height="116" width="143" alt="">
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

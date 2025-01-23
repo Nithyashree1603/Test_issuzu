@@ -1,0 +1,80 @@
+<apex:component >
+  <head> </head>
+  <div id="map"></div>
+  <c:udcs_vsf_eventdetails_panel />
+  <div class="maps_icons_container" id="maps_icons_container">
+    <div tooltip-title="{!$Label.ud_direction}" id="tracedirection" style="right: -5px !important; cursor: pointer">
+      <img id="tracedirection_img" width="50" height="50" style="right: -5px !important; cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/tracedirection_on.svg')}" />
+    </div>
+    <div tooltip-title="{!$Label.ud_event}" id="eventsfilter" style="right: -5px !important; cursor: pointer">
+      <img
+        tooltip-title="{!$Label.ud_events}"
+        id="eventsfilter_img"
+        width="50"
+        height="50"
+        style="right: -5px !important; cursor: pointer; height: 51px"
+        src="{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/eventsfilter_on.svg')}"
+      />
+    </div>
+    <div tooltip-title="Position" id="positionfilter" style="right: -5px !important; cursor: pointer">
+      <img
+        tooltip-title="Position"
+        id="positionfilter_img"
+        width="50"
+        height="50"
+        style="right: -5px !important; cursor: pointer; height: 51px"
+        src="{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/position_off.svg')}"
+      />
+    </div>
+    <div tooltip-title="{!$Label.ud_ZoomReset}" id="btnReset" style="right: -5px !important; cursor: pointer">
+      <img src="{!URLFOR($Resource.udcs_connectx,'/icons/common/map/alert_zoomout.svg')}" />
+    </div>
+    <div tooltip-title="{!$Label.ud_MapView}" id="maptypecontrol" style="right: -5px !important; cursor: pointer">
+      <img src="{!URLFOR($Resource.udcs_connectx,'/icons/common/map/terrain_mode.svg')}" />
+    </div>
+    <section id="opened-modal" style="display: none">
+      <div class="modal-header">
+        <p class="display-options">{!$Label.ud_display_options}</p>
+        <img id="close-modal" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/cross/dim_10_x_10.svg')}" />
+      </div>
+      <div class="top"></div>
+      <div class="middle">
+        <div class="modal-subheader">{!$Label.ud_map_info}</div>
+        <div class="line" id="trafficflow">
+          <p>{!$Label.ud_traffic_flow}</p>
+          <p id="on3">On</p>
+          <p id="off3">Off</p>
+          <label class="switch">
+            <input type="checkbox" checked="togglechecked3" id="trafficflowtoggle" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="line" id="maplabels">
+          <p>{!$Label.ud_map_label}</p>
+          <p id="on4">On</p>
+          <p id="off4">Off</p>
+          <label class="switch">
+            <input type="checkbox" checked="togglechecked4" id="maplabelstoggle" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="modal-subheader">{!$Label.ud_map_type}</div>
+        <div class="radiobutton">
+          <input type="radio" checked="checked" name="default" id="default" />
+          <p class="radiobuttontext">{!$Label.ud_default}</p>
+        </div>
+        <div class="radiobutton">
+          <input type="radio" name="satellite" id="satellite" />
+          <p class="radiobuttontext">{!$Label.ud_satellite}</p>
+        </div>
+        <div class="radiobutton">
+          <input type="radio" name="terrain" id="terrain" />
+          <p class="radiobuttontext">{!$Label.ud_terrain}</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <apex:stylesheet value="{!URLFOR($Resource.udcs_connectx,'/libraries/visualforce_style_sheets/ffs_track_trace_map.css')}"> </apex:stylesheet>
+</apex:component>

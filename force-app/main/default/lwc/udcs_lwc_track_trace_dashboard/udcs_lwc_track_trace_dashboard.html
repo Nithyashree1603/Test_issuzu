@@ -1,0 +1,618 @@
+<template>
+    <!-- <c-udcs_pagetitle_bar title={label.lbl_map} icon={reports}></c-udcs_pagetitle_bar> -->
+    <template if:true={showTitleMenu}>
+        <div class="dashboard-menu">
+            <div class="dashboard-left">
+                <template if:false={isMobile}>
+                    <span class="toggleicon">
+                        <img src={icons.common.hamburger.dark_fill} width="25" height="20" onclick={togglSidebar_fn}
+                            class="allMenuBar" onchange={handleChange}></img>
+                    </span>
+                </template>
+                <span class="udc-titlebar-reports-icon">
+                    <img src={icons.track_trace.logo.map} width="25" height="20"></img>
+                </span>
+                <span class="title-name">
+                    {label.lbl_map}
+                    <!-- <template if:false={isreports}>
+                        {title}
+                    </template>
+                    <template if:true={isreports}>
+                        {label.lbl_UD_ALERTS_cap}
+                    </template> -->
+                </span>
+            </div>
+            <template lwc:if={isMobile}></template>
+            <template lwc:else>
+                <div class="refresh-button">
+                    <template if:false={showtracehistory}>
+                        <div style="cursor: pointer;" onclick={reloadDataOnRefresh}>
+                            <svg width="87" height="26" viewBox="0 0 87 26" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0.5" y="0.5" width="86" height="25" rx="12.5" fill="#4D4E53" stroke="white" />
+                                <path
+                                    d="M31.1553 8.04688H34.4502C35.1976 8.04688 35.8288 8.16081 36.3438 8.38867C36.8633 8.61654 37.2575 8.95378 37.5264 9.40039C37.7998 9.84245 37.9365 10.387 37.9365 11.0342C37.9365 11.4899 37.8431 11.9069 37.6562 12.2852C37.474 12.6589 37.2096 12.9779 36.8633 13.2422C36.5215 13.502 36.1113 13.6956 35.6328 13.8232L35.2637 13.9668H32.167L32.1533 12.8936H34.4912C34.9652 12.8936 35.3594 12.8115 35.6738 12.6475C35.9883 12.4788 36.2253 12.2533 36.3848 11.9707C36.5443 11.6882 36.624 11.376 36.624 11.0342C36.624 10.6514 36.5488 10.3164 36.3984 10.0293C36.248 9.74219 36.0111 9.52116 35.6875 9.36621C35.3685 9.20671 34.9561 9.12695 34.4502 9.12695H32.4746V18H31.1553V8.04688ZM36.9727 18L34.5527 13.4883L35.9268 13.4814L38.3809 17.918V18H36.9727ZM42.6602 18.1367C42.1452 18.1367 41.6781 18.0501 41.2588 17.877C40.8441 17.6992 40.4863 17.4508 40.1855 17.1318C39.8893 16.8128 39.6615 16.4346 39.502 15.9971C39.3424 15.5596 39.2627 15.0811 39.2627 14.5615V14.2744C39.2627 13.6729 39.3516 13.1374 39.5293 12.668C39.707 12.194 39.9486 11.793 40.2539 11.4648C40.5592 11.1367 40.9056 10.8883 41.293 10.7197C41.6803 10.5511 42.0814 10.4668 42.4961 10.4668C43.0247 10.4668 43.4805 10.5579 43.8633 10.7402C44.2507 10.9225 44.5674 11.1777 44.8135 11.5059C45.0596 11.8294 45.2419 12.2122 45.3604 12.6543C45.4788 13.0918 45.5381 13.5703 45.5381 14.0898V14.6572H40.0146V13.625H44.2734V13.5293C44.2552 13.2012 44.1868 12.8822 44.0684 12.5723C43.9544 12.2624 43.7721 12.0072 43.5215 11.8066C43.2708 11.6061 42.929 11.5059 42.4961 11.5059C42.209 11.5059 41.9447 11.5674 41.7031 11.6904C41.4616 11.8089 41.2542 11.9867 41.0811 12.2236C40.9079 12.4606 40.7734 12.75 40.6777 13.0918C40.582 13.4336 40.5342 13.8278 40.5342 14.2744V14.5615C40.5342 14.9124 40.582 15.2428 40.6777 15.5527C40.778 15.8581 40.9215 16.127 41.1084 16.3594C41.2998 16.5918 41.5299 16.7741 41.7988 16.9062C42.0723 17.0384 42.3822 17.1045 42.7285 17.1045C43.1751 17.1045 43.5534 17.0133 43.8633 16.8311C44.1732 16.6488 44.4443 16.4049 44.6768 16.0996L45.4424 16.708C45.2829 16.9495 45.0801 17.1797 44.834 17.3984C44.5879 17.6172 44.2848 17.7949 43.9248 17.9316C43.5693 18.0684 43.1478 18.1367 42.6602 18.1367ZM48.9014 18H47.6367V9.82422C47.6367 9.29102 47.7324 8.84212 47.9238 8.47754C48.1198 8.1084 48.4001 7.8304 48.7646 7.64355C49.1292 7.45215 49.5622 7.35645 50.0635 7.35645C50.2093 7.35645 50.3551 7.36556 50.501 7.38379C50.6514 7.40202 50.7972 7.42936 50.9385 7.46582L50.8701 8.49805C50.7744 8.47526 50.665 8.45931 50.542 8.4502C50.4235 8.44108 50.305 8.43652 50.1865 8.43652C49.9176 8.43652 49.6852 8.49121 49.4893 8.60059C49.2979 8.7054 49.152 8.86035 49.0518 9.06543C48.9515 9.27051 48.9014 9.52344 48.9014 9.82422V18ZM50.4736 10.6035V11.5742H46.4678V10.6035H50.4736ZM53.1465 11.7656V18H51.8818V10.6035H53.1123L53.1465 11.7656ZM55.457 10.5625L55.4502 11.7383C55.3454 11.7155 55.2451 11.7018 55.1494 11.6973C55.0583 11.6882 54.9535 11.6836 54.835 11.6836C54.5433 11.6836 54.2858 11.7292 54.0625 11.8203C53.8392 11.9115 53.6501 12.0391 53.4951 12.2031C53.3402 12.3672 53.2171 12.5632 53.126 12.791C53.0394 13.0143 52.9824 13.2604 52.9551 13.5293L52.5996 13.7344C52.5996 13.2878 52.6429 12.8685 52.7295 12.4766C52.8206 12.0846 52.9596 11.7383 53.1465 11.4375C53.3333 11.1322 53.5703 10.8952 53.8574 10.7266C54.1491 10.5534 54.4954 10.4668 54.8965 10.4668C54.9876 10.4668 55.0924 10.4782 55.2109 10.501C55.3294 10.5192 55.4115 10.5397 55.457 10.5625ZM59.5586 18.1367C59.0436 18.1367 58.5765 18.0501 58.1572 17.877C57.7425 17.6992 57.3848 17.4508 57.084 17.1318C56.7878 16.8128 56.5599 16.4346 56.4004 15.9971C56.2409 15.5596 56.1611 15.0811 56.1611 14.5615V14.2744C56.1611 13.6729 56.25 13.1374 56.4277 12.668C56.6055 12.194 56.847 11.793 57.1523 11.4648C57.4577 11.1367 57.804 10.8883 58.1914 10.7197C58.5788 10.5511 58.9798 10.4668 59.3945 10.4668C59.9232 10.4668 60.3789 10.5579 60.7617 10.7402C61.1491 10.9225 61.4658 11.1777 61.7119 11.5059C61.958 11.8294 62.1403 12.2122 62.2588 12.6543C62.3773 13.0918 62.4365 13.5703 62.4365 14.0898V14.6572H56.9131V13.625H61.1719V13.5293C61.1536 13.2012 61.0853 12.8822 60.9668 12.5723C60.8529 12.2624 60.6706 12.0072 60.4199 11.8066C60.1693 11.6061 59.8275 11.5059 59.3945 11.5059C59.1074 11.5059 58.8431 11.5674 58.6016 11.6904C58.36 11.8089 58.1527 11.9867 57.9795 12.2236C57.8063 12.4606 57.6719 12.75 57.5762 13.0918C57.4805 13.4336 57.4326 13.8278 57.4326 14.2744V14.5615C57.4326 14.9124 57.4805 15.2428 57.5762 15.5527C57.6764 15.8581 57.82 16.127 58.0068 16.3594C58.1982 16.5918 58.4284 16.7741 58.6973 16.9062C58.9707 17.0384 59.2806 17.1045 59.627 17.1045C60.0736 17.1045 60.4518 17.0133 60.7617 16.8311C61.0716 16.6488 61.3428 16.4049 61.5752 16.0996L62.3408 16.708C62.1813 16.9495 61.9785 17.1797 61.7324 17.3984C61.4863 17.6172 61.1833 17.7949 60.8232 17.9316C60.4678 18.0684 60.0462 18.1367 59.5586 18.1367ZM68.2197 16.0381C68.2197 15.8558 68.1787 15.6872 68.0967 15.5322C68.0192 15.3727 67.8574 15.2292 67.6113 15.1016C67.3698 14.9694 67.0052 14.8555 66.5176 14.7598C66.1074 14.6732 65.736 14.5706 65.4033 14.4521C65.0752 14.3337 64.7949 14.1901 64.5625 14.0215C64.3346 13.8529 64.1592 13.6546 64.0361 13.4268C63.9131 13.1989 63.8516 12.9323 63.8516 12.627C63.8516 12.3353 63.9154 12.0596 64.043 11.7998C64.1751 11.54 64.3597 11.3099 64.5967 11.1094C64.8382 10.9089 65.1276 10.7516 65.4648 10.6377C65.8021 10.5238 66.1781 10.4668 66.5928 10.4668C67.1852 10.4668 67.6911 10.5716 68.1104 10.7812C68.5296 10.9909 68.8509 11.2712 69.0742 11.6221C69.2975 11.9684 69.4092 12.3535 69.4092 12.7773H68.1445C68.1445 12.5723 68.083 12.374 67.96 12.1826C67.8415 11.9867 67.666 11.8249 67.4336 11.6973C67.2057 11.5697 66.9255 11.5059 66.5928 11.5059C66.2419 11.5059 65.957 11.5605 65.7383 11.6699C65.5241 11.7747 65.3669 11.9092 65.2666 12.0732C65.1709 12.2373 65.123 12.4105 65.123 12.5928C65.123 12.7295 65.1458 12.8525 65.1914 12.9619C65.2415 13.0667 65.3281 13.1647 65.4512 13.2559C65.5742 13.3424 65.7474 13.4245 65.9707 13.502C66.194 13.5794 66.4788 13.6569 66.8252 13.7344C67.4313 13.8711 67.9303 14.0352 68.3223 14.2266C68.7142 14.418 69.0059 14.6527 69.1973 14.9307C69.3887 15.2087 69.4844 15.5459 69.4844 15.9424C69.4844 16.266 69.416 16.5622 69.2793 16.8311C69.1471 17.0999 68.9535 17.3324 68.6982 17.5283C68.4476 17.7197 68.1468 17.8701 67.7959 17.9795C67.4495 18.0843 67.0599 18.1367 66.627 18.1367C65.9753 18.1367 65.4238 18.0205 64.9727 17.7881C64.5215 17.5557 64.1797 17.2549 63.9473 16.8857C63.7148 16.5166 63.5986 16.127 63.5986 15.7168H64.8701C64.8883 16.0632 64.9886 16.3389 65.1709 16.5439C65.3532 16.7445 65.5765 16.888 65.8408 16.9746C66.1051 17.0566 66.3672 17.0977 66.627 17.0977C66.9733 17.0977 67.2627 17.0521 67.4951 16.9609C67.7321 16.8698 67.9121 16.7445 68.0352 16.585C68.1582 16.4255 68.2197 16.2432 68.2197 16.0381ZM72.4102 7.5V18H71.1455V7.5H72.4102ZM72.1094 14.0215L71.583 14.001C71.5876 13.4951 71.6628 13.028 71.8086 12.5996C71.9544 12.1667 72.1595 11.7907 72.4238 11.4717C72.6882 11.1527 73.0026 10.9066 73.3672 10.7334C73.7363 10.5557 74.1442 10.4668 74.5908 10.4668C74.9554 10.4668 75.2835 10.5169 75.5752 10.6172C75.8669 10.7129 76.1152 10.8678 76.3203 11.082C76.5299 11.2962 76.6895 11.5742 76.7988 11.916C76.9082 12.2533 76.9629 12.6657 76.9629 13.1533V18H75.6914V13.1396C75.6914 12.7523 75.6344 12.4424 75.5205 12.21C75.4066 11.973 75.2402 11.8021 75.0215 11.6973C74.8027 11.5879 74.5339 11.5332 74.2148 11.5332C73.9004 11.5332 73.6133 11.5993 73.3535 11.7314C73.0983 11.8636 72.8773 12.0459 72.6904 12.2783C72.5081 12.5107 72.3646 12.7773 72.2598 13.0781C72.1595 13.3743 72.1094 13.6888 72.1094 14.0215Z"
+                                    fill="white" />
+                                <g clip-path="url(#clip0_35935_122244)">
+                                    <path
+                                        d="M20.2373 8.7625C19.1498 7.675 17.6573 7 15.9998 7C12.6848 7 10.0073 9.685 10.0073 13C10.0073 16.315 12.6848 19 15.9998 19C18.7973 19 21.1298 17.0875 21.7973 14.5H20.2373C19.6223 16.2475 17.9573 17.5 15.9998 17.5C13.5173 17.5 11.4998 15.4825 11.4998 13C11.4998 10.5175 13.5173 8.5 15.9998 8.5C17.2448 8.5 18.3548 9.0175 19.1648 9.835L16.7498 12.25H21.9998V7L20.2373 8.7625Z"
+                                        fill="white" />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_35935_122244">
+                                        <rect width="18" height="18" fill="white" transform="translate(7 4)" />
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </div>
+                        <p class="refresh-timing">{assetsAPIReloadTime}</p>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </template>
+
+
+    <div class="track_trace_container">
+        <template if:true={isMobile}>
+            <template if:true={isShowMapMenuButton}>
+                <div class="mapMenu" onclick={openSidebar}>
+                    <img src={icons.common.mapMenuIcon} alt="Map Menu" class="mapMenu_icon" onclick={openSidebar}></img>
+                    <div>Back to details</div>
+                </div>
+            </template>
+            <template if:true={isShowMapMenuButtonEvtDetails}>
+                <div class="mapMenuEvtDetials" onclick={openEvtDetails}>
+                    <img src={icons.common.mapMenuIcon} alt="Map Menu" class="mapMenu_icon"
+                        onclick={openEvtDetails}></img>
+                    <div>Back to details</div>
+                </div>
+            </template>
+        </template>
+        <template if:false={isLoad}>
+            <c-udcs_lwc_spinner></c-udcs_lwc_spinner>
+        </template>
+        <template if:true={isMobile}>
+            <template if:false={isMobileLoad}>
+                <c-udcs_lwc_spinner></c-udcs_lwc_spinner>
+            </template>
+        </template>
+        <template if:true={istogglSidebar}>
+            <template if:false={showtracehistory}>
+                <template if:true={isMobile}>
+                    <div class="track_trace_ffs_sidebar_search_container mobile_search">
+                        <div class="searchbox_container">
+                            <img src={icons.common.search.dark_gray} width="16" height="16" alt="Search Icon"
+                                class="ffs_search_icon"></img>
+                            <input type="search" class="ffs_sidebar_search" style="cursor: text !important;"
+                                placeholder={mobileSearchPlaceHolder} data-value="searchVehicles"
+                                onkeyup={searchVehicles} onclick={openVehicles} />
+                            <template if:true={isClear}>
+                                <img src={icons.common.cross.dim_10_x_10} alt="Clear Search" onclick={clearSearch}
+                                    class="ffs_searchClear_icon"></img>
+                            </template>
+                        </div>
+                        <span class="none">{SearchText}</span>
+                    </div>
+
+                </template>
+
+                <div class="track_trace_vehiclecontainer">
+                    <template if:false={isShowcategoryvehicles}>
+                        <template for:each={categories} for:item="cat">
+                            <div class="slds-media_center track_trace_category" data-value={cat.name} key={cat.name}
+                                onclick={categoryHandleClick}>
+                                <div class="cat-name">
+                                    <span style="padding-right: 0.75rem">
+                                        <img src={icons.vehicle.details.free_search_light_gray} width="22"
+                                            height="18"></img>
+                                    </span>
+                                    {cat.name}
+                                </div>
+                                <span>
+                                    <div class="track_trace_d-inline-block">
+                                        <div class="track_trace_cal_green_circle">{cat.count}</div>
+                                    </div>
+                                    <span>
+                                        <img src={icons.common.right_arrow.right_arrow_light_dark_gray}
+                                            style="margin-left: 0.5rem" width="20" height="20"></img>
+                                    </span>
+                                </span>
+                            </div>
+                        </template>
+                    </template>
+                    <template if:true={isShowcategoryvehicles}>
+                        <div class="track_trace_vehicle_dropdown">
+                            <template if:false={isMobile}>
+                                <template if:false={isJapan.data}>
+                                    <div class="track_trace_vehicle_dropdown_header">
+                                        <div class="back-click" onclick={showcategorypanel}>
+                                            <img src={icons.common.left_arrow.left_arrow_dark_gray} width="9"
+                                                height="15"></img>
+                                            <div class="backbtn">
+                                                {label.lbl_back}
+                                            </div>
+                                        </div>
+                                        <div class="view-list">
+                                            <c-udcs_lwc_fleet_status_overview all-track-events={allTrackEvents}
+                                                style="padding-left: 0.4375rem;"></c-udcs_lwc_fleet_status_overview>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                            <template if:true={isJapan.data}>
+                                <div class="track_trace_vehicle_dropdown_header_jpn">
+                                    <!-- <div class="back-click_jpn" onclick={backFn}>
+                                        <img src={icons.common.left_arrow.left_arrow_dark_gray}></img>
+                                        <div class="backbtn">
+                                            {label.lbl_back}
+                                        </div>
+                                    </div> -->
+                                    <div class="view-list" style="display: none;"></div>
+                                </div>
+                            </template>
+                            <template if:false={isMobile}>
+                                <div class="track_trace_ffs_sidebar_search_container">
+                                    <div class="searchbox_container">
+                                        <img src={icons.common.search.dark_gray} width="16" height="16"
+                                            alt="Search Icon" class="ffs_search_icon"></img>
+                                        <input type="search" class="ffs_sidebar_search "
+                                            style="cursor: text !important;" placeholder={label.lbl_ud_placeholder}
+                                            data-value="searchVehicles" onkeyup={searchVehicles} />
+                                    </div>
+
+                                    <template if:true={isClear}>
+                                        <img src={icons.common.cross.dim_10_x_10} alt="Clear Search"
+                                            onclick={clearSearch} class="ffs_searchClear_icon"></img>
+                                    </template>
+                                    <span class="none">{SearchText}</span>
+                                </div>
+                            </template>
+                            <template if:true={isMobile}>
+                                <div class="track_trace_vehicle_dropdown_swiper" onclick={handleSwipe}>
+                                    {showHideList}
+                                </div>
+                            </template>
+                            <div class="track_trace_vehicle_dropdown_body">
+                                <div class="track_trace_dropdown_body">
+                                    <div class="track_trace_items" data-value="Moving" onclick={vehicleFilter}>
+                                        <div style="font-size: 10px;">{label.lbl_moving}</div>
+                                        <img src={icons.track.status.moving} width="25" height="25"></img>
+                                        <span style="font-size: 14px;">{trackVehicleCount.Moving}</span>
+                                    </div>
+                                    <div class="track_trace_items" data-value="IgntionOn" onclick={vehicleFilter}>
+                                        <div style="font-size: 10px;">{label.lbl_ign_on}</div>
+                                        <img src={icons.track.status.igntion_on} width="25" height="25"></img>
+                                        <span style="font-size: 14px;">{trackVehicleCount.IgntionOn}</span>
+                                    </div>
+                                    <div class="track_trace_items" data-value="IgntionOff" onclick={vehicleFilter}>
+                                        <div style="font-size: 10px;">{label.lbl_ign_off}</div>
+                                        <img src={icons.track.status.igntion_off} width="25" height="25"></img>
+                                        <span style="font-size: 14px;">{trackVehicleCount.IgntionOff}</span>
+                                    </div>
+                                    <div class="track_trace_items" data-value="NonComm" onclick={vehicleFilter}>
+                                        <div style="font-size: 10px;">{label.lbl_non_comm_non_communicating}</div>
+                                        <img src={icons.track.status.non_comm} width="25" height="25"></img>
+                                        <span style="font-size: 14px;">{trackVehicleCount.NonComm}</span>
+                                    </div>
+                                    <div class={NoDataSelected} data-value="NoData" onclick={vehicleFilter}
+                                        style="border-right: none;">
+                                        <div style="font-size: 10px;">{label.lbl_nodata}</div>
+                                        <img src={icons.track.status.no_data} width="25" height="25"></img>
+                                        <span style="font-size: 14px;">{trackVehicleCount.NoData}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="track_trace_vehicle_category_group group_height">
+                            <template for:each={selectedcategoryvehicles} for:item="cat">
+                                <div class="track_trace_category_group" key={cat.name}>
+                                    <template if:true={cat.show}>
+                                        <div id={cat.key} data-value={cat.key} data-category="searchVehicles"
+                                            class="track_trace_sub_category" onclick={toggleCategoryGroup}>
+                                            <div class="track_trace_category_item">
+                                                <div>
+                                                    <template if:true={cat.isChurnup}>
+                                                        <img src={icons.common.up_arrow.up_arrow_light_gray}
+                                                            style="margin-right: 10px" width="20" height="20"></img>
+                                                    </template>
+                                                    <template if:false={cat.isChurnup}>
+                                                        <img src={icons.common.up_arrow.up_arrow_light_gray}
+                                                            style="margin-right: 10px; transform: rotate(180deg);"
+                                                            width="20" height="20"></img>
+                                                    </template>
+                                                    {cat.name}
+                                                </div>
+                                                <div>
+                                                    <span class="track_trace_categorycount">
+                                                        <div class="track_trace_d-inline-block">
+                                                            <div class="track_trace_cal_green_circle">{cat.count}</div>
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:false={cat.isChurnup}>
+                                            <template for:each={cat.vechicles} for:item="v">
+                                                <template if:true={v.show}>
+                                                    <div class="track_trace_categoryvehicle" data-name={v.name}
+                                                        data-value={v.key} key={v.key} onclick={openVehicleDetailsPanel}
+                                                        style="overscroll-behavior: none;touch-action: cross-slide-y;">
+                                                        <div
+                                                            style="overscroll-behavior: none;touch-action: cross-slide-y;">
+                                                            <img class="sidebarIcon" src={v.sidebarIcon}></img>
+                                                            <template if:true={isJS}>{v.marketbasedname}</template>
+                                                            <template if:false={isJS}
+                                                                title={v.longID}>{v.shortID}</template>
+
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </template>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template if:true={showtracehistory}>
+
+                <div class="track_trace_tracehistory">
+                    <div class="track_trace_tracehistory-sidebar">
+                        <template if:false={isMobile}>
+                            <div class="track_trace_history_header">
+                                <img src={icons.common.left_arrow.left_arrow_dark_gray} onclick={traceBackbtn}
+                                    style="margin-right: 10px; cursor:pointer;"></img>
+                                <span onclick={traceBackbtn} class="back">{label.lbl_back}</span>
+                                <template if:true={isJS}><span
+                                        class="reg">{v.currentTrackVehicleChassisID}</span></template>
+                                <template if:false={isJS} title={longID}><span class="reg">{shortID}</span></template>
+                            </div>
+                        </template>
+                        <template if:true={isMobile}>
+                            <div class="track_trace_history_header">
+                                <div style="display: flex;gap: 5px;align-items: center;">
+                                    <img src={icons.common.cal_mobile} onclick={enableCalFromTrace}
+                                        style="cursor:pointer;"></img>
+                                </div>
+                                <template if:true={isJS}>
+                                    <div class="reg trace_history_chassis">{v.currentTrackVehicleChassisID}</div>
+                                </template>
+                                <template if:false={isJS} title={longID}>
+                                    <div class="reg trace_history_chassis">{shortID}</div>
+                                </template>
+                                <div>
+                                    <img src={icons.common.truck} onclick={closeTraceHistory}
+                                        style="cursor:pointer;"></img>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="track_trace_history_body">
+                            <div class="track_trace_d-inline-block">
+                                <img src={icons.reports.detailed_trace_black_fill} class="d-inline"
+                                    style="margin-right: 10px;"></img>
+                                <div class="d-inline">{label.lbl_tracehistory}</div>
+                            </div>
+                            <template if:false={isMobile}>
+                                <div class="track_trace_d-inline-block thb-right-content-grey exportFld"
+                                    onclick={handleExport}>
+                                    <img src={traceExport} class="d-inline" style="padding-right: 2px;">
+                                    {label.lbl_export}
+                                </div>
+                            </template>
+                        </div>
+                        <div class="track_trace_history_inputbox">
+                            <div class="track_trace_range-box" onclick={showCalandar}>
+                                <img src={icons.track_trace.white_fill} class="range-box-border"></img>
+                                <div class="track_trace_range_text">
+                                    <template if:false={istrackdeteSelected}>
+                                        <div style="margin-top: 6px;">{label.lbl_selectrange}</div>
+                                    </template>
+                                    <template if:true={istrackdeteSelected}>
+                                        <div class="begining">
+                                            <div>{trackingEventsHistoryFromDate_fm}</div>
+                                            <div class="traceTiming">
+                                                {trackingEventsHistoryFromTime} </div>
+                                        </div>
+                                        <div style="margin-right: 20px;">-</div>
+                                        <div class="end">
+                                            <div>{trackingEventsHistoryToDate_fm}</div>
+                                            <div class="traceTiming">
+                                                {trackingEventsHistoryToTime}</div>
+                                        </div>
+                                    </template>
+                                </div>
+                                <div class="track_trace_range_icon -rotate" onclick={showCalandar}>
+                                    <img src={icons.common.up_arrow.up_arrow_light_gray} width="20" height="20"
+                                        onclick={showCalandar}></img>
+                                </div>
+                            </div>
+                        </div>
+
+                        <template if:true={istrackingEventsHistoryEmpty}>
+                            <div class="track_trace_no_event">
+                                <img src={icons.trace.event.no_traceevents} width="130" height="83"></img>
+                            </div>
+                            <div class="track_trace_noevent_text">{label.lbl_noeventsfound}</div>
+                        </template>
+                        <template if:false={istrackingEventsHistoryEmpty}>
+                            <div class="track_trace_event_filter_body">
+                                <c-udcs_lwc_mutiselect_count onudcs_selectdropdown={selectedValueFilter}
+                                    option-data={uniqueEvents}>
+                                </c-udcs_lwc_mutiselect_count>
+                            </div>
+                            <div class="track_trace_event_item_cotainer">
+                                <template if:false={isMobile}>
+                                    <template for:each={trackingEventsHistory} for:item="trh">
+                                        <template if:true={trh.show}>
+                                            <div class="track_trace_events" key={trh.key}>
+                                                <div style="font-size: 15px;" class="track_trace_group_1">
+                                                    <template if:true={trh.isChurnup}>
+                                                        <img src={icons.common.up_arrow.up_arrow_light_gray}
+                                                            style="margin-right: 8px" width="20" height="20"
+                                                            data-value={trh.key}
+                                                            onclick={toggleTraceEventsByDate}></img>
+                                                    </template>
+                                                    <template if:false={trh.isChurnup}>
+                                                        <img src={icons.common.up_arrow.up_arrow_light_gray}
+                                                            style="margin-right: 8px; transform: rotate(180deg);"
+                                                            width="20" height="20" data-value={trh.key}
+                                                            onclick={toggleTraceEventsByDate}></img>
+                                                    </template>
+
+                                                    {trh.key}
+                                                </div>
+                                                <div class="track_trace_grrup_2">
+                                                    <div class="track_trace_d-inline-block">
+                                                        <div class="track_trace_cal_green_circle">{trh.eventSize}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <template if:false={trh.isChurnup}>
+                                                <template for:each={trh.value} for:item="trhevent">
+                                                    <template if:true={trhevent.show}>
+                                                        <div key={trhevent.unique_key} data-value={trhevent.unique_key}
+                                                            onclick={traceeventdetails} data-shows={trhevent.show}>
+                                                            <div class="track_trace_event_items">
+                                                                <div class="text">
+                                                                    <template if:true={trhevent.hasIcon}>
+                                                                        <img style="width:18px;height:18px;margin-right: 8px;"
+                                                                            src={trhevent.traceEventTypeIcon}></img>
+                                                                    </template>
+                                                                    <template if:false={trhevent.hasIcon}>
+                                                                        <div
+                                                                            style="width:18px;height:18px;margin-right: 8px; display:inline-block;">
+                                                                        </div>
+                                                                    </template>
+                                                                    {trhevent.triggerType_trl}
+                                                                </div>
+                                                                <div class="time">{trhevent.eventTime}</div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </template>
+                                            </template>
+                                        </template>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+
+                    </div>
+                    <template if:true={isShowTraceHistoryModal}>
+                        <div class="trace_history_modal_wrapper">
+                            <div class="trace_history_modal">
+                                <div class="trace_history_modal_desc">
+                                    Are you sure close trace history?
+                                </div>
+                                <div class="trace_history_modal_buttons">
+                                    <div class="trace_history_modal_cancel" onclick={traceModalCancel}>Cancel</div>
+                                    <div class="trace_history_modal_close" onclick={traceModalClose}>{label.lbl_ud_close}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+
+                </div>
+            </template>
+        </template>
+
+        <div data-id="vfFrameparent" class="vfFrameparent track_trace_d-inline-block">
+            <template if:true={isRenderCal}>
+                <template if:true={isMobile}>
+                    <div class="cal-sidebar-header">
+                        <div class="cal-back_button" onclick={backToVehicleDetails}>
+                            <img style="cursor: pointer" src={icons.common.left_arrow.left_arrow_dark_gray} width="15"
+                                height="15" class="cal-left_arrow_back" />
+                            <div class="cal-back">Back</div>
+                        </div>
+                        <p>Trace History</p>
+                    </div>
+                </template>
+                <c-udcs_lwc_calender_v1 class="c-udcs-calander" oncalenderclose={handleCalendarClose}
+                    onokclick={handleOkClick} config-type="12" from-date-time={fromDateTime} to-date-time={toDateTime}
+                    current-sel-option={selectedOption} chassis-id={currentTrackVehicleChassisID}
+                    onokodoclick={handleOdoClick} start-range={startRange} end-range={endRange}></c-udcs_lwc_calender_v1>
+            </template>
+
+            <iframe data-id="vfFrame" id="iframe" src={vfHost} class="vfFrame"></iframe>
+            <template if:true={isMobile}>
+                <template if:true={isEnableShowRouteTraceSummary}>
+                    <div class="show_events_route_summary">
+                        <div class="show_events" onclick={showEventsHistory}>Show Events</div>
+                        <div class="route_summary" onclick={showRouteSummary}>Route Summary</div>
+                    </div>
+                </template>
+                <template if:true={isShowEventsHistory}>
+                    <div class="events_history_mobile">
+                        <div class="events_history_mobile_header">
+                            <div class="events">Events</div>
+                            <div class="close_icon_events">
+                                <img src={icons.common.close_icon} onclick={closeEventsPanel} style="cursor:pointer;"
+                                    width="15" height="15"></img>
+                            </div>
+                        </div>
+                        <div class="track_trace_event_filter_body">
+                            <c-udcs_lwc_mutiselect_count onudcs_selectdropdown={selectedValueFilter}
+                                option-data={uniqueEvents}>
+                            </c-udcs_lwc_mutiselect_count>
+                        </div>
+                        <div class="track_trace_event_item_cotainer">
+                            <template for:each={trackingEventsHistory} for:item="trh">
+                                <template if:true={trh.show}>
+                                    <div class="track_trace_events" key={trh.key}>
+                                        <div style="font-size: 15px;" class="track_trace_group_1">
+                                            <template if:true={trh.isChurnup}>
+                                                <img src={icons.common.up_arrow.up_arrow_light_gray}
+                                                    style="margin-right: 8px" width="20" height="20"
+                                                    data-value={trh.key} onclick={toggleTraceEventsByDate}></img>
+                                            </template>
+                                            <template if:false={trh.isChurnup}>
+                                                <img src={icons.common.up_arrow.up_arrow_light_gray}
+                                                    style="margin-right: 8px; transform: rotate(180deg);" width="20"
+                                                    height="20" data-value={trh.key}
+                                                    onclick={toggleTraceEventsByDate}></img>
+                                            </template>
+
+                                            {trh.key}
+                                        </div>
+                                        <div class="track_trace_grrup_2">
+                                            <div class="track_trace_d-inline-block">
+                                                <div class="track_trace_cal_green_circle">{trh.eventSize}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <template if:false={trh.isChurnup}>
+                                        <template for:each={trh.value} for:item="trhevent">
+                                            <template if:true={trhevent.show}>
+                                                <div key={trhevent.unique_key} data-value={trhevent.unique_key}
+                                                    onclick={traceeventdetails} data-shows={trhevent.show}>
+                                                    <div class="track_trace_event_items">
+                                                        <div class="text">
+                                                            <template if:true={trhevent.hasIcon}>
+                                                                <img style="width:18px;height:18px;margin-right: 8px;"
+                                                                    src={trhevent.traceEventTypeIcon}></img>
+                                                            </template>
+                                                            <template if:false={trhevent.hasIcon}>
+                                                                <div
+                                                                    style="width:18px;height:18px;margin-right: 8px; display:inline-block;">
+                                                                </div>
+                                                            </template>
+                                                            {trhevent.triggerType_trl}
+                                                        </div>
+                                                        <div class="time">{trhevent.eventTime}</div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </template>
+                                    </template>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <template if:true={isShowRouteSummary}>
+                    <div class="route_summary_mobile_wrapper">
+                        <div class="route_summary_mobile_header">
+                            <div class="title_summary">Route Summary</div>
+                            <div class="close_icon_summery">
+                                <img src={icons.common.close_icon} onclick={closeRouteSummary} style="cursor:pointer;"
+                                    width="15" height="15"></img>
+                            </div>
+                        </div>
+                        <div class="route_summary_mobile_body">
+                            <div class="route_summary_body_elemeny">
+                                <div class="title">
+                                    Range
+                                </div>
+                                <div class="value">
+                                    <div class="value-from">{summaryFrom}</div>
+                                    <div class="value-seperator"> - </div>
+                                    <div class="value-to">{summaryTo}</div>
+                                </div>
+                            </div>
+                            <div class="route_summary_body_elemeny">
+                                <div class="title">Distance Covered</div>
+                                <div class="value">{summaryDistanceCovered}</div>
+                            </div>
+                            <div class="route_summary_body_elemeny">
+                                <div class="title">Total Fuel Consumed</div>
+                                <div class="value">{summaryTotalFuelConsumed}</div>
+                            </div>
+                            <div class="route_summary_body_elemeny">
+                                <div class="title">Maximum Speed</div>
+                                <div class="value">{summaryMaximumSpeed}</div>
+                            </div>
+                            <div class="route_summary_body_elemeny">
+                                <div class="title">Total Fuel Efficiency</div>
+                                <div class="value">{summaryTotalFE}</div>
+                            </div>
+                            <div class="route_summary_body_elemeny">
+                                <div class="title">Total Engine Hours</div>
+                                <div class="value">{summaryTotalEH}</div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template if:false={isMobileLoad}>
+                    <c-udcs_lwc_spinner></c-udcs_lwc_spinner>
+                </template>
+            </template>
+        </div>
+
+
+    </div>
+    <template if:true={isTechnicalIssue}>
+        <div class="technical-issue-wrapper">
+            <div class="technical-issue-container">
+                <!--<div class="technical-issue-title">
+                    <img src={technical_issue} class="technical-issue-icon"> ET201-2 Technical issue
+                </div>-->
+                <div class="technical-issue-description">There is no data for the selected period</div>
+                <div class="technical-issue-close-icon" onclick={closeTechnicalIssue}><img src={close_btn}
+                        alt="close button">
+                </div>
+                <div class="technical-issue-button-container">
+                    <button class="back-to-calendar" type="submit" onclick={closeTechnicalIssue}>Back to Page</button>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template if:true={isOdoRangeMessage}>
+        <div class="session_limit_exceeded_wrapper">
+            <div class="session_limit_exceeded_container">
+                <div class="session_limit_exceeded_header">
+                    Range Exceeds 14 days
+                </div>
+                <div class="session_limit_exceeded_text slds-text-align_center">
+                    {odoErrorMessage}
+                </div>
+                <div class="session_limit_exceeded_button" onclick={closeSessionLimitPopup}>
+                    OK
+                </div>
+                <div class="session_limit_exceeded_close" onclick={closeSessionLimitPopup}>
+                    <img src={close_btn} width="22" height="22" alt="close button">
+                </div>
+            </div>
+        </div>
+    </template>
+    <template if:true={isShowToast}>
+        <div class="toast_notification_wrapper">
+            <div class="error_toast">
+                <div>
+                    <img src={icons.flc.information} alt="Information">
+                </div>
+                <div class="toast_text">
+                    System date appears set to future. Displaying report relevant to current time.
+                </div>
+                <div class="toast_close" onclick={closeToast}>
+                    <img src={icons.flc.close} alt="Information">
+                </div>
+            </div>
+        </div>
+    </template>
+    <div lwc:dom="manual" class="download-container"></div>
+</template>

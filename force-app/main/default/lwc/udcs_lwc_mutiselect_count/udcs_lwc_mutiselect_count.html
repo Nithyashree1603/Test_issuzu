@@ -1,0 +1,66 @@
+<template>
+
+    <div class="backdrop hidden" onclick={showCheckboxes}></div>
+    <div class="multiselect">
+        <div class="border-black bg-white" onclick={showCheckboxes} style="position: relative;">
+            <input type="text" class="select inline-block" placeholder={selectOptionValueParameter} readonly
+                onclick={showCheckboxes}>
+            <span class="input_up_arrow rotate inline-block"><img src={icons.common.up_arrow.up_arrow_dark_gray}
+                    height="10" width="14" onclick={showCheckboxes} /></span>
+            <template if:true={isMobile}>
+                <span class="filter_icon"><img src={icons.common.filter} height="24" width="25" /></span>
+            </template>
+        </div>
+        <template if:true={showPicklist} onclick={showCheckboxes}>
+            <div class="checkboxespl">
+                <div class="search_cont">
+                    <input type="text" onkeyup={searchVechiles} class="flc_dd_search">
+                    <img src={icons.common.search.turquoise} height="18" width="18" alt="" class="search_icon"
+                        onclick={focus} />
+                    <button onclick={reset} class="reset_btn">× {label.lbl_reset}</button>
+                </div>
+                <div class="filters_container">
+                    <template for:each={parameters} for:item="g" for:index="gindex">
+                        <div key={g.groupName} class="flc_drop_single">
+                            <template if:true={g.groupData.isChurnUp}>
+                                <label for={g.groupName}>
+                                    <div class="flc_dd_grp_cont search_icon">
+                                        <input type="checkbox" id={g.groupName} onclick={selectinggrpparameters}
+                                            checked={g.groupData.checked} data-groupindex={gindex} value=""></input>
+                                        <div data-groupindex={gindex} class="flc_dd_nm-ct">
+                                            <div class="flc_dd_grp_name">
+                                                {g.groupName}
+                                            </div>
+
+                                            <div class="count-cont"><span
+                                                    class="veh-count">{selectedParaIds_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </template>
+
+                            <div class="flc_dd_clicked">
+                                <template for:each={g.groupData.data} for:item=vh for:index="vindex">
+                                    <template if:true={vh.show}>
+                                        <label for={vindex} key={vh.key}>
+                                            <div key={vh.key} class="flc_dd_vehicle search_icon">
+                                                <input class="flc_dd_cb" type="checkbox" checked={vh.checked}
+                                                    id={vindex} data-groupindex={gindex} data-vhindex={vindex}
+                                                    onclick={selectingevent}></input>
+                                                <span style="margin-left:4px">{vh.name}</span><br>
+
+                                                <!-- <span style="margin-left:4px">{vh.name}</span> -->
+                                            </div>
+                                        </label>
+                                    </template>
+                                </template>
+                            </div>
+                            <!-- <div>******************************</div>     -->
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
