@@ -28,7 +28,7 @@
         <members>udcs_lwc_fleetstatus_overview_export</members>
         <members>udcs_lwc_mutiselect_count</members>
         <members>udcs_lwc_track_trace_dashboard</members>
-        <!-- <members>udcs_lwc_track_trace_widget</members>Need to think about it -->
+       <members>udcs_lwc_track_trace_widget</members>
         <name>LightningComponentBundle</name>
     </types>
     <version>57.0</version>
