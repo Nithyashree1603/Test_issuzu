@@ -1,0 +1,30 @@
+<template>
+
+   <div class="mapwidget">
+      <div class="widget-header">
+         <div>
+            <img src={icons.track_trace.logo.map} alt="" class="map-img" width="25px" height="19px"></img>
+         </div>
+         <div class="caps">{label.lbl_ud_map}</div>
+      </div>
+      <div class={getContentClass}>
+         <template if:false={isJapanese}>
+            <template if:true={featureVisibilityData.maps}>
+               <c-udcs_lwc_map_track_trace_widget onclick={show_udcs_map_dashbaord}></c-udcs_lwc_map_track_trace_widget>
+            </template>
+            <template if:false={isMobile}>
+               <template if:true={featureVisibilityData.geofence}>
+                  <c-udcs_lwc_map_geofence_widget onclick={show_udcs_geo_fencing}></c-udcs_lwc_map_geofence_widget>
+               </template>
+            </template>
+         </template>
+         <template if:true={isJapanese}>
+            <template if:true={featureVisibilityData.maps}>
+               <div onclick={show_udcs_map_dashbaord}>
+                  <img src={icons.track_trace.mapwidget}></img>
+               </div>
+            </template>
+         </template>
+      </div>
+   </div>
+</template>
