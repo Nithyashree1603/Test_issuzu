@@ -29,7 +29,7 @@
         <members>udcs_lwc_mutiselect_count</members>
         <members>udcs_lwc_track_trace_dashboard</members>
        <members>udcs_lwc_track_trace_widget</members>
-       <members>udcs_lwc_map_widget</members>
+       <members>udcs_lwc_map_track_trace_widget</members>
         <name>LightningComponentBundle</name>
     </types>
     <version>57.0</version>
