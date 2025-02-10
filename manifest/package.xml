@@ -14,6 +14,7 @@
         <members>udcs_vsf_track_trace_service</members>
         <members>udcs_vsf_track_trace_svg_icons</members>
         <members>udcs_vsf_track_vehicle_details</members>
+        <members>udcs_vsf_track_googleplace_Assets_search</members>
         <name>ApexComponent</name>
     </types>
     <types>

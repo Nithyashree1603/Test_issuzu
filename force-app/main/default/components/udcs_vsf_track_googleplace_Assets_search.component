@@ -1,0 +1,322 @@
+<apex:component controller="udcs_apex_google_custom_place_search">
+    <div id="customsearch">
+        <div id="search">
+            <div class="search-position">
+                <input type="search" class="inputSearch" id="pac-input" autocomplete="off" placeholder="{!$Label.ud_searchforassets_location}"
+                />
+                <img class="clearInput clearinput-child1" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/clearinput.svg')}"/>
+                <!-- <svg class="clearInput clearinput-child1" width="1" height="23" viewBox="0 0 1 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.499966 0.5V22.5" stroke="#E1E1E1" stroke-linecap="round" />
+                </svg> -->
+                <img  class="clearInput" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/googlecancel.svg')}"/>
+                <!-- <svg class="clearInput" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L12 12" stroke="#A6A6A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="bevel" />
+                    <path d="M1 12L12 1" stroke="#A6A6A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="bevel" />
+                </svg> -->
+                <img id="svg" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/googlesearch.svg')}"/>
+                <!-- <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" id="svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.32208 0.761222C11.5744 1.97996 12.8675 4.43787 12.5958 6.9838C12.4297 8.64064 11.6115 10.1635 10.3215 11.2168C9.03153 12.2702 7.37558 12.7676 5.7185 12.5995C3.16892 12.3573 1.01806 10.5998 0.273262 8.15011C-0.471535 5.7004 0.337212 3.04355 2.32073 1.42389C4.30424 -0.195762 7.06977 -0.457517 9.32208 0.761222ZM1.70924 5.8333C1.4464 8.36679 3.28378 10.6358 5.81932 10.9088V10.9238C7.05123 11.048 8.28198 10.6776 9.24005 9.89423C10.1981 9.11091 10.8048 7.97906 10.9262 6.7484C11.1679 4.21281 9.31167 1.95919 6.77394 1.70724C4.23621 1.45528 1.97207 3.2998 1.70924 5.8333Z"
+                        fill="#4D4E53" />
+                    <path d="M12.1883 10.4222L15.349 13.5829L13.774 15.1579L10.6133 11.9972L12.1883 10.4222Z" fill="#4D4E53" />
+                </svg> -->
+                <div class="cancel-search" id="clearSearch">
+                    <img class="cancelsearch-icon" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/googleclear.svg')}"/>
+                    <!-- <svg class="cancelsearch-icon" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1L12 12" stroke="#A6A6A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="bevel" />
+                        <path d="M1 12L12 1" stroke="#A6A6A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="bevel" />
+                    </svg> -->
+                </div>
+            </div>
+            <div class="customsearchresults"></div>
+        </div>
+        <div id="addressinfo">
+            <div class="background-addressinfo">
+                <div id="addressinfobtn">
+                    <div class="back-arrow">
+                        <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/backarrow.svg')}"/>
+                        <!-- <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.56159 7.5L11.1743 13.782C11.3119 13.9128 11.3175 14.1304 11.1867 14.268C11.056 14.4056 10.8384 14.4112 10.7007 14.2805L3.82574 7.74922C3.68309 7.61369 3.68309 7.3863 3.82574 7.25078L10.7007 0.719529C10.8384 0.588772 11.056 0.594351 11.1867 0.731991C11.3175 0.86963 11.3119 1.08721 11.1743 1.21797L4.56159 7.5Z"
+                                fill="#4D4E53" />
+                        </svg> -->
+                        {!$Label.ud_backtolist}
+                    </div>
+                    <div class="clearsearch-icon" id="clearSearch">
+                        <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/clearsearchicon.svg')}"/>
+                        <!-- <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14 0.637258L13.3627 0L6.99972 6.36302L0.637258 0L0 0.637258L6.36246 7.00028L0 13.3627L0.637258 14L6.99972 7.63529L13.3627 14L14 13.3627L7.63473 7.00028L14 0.637258Z"
+                                fill="#5A5A5A" />
+                        </svg> -->
+                    </div>
+                </div>
+            </div>
+            <div id="address"></div>
+        </div>
+    </div>
+    <apex:stylesheet value="{!URLFOR($Resource.udcs_googlecustomplacesearch)}"></apex:stylesheet>
+    <script>    
+        let SortColumn = '';
+        let GooglePlacesList = [];
+        let vehicledataList = [];
+        let isAssending = true;
+
+        jQuery('#pac-input').on('click', () => {
+            if (parseInt($('#pac-input').css('width').replace('px', '')) < 50) {
+                document.getElementsByClassName("svg").setAttribute("style", "left:43px");
+                window.parent.postMessage({
+                    source: 'closeTrackSidebar'
+                }, window.location.origin);
+            }
+        });
+
+
+
+        jQuery('#pac-input').on('input propertychange paste', function (e) {
+            isAssending = true;
+            $('#vehicleDetails').hide();
+            isVehicleDetailsShowing = false;
+            let searchText = $('#pac-input').val();
+            $('#clearSearch').on('click', () => {
+                $('#pac-input').val('');
+                $('.customsearchresults').hide();
+            })
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.udcs_apex_google_custom_place_search.getAddressRecommendations}', searchText, function (result, event) {
+                GooglePlacesList = [];
+                vehicledataList = [];
+                $('.customsearchresults').show();
+                let data = JSON.parse(result);
+                let listofData = '<div class="searchsort" ><hr/><p style="display: flex;" id="search-div" class="search-div-2">{!$Label.ud_sort} <svg class="sort-arrow" style="margin:-4px 8px;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.99968 5.14933L1.90801 11.5616C1.78121 11.6951 1.57023 11.7005 1.43676 11.5737C1.30329 11.4469 1.29788 11.2359 1.42468 11.1024L7.75801 4.43578C7.88943 4.29745 8.10993 4.29745 8.24134 4.43578L14.5747 11.1024C14.7015 11.2359 14.6961 11.4469 14.5626 11.5737C14.4291 11.7005 14.2181 11.6951 14.0913 11.5616L7.99968 5.14933Z" fill="#222222"/></svg></p></div><div class="searchData-container">';
+                let count = 0
+                let dataField = data.results;
+                SortColumn = 'name';
+
+                for (let a of data.results) {
+                    count++;
+                    GooglePlacesList.push(a);
+                    if (count == 5) {
+                        break;
+                    }
+                }
+                GooglePlacesList = GooglePlacesList.sort(compare_name);
+                count = 0;
+                for (let a of all_vehicles.filter(x =>
+                    (x.vin + '').toLowerCase().includes(searchText.toLowerCase()) ||
+                    (x.chassisNumber + '').toLowerCase().includes(searchText.toLowerCase()) ||
+                    (x.registrationNumber + '').toLowerCase().includes(searchText.toLowerCase())
+                )) {
+                    if (SelectedvehicleFilter == undefined) {
+                        vehicledataList.push(a);
+                        count++;
+                    } else if (SelectedvehicleFilter == a.statusIcon) {
+                        vehicledataList.push(a);
+                        count++;
+                    }
+
+                    if (count == 5) {
+                        break;
+                    }
+                }
+                vehicledataList = vehicledataList.sort(compare_name);
+                for (let a of vehicledataList) {
+                    listofData += vehicleDataDom(a);
+                }
+                for (let a of GooglePlacesList) {
+                    listofData += googlePlaceDom(a);
+                }
+                document.getElementsByClassName('customsearchresults')[0].innerHTML = listofData;
+                let placeMarker;
+                $(".searchgoogleData").on("click", track_googleplaceSearch);
+                $("#addressinfobtn").on("click", function () {
+                    $('#search').show();
+                    $("#addressinfo").hide();
+                    try {
+                        placeMarker.setMap(null);
+                    } catch (error) {
+
+                    }
+                })
+            },
+                { escape: false })
+        });
+
+        $(".cancel-search").hide();
+        $("#pac-input").on("input", function () {
+            $(".cancel-search").show();
+            if (!$(this).val()) {
+                $(".clearInput").hide();
+            }
+        });
+        function elementHide(elementName, elementType) {
+            if (elementType == "class") {
+                $("." + elementName).hide();
+            }
+            else {
+                $("#" + elementName).hide();
+            }
+        }
+
+        $("#clearSearch").on("click", function () {
+            elementName = "cancel-search";
+            elementType = "class";
+            elementHide(elementName, elementType)
+            $(".clearInput").hide();
+        });
+
+        $(".clearInput").hide();
+        $(".clearInput").on("click", function () {
+            $("#pac-input").val("");
+            $(".clearInput").hide();
+
+        });
+
+        $("#pac-input").on("keypress", function () {
+            $(".clearInput").show();
+        })
+
+        $(".customsearchresults").bind("DOMSubtreeModified", function () {
+            $('#search-div').on('click', () => {
+                dataSort();
+            });
+            $(".searchgoogleData").on("click", track_googleplaceSearch);
+            $('.datastatic').on('click', function (event) {
+                event.stopPropagation();
+                try {
+                    placeMarker.setMap(null);
+                } catch (error) {
+                }
+                window.parent.postMessage({
+                    source: 'SelectedTrackEventhighlight',
+                    data: $(this).attr('key'), name: $(this).attr('name')
+                }, window.location.origin);
+                $('.customsearchresults').hide();
+                $("#clearSearch").hide();
+            })
+        });
+        // #1.On selecting any location, the vehicle selection on the left panel should be removed.
+        // #2. On selecting a vehicle on search, it should be highlighted on the left panel
+        function track_googleplaceSearch(event) {
+            event.stopPropagation();
+            try {
+                placeMarker.setMap(null);
+            } catch (error) {
+            }
+            $('#search').hide();
+            $("#addressinfo").show();
+            let lng = parseFloat($(this).attr('lng'));
+            let lat = parseFloat($(this).attr('lat'));
+            placeMarker = new google.maps.Marker({ position: { lat: lat, lng: lng }, map });
+            map.setCenter(new google.maps.LatLng(lat, lng));
+            let request = {
+                placeId: $(this).attr('place_id'),
+                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'formatted_address']
+            };
+            service = new google.maps.places.PlacesService(map);
+            window.parent.postMessage({
+                source: 'SelectedTrackEventhighlight',
+                data: 'GOOGLE_MARKER'
+            }, window.location.origin);
+            service.getDetails(request, callback);
+            function callback(place, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    $("#address").html(`<div>
+                        <div class="placename-height">
+                            <p class="place-name">
+                                ${place.name}
+                            </p>
+                            <p class="place-name1">
+                                ${place.name}
+                            </p>
+                        </div>
+                        <div class="border-solid">
+                        </div>
+                        <div class="place-data-container" >
+                            <div class="place-data" >
+                                <img class="location-icon" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/locationicon.svg')}"/>
+                                <div class="formatted-address">
+                                    ${place.formatted_address} 
+                                </div>
+                            </div>
+                            <div class="place-data">
+                                <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/phone.svg')}"/>
+                                    ${place.formatted_phone_number == undefined ? '' : place.formatted_phone_number}    
+                            </div>
+                            <div class="place-data">
+                                <img class="webicon" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/webicon.svg')}"/>  
+                                <div class="website-name">
+                                ${place.website ?
+                            `<a target="_blank" href="${place.website}" class="website-link">
+                                    ${place.website}</a>
+                                    <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/weblink.svg')}"/>
+                                    `
+                            : ''
+                        } 
+                            </div>
+                            </div>
+                        </div>`);
+                }
+            }
+        }
+        function compare_name(a, b) {
+            if (a[SortColumn].toLowerCase() < b[SortColumn].toLowerCase()) {
+                return -1;
+            }
+            else if (a[SortColumn].toLowerCase() > b[SortColumn].toLowerCase()) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+
+        function vehicleDataDom(a) {
+            return `
+                        <div class="searchData" data-key='${a.key}' >
+                            <div class="data-static datastatic" id="data-static" key='${a.key}' name='${a.name}'>
+                                <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/vehicledom.svg')}"/>
+                                <p>
+                                    ${a.name}
+                                </p>
+                            </div>
+                        </div>
+                            `;
+        }
+
+        function googlePlaceDom(a) {
+            return `<div class="searchData" >
+                            <div class="dynamic-data searchgoogleData" id="searchgoogleData" place_id='${a.place_id}' lat='${a.geometry.location.lat}' lng='${a.geometry.location.lng}' data-value="${a.formatted_address}">
+                                <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/googledom.svg')}"/>
+                                <p style="">
+                                    ${a.name}
+                                </p>
+                                <p class="empty-space"></p>
+                                <img src="{!URLFOR($Resource.UDCS_Fleet,'/Images/extendicon.svg')}"/>
+                            </div>
+                        </div>`
+        }
+        function dataSort() {
+            let listofData = `<div class="searchsort" >
+                <hr/>
+                <p id="search-div" class="search-div-1">{!$Label.ud_sort} 
+                    <img class="sort-arrow-1" src="{!URLFOR($Resource.UDCS_Fleet,'/Images/datasort.svg')}"/>
+                </p>
+                </div>
+                <div class="searchData-container">`;
+
+            GooglePlacesList = GooglePlacesList.reverse();
+            vehicledataList = vehicledataList.reverse();
+            for (let a of vehicledataList) {
+                listofData += vehicleDataDom(a);
+            }
+            for (let a of GooglePlacesList) {
+                listofData += googlePlaceDom(a);
+            }
+
+
+            document.getElementsByClassName('customsearchresults')[0].innerHTML = listofData;
+            isAssending = !isAssending
+            if (!isAssending) {
+                document.querySelector('.sort-arrow-1').classList.toggle('toggle-sort')
+            }
+            $(".searchgoogleData").on("click", track_googleplaceSearch);
+        }
+    </script>
+</apex:component>
