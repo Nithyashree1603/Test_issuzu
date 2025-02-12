@@ -1,0 +1,277 @@
+/* stylelint-disable max-line-length */
+/* stylelint-disable font-family-name-quotes */
+/* stylelint-disable font-family-no-missing-generic-family-keyword */
+/* stylelint-disable selector-class-pattern */
+
+/*
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&family=Roboto:wght@400;700&display=swap');
+*/
+
+@import "c/udcs_lwc_css_lib";
+
+* {
+  border: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.text-align-top {
+  vertical-align: top !important;
+}
+
+body {
+  border: 2px solid red;
+  font-family: "Roboto", sans-serif;
+  height: 100%;
+}
+
+.checkboxespl {
+  background-color: #fff;
+  z-index: 2;
+  position: absolute;
+  width: 250px;
+  max-height: 340px;
+  overflow-y: scroll;
+  overflow-y: overlay;
+  box-shadow: 0 3px 5px 4px rgb(191 191 191 / 75%);
+}
+
+.rotate {
+  transform: rotate(180deg);
+  cursor: pointer;
+}
+
+.search_icon {
+  cursor: pointer;
+}
+
+.reset_btn {
+  position: absolute;
+  z-index: 1;
+  right: 5px;
+  top: 12px;
+  border: 0;
+  background: transparent;
+  color: #00829b;
+}
+
+.search_cont {
+  position: relative;
+}
+
+.search_cont > img {
+  position: absolute;
+  left: 15px;
+  top: 17px;
+}
+
+.checkboxespl::-webkit-scrollbar {
+  background-color: transparent;
+  width: 3px;
+}
+
+.checkboxespl::-webkit-scrollbar-thumb {
+  height: 20px;
+  background-color: #e1e1e1;
+}
+
+.flc_drop_single {
+  gap: 10px;
+  align-items: center;
+  border-bottom: 0.5px solid #e1e1e1;
+}
+
+.flc_dd_grp_cont {
+  display: flex;
+  gap: 10px;
+  flex-grow: 1;
+  padding-left: 18px;
+}
+
+.flc_dd_nm-ct {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.flc_dd_search {
+  width: 100%;
+  background-color: #ececec;
+  height: 50px;
+  border: 0;
+  padding-left: 40px;
+}
+
+.flc_dd_clicked {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.flc_dd_vehicle {
+  padding: 15px 20px;
+  border-top: 0.5px solid #e1e1e1;
+  border-bottom: 0.5px solid #e1e1e1;
+}
+
+.flc_dd_cb {
+  margin-right: 5px;
+}
+
+.flc_dd_nm-ct-2 {
+  gap: 10px;
+  padding: 15px 19px 10px;
+  border-bottom: 0.5px solid #e1e1e1;
+}
+
+.flc_dd_nm-ct-2 > div:nth-child(2) {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.input_up_arrow {
+  cursor: pointer;
+}
+
+input.select {
+  background: #fff;
+  width: 220px;
+  height: 30px;
+  padding: 0 12px;
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+}
+
+.select::placeholder {
+  color: black;
+}
+
+.count-cont {
+  display: flex;
+  justify-content: end;
+  padding: 9px 16px;
+  border-bottom: 0.5px solid #e1e1e1;
+}
+
+.rotateVehicle {
+  transform: rotate(180deg);
+  cursor: pointer;
+  margin-top: -18px;
+}
+
+.backdrop {
+  position: fixed;
+  z-index: 3;
+  inset: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.multiselect > * {
+  z-index: 4;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: #00829b;
+}
+
+.up_arrow_flc_dd {
+  cursor: pointer;
+}
+
+.mt-10 {
+  margin-top: -18px;
+}
+
+.veh-count {
+  width: 32px;
+  height: 32px;
+  background: #00829b;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 500;
+}
+
+.flc_dd_grp_name {
+  margin-top: 15px;
+}
+
+.red_border {
+  border: 2.5px solid #e83646 !important;
+}
+
+.green_border {
+  border: 2.5px solid #00829b !important;
+}
+
+.border-black {
+  border: 0.5px solid #4d4e53;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+@media screen and (max-width: 480px) {
+  .multiselect {
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+
+  .border-black {
+    width: 254px;
+  }
+
+  .multiselect > * {
+    z-index: 4;
+  }
+  .checkboxespl {
+    top: 32px;
+    overflow-y: hidden;
+  }
+
+  .filters_container {
+    max-height: 225px;
+    overflow-y: scroll;
+  }
+
+  .filters_container::-webkit-scrollbar {
+    background-color: transparent;
+    width: 5px;
+  }
+  .filters_container::-webkit-scrollbar-thumb {
+    background-color: #cccccc;
+  }
+  input.select {
+    padding: 0px 12px 0px 30px;
+  }
+  .filter_icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .flc_dd_grp_cont {
+    align-items: center;
+    padding-left: 20px;
+  }
+  .flc_dd_vehicle {
+    display: flex;
+    align-items: center;
+  }
+}
