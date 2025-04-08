@@ -129,6 +129,5 @@ export default {
   lbl_excessiveidlingstart_end,
   lbl_overspeedingstart_end,
   lbl_overrevvingstart_end,
-  lbl_seatbeltengaged_disengaged,
-  lbl_ud_close
+  lbl_seatbeltengaged_disengaged
 };

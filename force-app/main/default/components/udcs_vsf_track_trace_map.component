@@ -38,6 +38,29 @@
         <img id="close-modal" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/cross/dim_10_x_10.svg')}" />
       </div>
       <div class="top"></div>
+      <div class="top">
+        <!-- cat -->
+        <div class="modal-subheader">Assets</div>
+        <!-- <div class="line disablediv"> -->
+        <div class="line">
+          <p>{!$Label.ud_vehicles}</p>
+          <p id="on1">On</p>
+          <p id="off1">Off</p>
+          <label class="switch">
+            <input type="checkbox" checked="togglechecked1" id="vehiclestoggle" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="line">
+          <p>{!$Label.ud_geofences}</p>
+          <p id="on2">On</p>
+          <p id="off2">Off</p>
+          <label class="switch">
+            <input type="checkbox" id="geofencestoggle" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
       <div class="middle">
         <div class="modal-subheader">{!$Label.ud_map_info}</div>
         <div class="line" id="trafficflow">

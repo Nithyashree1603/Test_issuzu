@@ -10,7 +10,7 @@
     let position_off = "{!URLFOR($Resource.udcs_connectx,'/icons/trace/event/position_off.svg')}";
 
     let trafficLayer;
-
+    let drawnGeofences = [];
     let togglechecked1 = false;
     let togglechecked2 = false;
     let togglechecked3 = false;
@@ -34,7 +34,13 @@
 
     const trafficflowbutton = document.getElementById("trafficflowtoggle");
     const maplabelsbutton = document.getElementById("maplabelstoggle");
+    const vehiclestogglebutton = document.getElementById("vehiclestoggle");
+    const on1button = document.getElementById("on1");
+    const off1button = document.getElementById("off1");
 
+    const geofencestogglebutton = document.getElementById("geofencestoggle");
+    const on2button = document.getElementById("on2");
+    const off2button = document.getElementById("off2");
     let cameFrom = undefined;
 
     let isVehicleDetailsShowing = false;
@@ -150,6 +156,180 @@
       traceInfoWindow = new google.maps.InfoWindow();
       googleMapEventListeners();
     }
+
+    function geofenceOnTrack(geofenceData) {
+      geofenceData.geofences.forEach((geofence) => {
+        if (geofence.type === "POLYGON") {
+          drawPolygon(geofence);
+        } else if (geofence.type === "RECTANGLE") {
+          drawRectangle(geofence);
+        } else if (geofence.type === "CIRCLE") {
+          drawCircle(geofence);
+        } else if (geofence.type === "ROUTE") {
+          drawRoute(geofence);
+        }
+      });
+
+      function drawPolygon(geofence) {
+        const paths = geofence.region.coordinates.map((coord) => new google.maps.LatLng(coord[0], coord[1]));
+        const polygon = new google.maps.Polygon({
+          paths: paths,
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4D4E53",
+          fillOpacity: 0.35
+        });
+        polygon.setMap(map);
+        drawnGeofences.push(polygon);
+      }
+
+      function drawRectangle(geofence) {
+        const coordinates = geofence.region.coordinates;
+        const latitudes = coordinates.map((coord) => coord[1]);
+        const longitudes = coordinates.map((coord) => coord[0]);
+        const minLat = Math.min(...latitudes);
+        const maxLat = Math.max(...latitudes);
+        const minLng = Math.min(...longitudes);
+        const maxLng = Math.max(...longitudes);
+        const swCorner = new google.maps.LatLng(minLat, minLng);
+        const neCorner = new google.maps.LatLng(maxLat, maxLng);
+        const boundsRectangle = new google.maps.LatLngBounds(swCorner, neCorner);
+        const rectangle = new google.maps.Rectangle({
+          bounds: boundsRectangle,
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4D4E53",
+          fillOpacity: 0.15
+        });
+        rectangle.setMap(map);
+        drawnGeofences.push(rectangle);
+      }
+
+      function drawCircle(geofence) {
+        const circle = new google.maps.Circle({
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4D4E53",
+          fillOpacity: 0.35,
+          map: map,
+          center: {
+            lat: geofence.region.coordinates[0][1],
+            lng: geofence.region.coordinates[0][0]
+          },
+          radius: geofence.region.radius
+        });
+        circle.setMap(map);
+        drawnGeofences.push(circle);
+      }
+
+      function drawRoute(geofence) {
+        const start = new google.maps.LatLng(geofence.additionalRules.routeDeviation.startingPoint.latitude, geofence.additionalRules.routeDeviation.startingPoint.longitude);
+        const end = new google.maps.LatLng(geofence.additionalRules.routeDeviation.endPoint.latitude, geofence.additionalRules.routeDeviation.endPoint.longitude);
+
+        const route = new google.maps.Polyline({
+          path: [start, end],
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2
+        });
+
+        route.setMap(map);
+        drawnGeofences.push(route);
+      }
+    }
+
+    function geofenceOnTrace(geofenceData) {
+      geofenceData.geofences.forEach((geofence) => {
+        if (geofence.type === "POLYGON") {
+          drawPolygon(geofence);
+        } else if (geofence.type === "RECTANGLE") {
+          drawRectangle(geofence);
+        } else if (geofence.type === "CIRCLE") {
+          drawCircle(geofence);
+        } else if (geofence.type === "ROUTE") {
+          drawRoute(geofence);
+        }
+      });
+
+      function drawPolygon(geofence) {
+        const paths = geofence.region.coordinates.map((coord) => new google.maps.LatLng(coord[0], coord[1]));
+        const polygon = new google.maps.Polygon({
+          paths: paths,
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4D4E53",
+          fillOpacity: 0.35
+        });
+        polygon.setMap(map);
+        drawnGeofences.push(polygon);
+      }
+
+      function drawRectangle(geofence) {
+        const coordinates = geofence.region.coordinates;
+        const latitudes = coordinates.map((coord) => coord[1]);
+        const longitudes = coordinates.map((coord) => coord[0]);
+        const minLat = Math.min(...latitudes);
+        const maxLat = Math.max(...latitudes);
+        const minLng = Math.min(...longitudes);
+        const maxLng = Math.max(...longitudes);
+        const swCorner = new google.maps.LatLng(minLat, minLng);
+        const neCorner = new google.maps.LatLng(maxLat, maxLng);
+        const boundsRectangle = new google.maps.LatLngBounds(swCorner, neCorner);
+        const rectangle = new google.maps.Rectangle({
+          bounds: boundsRectangle,
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4D4E53",
+          fillOpacity: 0.15
+        });
+        rectangle.setMap(map);
+        drawnGeofences.push(rectangle);
+      }
+
+      function drawCircle(geofence) {
+        const circle = new google.maps.Circle({
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#4D4E53",
+          fillOpacity: 0.35,
+          map: map,
+          center: {
+            lat: geofence.region.coordinates[0][0],
+            lng: geofence.region.coordinates[0][1]
+          },
+          radius: geofence.region.radius
+        });
+        circle.setMap(map);
+        drawnGeofences.push(circle);
+      }
+
+      function drawRoute(geofence) {
+        const start = new google.maps.LatLng(geofence.additionalRules.routeDeviation.startingPoint.latitude, geofence.additionalRules.routeDeviation.startingPoint.longitude);
+        const end = new google.maps.LatLng(geofence.additionalRules.routeDeviation.endPoint.latitude, geofence.additionalRules.routeDeviation.endPoint.longitude);
+
+        const route = new google.maps.Polyline({
+          path: [start, end],
+          strokeColor: "#4583FF",
+          strokeOpacity: 0.8,
+          strokeWeight: 2
+        });
+
+        route.setMap(map);
+        drawnGeofences.push(route);
+      }
+    }
+
+    function clearGeofences() {
+      drawnGeofences.forEach((geofence) => geofence.setMap(null));
+      drawnGeofences = [];
+    }
+
     function googleMapEventListeners() {
       google.maps.event.addListener(infoWindow, "domready", () => {
         $(".gm-style .gm-style-iw.gm-style-iw-c").css({
@@ -417,9 +597,6 @@
           document.querySelector(".scroll-trace-history-items").classList.remove("trace-history-height");
           isJapan = false;
         }
-        if (receivedfromLWC.track_trace == false) {
-          $(".tracehistory").hide();
-        }
       } else if (receivedfromLWC.source == "openvehicledetailssidebar") {
         $("#vehicleDetails").show();
       } else if (receivedfromLWC.source == "calendarback") {
@@ -439,8 +616,13 @@
         }
       } else if (receivedfromLWC.source == "zoomvehicle") {
         map.setZoom(12);
+      } else if (receivedfromLWC.source == "geofenceshownontrack") {
+        const geofenceData = JSON.parse(receivedfromLWC.data);
+        geofenceOnTrack(geofenceData.value);
+      } else if (receivedfromLWC.source == "geofenceshownontrace") {
+        const geofenceData = JSON.parse(receivedfromLWC.data);
+        geofenceOnTrace(geofenceData.value);
       }
-      console.timeEnd(receivedfromLWC.source);
     }
     window.addEventListener("message", messageEvent1, false);
 
@@ -757,6 +939,37 @@
         });
       }
     });
+
+    vehiclestogglebutton.addEventListener("click", () => {
+      togglechecked1 = !togglechecked1;
+      if (vehiclestogglebutton.checked === true) {
+        on1button.style.display = "block";
+        off1button.style.display = "none";
+        all_markers.forEach((a) => a.setMap(map));
+      } else {
+        on1button.style.display = "none";
+        off1button.style.display = "block";
+        all_markers.forEach((a) => a.setMap(null));
+      }
+    });
+
+    geofencestogglebutton.addEventListener("click", () => {
+      togglechecked2 = !togglechecked2;
+      if (geofencestogglebutton.checked === true) {
+        on2button.style.display = "block";
+        off2button.style.display = "none";
+        if (!isVehicleDetailsShowing) window.parent.postMessage({ source: "showGeofences" }, window.location.origin);
+        else {
+          const vehicleId = trackCurrentSelectedVehicle.ChassisSeries + "-" + trackCurrentSelectedVehicle.ChassisNumber;
+          window.parent.postMessage({ source: "showVehicleGeofences", data: vehicleId }, window.location.origin);
+        }
+      } else {
+        on2button.style.display = "none";
+        off2button.style.display = "block";
+        clearGeofences();
+      }
+    });
+
     mapTypeCont.addEventListener("click", () => {
       openedModal.style.display = openedModal.style.display === "none" ? "block" : "none";
     });

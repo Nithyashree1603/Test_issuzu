@@ -8,8 +8,10 @@ import configs from "./udcs_lwc_track_trace_dashboard_configs";
 import loadAssetData from "./udcs_lwc_track_trace_dashboard_track";
 import getTrackingEventsHistorynew from "./udcs_lwc_track_trace_dashboard_trace";
 
-import { executeParallelActions, executeAction } from "c/udcs_lwc_ui_service";
-import { getLocalFormatedDate, setStyle, isDebugMode, static_resources, icons, libraries, getCountryName, mobileDeviceCheck, stringUtils, getFeatureVisibilityData } from "c/udcs_lwc_utils";
+import getActiveGeofenceForFleet from "@salesforce/apex/udcs_apex_geo_fence.getActiveGeofenceForFleet";
+import getActiveGeofenceForVehicle from "@salesforce/apex/udcs_apex_geo_fence.getActiveGeofenceForVehicle";
+import { executeParallelActions, executeParallelActionsNew, executeAction } from "c/udcs_lwc_ui_service";
+import { getLocalFormatedDate, setStyle, isDebugMode, static_resources, icons, libraries, getCountryName, mobileDeviceCheck, stringUtils } from "c/udcs_lwc_utils";
 import udcs_flc_icons from "@salesforce/resourceUrl/udcs_flc_icons";
 import user_Info from "@salesforce/apex/udcs_apex_connect.userInfo";
 import { NavigationMixin } from "lightning/navigation";
@@ -17,7 +19,6 @@ import { NavigationMixin } from "lightning/navigation";
 const COMMON_TRIGER = ["MOVEMENT", "NO_MOVEMENT", "PERIODIC_WITH_ENGINE_ON"];
 
 export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(LightningElement) {
-  featureVisibilityData = getFeatureVisibilityData();
   assetsAPIReloadTime = "03:00";
   assetsAPIReloadTimeInterval = undefined;
   shortID = null;
@@ -258,10 +259,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       setStyle(this.template.querySelector(`[data-value="${this.prvSelectedTraceEvent}"`), "removeClassList", "SelectedTraceEvent");
     }
     this.filteredEvents = JSON.parse(JSON.stringify(event.detail.list));
-    let isAllEventsNotSelected = false;
-    if (this.filteredEvents.length === 0) {
-      isAllEventsNotSelected = true;
-    }
     let tempUniqueEvents = [...this.filteredEvents];
     for (let a of [...this.filteredEvents]) {
       if (a === "IDLING_STARTED") {
@@ -279,53 +276,41 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.initialFilter = this.filteredEvents;
       this.isInitialFilter = true;
     }
-    tempUniqueEvents = tempUniqueEvents.length === 0 ? this.initialFilter : tempUniqueEvents;
+    if (!(this.initialFilter.length === 0)) tempUniqueEvents = tempUniqueEvents.length === 0 ? this.initialFilter : tempUniqueEvents;
     let temptrackingEvents = [];
     let temptrackingEvents_eventDetailsPanel = [];
     let trackingEventsHistory = this.trackingEventsHistory;
-    if (!isAllEventsNotSelected) {
-      for (let a of trackingEventsHistory) {
-        let tempCount = 0;
-        for (let b of a.value) {
-          if (tempUniqueEvents.indexOf(b.trigerType_en) !== -1) {
-            tempCount++;
-            temptrackingEvents.push(b);
-            temptrackingEvents_eventDetailsPanel.push(b);
-            b.show = true;
-          } else {
-            temptrackingEvents.push(b);
-            b.show = false;
-          }
-        }
-        a.size = tempCount;
-        a.show = a.size !== 0;
-      }
-      if (tempUniqueEvents.length === 0) {
-        temptrackingEvents = [];
-        temptrackingEvents_eventDetailsPanel = [];
-        for (let a of trackingEventsHistory) {
-          for (let b of a.value) {
-            b.show = configs.traceeventtypes.indexOf(b.triggerType.toLowerCase().replaceAll(" ", "")) !== -1;
-            temptrackingEvents.push(b);
-            temptrackingEvents_eventDetailsPanel.push(b);
-          }
-          a.size = a.value.length;
-          a.show = a.size !== 0;
-        }
-      }
-    } else {
-      for (let a of trackingEventsHistory) {
-        let tempCount = 0;
-        for (let b of a.value) {
+    for (let a of trackingEventsHistory) {
+      let tempCount = 0;
+      for (let b of a.value) {
+        if (tempUniqueEvents.indexOf(b.trigerType_en) !== -1) {
           tempCount++;
           temptrackingEvents.push(b);
           temptrackingEvents_eventDetailsPanel.push(b);
+          b.show = true;
+        } else {
+          temptrackingEvents.push(b);
           b.show = false;
         }
-        a.size = tempCount;
+      }
+      a.size = tempCount;
+      a.show = a.size !== 0;
+    }
+
+    if (tempUniqueEvents.length === 0) {
+      temptrackingEvents = [];
+      temptrackingEvents_eventDetailsPanel = [];
+      for (let a of trackingEventsHistory) {
+        for (let b of a.value) {
+          b.show = configs.traceeventtypes.indexOf(b.triggerType.toLowerCase().replaceAll(" ", "")) !== -1;
+          temptrackingEvents.push(b);
+          temptrackingEvents_eventDetailsPanel.push(b);
+        }
+        a.size = a.value.length;
         a.show = a.size !== 0;
       }
     }
+
     this.postEventDetailsMapIcons(temptrackingEvents);
     try {
       if (temptrackingEvents_eventDetailsPanel.length) {
@@ -477,7 +462,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
         source: "vehicledashboardsidebar",
         vechicleData: currentTrackVehicleData,
         isJapan: this.isJS,
-        track_trace: this.featureVisibilityData.track_trace,
         cameFrom: "map"
       });
       this.longID = currentTrackVehicleData.longID;
@@ -492,6 +476,36 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     } else if (message.data.source === "initiateShowCalender" && message.data.open) {
       this.clearSelectedValue();
       this.showCalandar();
+    } else if (message.data.source === "showGeofences") {
+      try {
+        await executeParallelActionsNew([getActiveGeofenceForFleet()], this);
+        let result = this.action_data[0];
+        if (result.status === "fulfilled") {
+          this.postMessage({
+            message: true,
+            source: "geofenceshownontrack",
+            data: JSON.stringify(result)
+          });
+        } else console.error(result.reason);
+      } catch (err) {
+        console.log(err);
+      }
+    } else if (message.data.source === "showVehicleGeofences") {
+      const vehicleId = message.data.data;
+      try {
+        await executeParallelActionsNew([getActiveGeofenceForVehicle({ id: vehicleId })], this);
+        let result = this.action_data[0];
+        console.log(JSON.stringify(result));
+        if (result.status === "fulfilled") {
+          this.postMessage({
+            message: true,
+            source: "geofenceshownontrace",
+            data: JSON.stringify(result)
+          });
+        } else console.error(result.reason);
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 
@@ -643,7 +657,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       source: "vehicledashboardsidebar",
       vechicleData: currentTrackVehicleData,
       isJapan: this.isJapan.data,
-      track_trace: this.featureVisibilityData.track_trace,
       cameFrom: "sidebar"
     });
     this.longID = currentTrackVehicleData.longID;
@@ -710,8 +723,8 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     setTimeout(() => {
       if (this.isMobile) {
         this.innerHeight = window.innerHeight;
-        console.log("this.innerHeight", this.innerHeight);
-        console.log("Hi");
+       //console.log("this.innerHeight", this.innerHeight);
+        //console.log("Hi");
         window.addEventListener("resize", this.appHeight);
         this.appHeight();
       }
@@ -778,7 +791,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
 
       if (message.data.source === "backToSidebar") {
         this.istogglSidebar = true;
-        console.log("message.data.cameFrom", message.data.cameFrom);
+        //console.log("message.data.cameFrom", message.data.cameFrom);
         setTimeout(() => {
           if (message.data.cameFrom === "sidebar") {
             this.openVehicles();
@@ -838,7 +851,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     }
   }
   mapEventsClicked(message) {
-    console.log("mapEventsClicked", message.data.source);
+    //console.log("mapEventsClicked", message.data.source);
     if (message.data.source === "SelectedTraceEventhighlight_mobile" && this.isMobile) {
       this.traceeventdetails(message.data.data);
     }

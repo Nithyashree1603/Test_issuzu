@@ -10,7 +10,7 @@
   <c:udcs_vsf_track_vehicle_details />
   <c:udcs_vsf_track_trace_map />
   <c:udcs_vsf_track_trace_service />
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxeLHYolT0A5CyjFx0H9XlSNxbaEsnBCo&callback=initMap&libraries=drawing,places,marker" async="true"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxeLHYolT0A5CyjFx0H9XlSNxbaEsnBCo&callback=initMap&libraries=drawing,places" async="true"></script>
   <script src="https://unpkg.com/@googlemaps/markerclusterer@2.5.3/dist/index.min.js"></script>
   <apex:stylesheet value="{!URLFOR($Resource.udcs_connectx,'/libraries/visualforce_style_sheets/ffs_track_trace_page.css')}"> </apex:stylesheet>
 </apex:page>
