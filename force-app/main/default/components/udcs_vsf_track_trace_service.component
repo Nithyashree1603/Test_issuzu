@@ -80,6 +80,7 @@
     let positionfilterFlag = false;
 
     let isDefaultLocationShown = false;
+    let isTraceOpen = false;
 
     let utils = {
       setCenter: (country) => {
@@ -520,6 +521,9 @@
           clusterAllMarkers(all_markers);
         }
       } else if (receivedfromLWC.source == "showtrackMapMarkers") {
+        isTraceOpen = false;
+        clearGeofences();
+        showCorrectGeofence();
         isJapan = receivedfromLWC.isJapan;
         initializeTrackMarkers();
         $("#tracedirection").hide();
@@ -953,13 +957,17 @@
       }
     });
 
-    geofencestogglebutton.addEventListener("click", () => {
+    geofencestogglebutton.addEventListener("click", () => showCorrectGeofence());
+    function showCorrectGeofence() {
       togglechecked2 = !togglechecked2;
+
       if (geofencestogglebutton.checked === true) {
         on2button.style.display = "block";
         off2button.style.display = "none";
-        if (!isVehicleDetailsShowing) window.parent.postMessage({ source: "showGeofences" }, window.location.origin);
-        else {
+
+        if (!isTraceOpen) {
+          window.parent.postMessage({ source: "showGeofences" }, window.location.origin);
+        } else {
           const vehicleId = trackCurrentSelectedVehicle.ChassisSeries + "-" + trackCurrentSelectedVehicle.ChassisNumber;
           window.parent.postMessage({ source: "showVehicleGeofences", data: vehicleId }, window.location.origin);
         }
@@ -968,7 +976,7 @@
         off2button.style.display = "block";
         clearGeofences();
       }
-    });
+    }
 
     mapTypeCont.addEventListener("click", () => {
       openedModal.style.display = openedModal.style.display === "none" ? "block" : "none";
@@ -983,6 +991,9 @@
       e.stopPropagation();
     });
     $("#showtracehistory").on("click", () => {
+      isTraceOpen = true;
+      clearGeofences();
+      showCorrectGeofence();
       try {
       } catch (e) {
         console.log(e);
