@@ -67,8 +67,19 @@ import lbl_overspeedingstart_end from "@salesforce/label/c.ud_overspeedingstart_
 import lbl_overrevvingstart_end from "@salesforce/label/c.ud_overrevvingstart_end";
 import lbl_seatbeltengaged_disengaged from "@salesforce/label/c.ud_seatbeltengaged_disengaged";
 import lbl_ud_close from "@salesforce/label/c.ud_close";
+import lbl_ud_backtopage from "@salesforce/label/c.ud_backtopage";
+import lbl_ud_nodataforselectedperiod from "@salesforce/label/c.ud_nodataforselectedperiod";
+import lbl_ud_rangeexceeds14days from "@salesforce/label/c.ud_rangeexceeds14days";
+import lbl_ud_systemdatefuture from "@salesforce/label/c.ud_systemdatefuture";
+import lbl_ud_range from "@salesforce/label/c.ud_range";
 
 export default {
+  lbl_ud_range,
+  lbl_ud_rangeexceeds14days,
+  lbl_ud_nodataforselectedperiod,
+  lbl_ud_backtopage,
+  lbl_ud_systemdatefuture,
+  lbl_ud_close,
   lbl_map,
   lbl_nomovement,
   lbl_ud_Add,

@@ -526,7 +526,7 @@
                         <div class="route_summary_mobile_body">
                             <div class="route_summary_body_elemeny">
                                 <div class="title">
-                                    Range
+                                    {label.lbl_ud_range}
                                 </div>
                                 <div class="value">
                                     <div class="value-from">{summaryFrom}</div>
@@ -571,12 +571,12 @@
                 <!--<div class="technical-issue-title">
                     <img src={technical_issue} class="technical-issue-icon"> ET201-2 Technical issue
                 </div>-->
-                <div class="technical-issue-description">There is no data for the selected period</div>
+                <div class="technical-issue-description">{label.lbl_ud_nodataforselectedperiod}</div>
                 <div class="technical-issue-close-icon" onclick={closeTechnicalIssue}><img src={close_btn}
                         alt="close button">
                 </div>
                 <div class="technical-issue-button-container">
-                    <button class="back-to-calendar" type="submit" onclick={closeTechnicalIssue}>Back to Page</button>
+                    <button class="back-to-calendar" type="submit" onclick={closeTechnicalIssue}>{label.lbl_ud_backtopage}</button>
                 </div>
             </div>
         </div>
@@ -585,7 +585,7 @@
         <div class="session_limit_exceeded_wrapper">
             <div class="session_limit_exceeded_container">
                 <div class="session_limit_exceeded_header">
-                    Range Exceeds 14 days
+                    {label.lbl_ud_rangeexceeds14days}
                 </div>
                 <div class="session_limit_exceeded_text slds-text-align_center">
                     {odoErrorMessage}
@@ -606,7 +606,7 @@
                     <img src={icons.flc.information} alt="Information">
                 </div>
                 <div class="toast_text">
-                    System date appears set to future. Displaying report relevant to current time.
+                    {label.lbl_ud_systemdatefuture}
                 </div>
                 <div class="toast_close" onclick={closeToast}>
                     <img src={icons.flc.close} alt="Information">
