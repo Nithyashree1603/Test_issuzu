@@ -1165,7 +1165,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       let a = document.createElement("a");
       a.href = "data:application/octet-stream;base64," + result.reportsByteArray;
       a.target = "_parent";
-      a.download = "Trace_History_" + this.currentTrackVehicleChassisID + "_" + moment().format("DD_MM_YYYY_HH_mm") + ".xlsx";
+      a.download = label.lbl_ud_trace + "_" + label.lbl_ud_history + "_" + this.currentTrackVehicleChassisID + "_" + moment().format("DD_MM_YYYY_HH_mm") + ".xlsx";
       if (downloadContainer) {
         downloadContainer.appendChild(a);
       }

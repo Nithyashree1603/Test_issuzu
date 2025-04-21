@@ -54,7 +54,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
               }
             },
             {
-              v: "UD Connected Services",
+              v: label.lbl_ud_udconnectedservices,
               t: "s",
               s: {
                 font: {
@@ -242,7 +242,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
               }
             },
             {
-              v: "Fleet Status Overview",
+              v: label.lbl_ud_FleetStatusOverview,
               t: "s",
               s: {
                 font: {
@@ -404,7 +404,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
               }
             },
             {
-              v: "Report created (UTC + 5:30)",
+              v: label.lbl_UD_ReportCreated + "(UTC + 5:30)",
               t: "s",
               s: {
                 font: {
@@ -759,7 +759,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
               }
             },
             {
-              v: "Vehicle Specification",
+              v: label.lbl_ud_vehicle_specification,
               t: "s",
               s: {
                 font: {
@@ -1495,8 +1495,8 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
         }
         ws["!cols"] = wsCols;
         ws["!rows"] = [{}, {}, {}, {}, {}, { hpt: 30 }];
-        XLSX.utils.book_append_sheet(wb, ws, "Fleet Status Overview");
-        XLSX.writeFile(wb, "Fleet_Status_Report_" + moment().format("DD_MM_YYYY_HH_mm") + ".xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, label.lbl_ud_FleetStatusOverview);
+        XLSX.writeFile(wb, label.lbl_ud_Fleet + "_" + label.lbl_ud_status + "_" + label.lbl_ud_report + "_" + moment().format("DD_MM_YYYY_HH_mm") + ".xlsx");
         this.isLoaded = false;
       }, 1000);
     } catch (error) {
