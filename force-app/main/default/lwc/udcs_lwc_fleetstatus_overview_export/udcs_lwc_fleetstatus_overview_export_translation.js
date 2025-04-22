@@ -19,10 +19,22 @@ import lbl_UD_ReportName from "@salesforce/label/c.UD_ReportName";
 import lbl_ud_UnknownDriver from "@salesforce/label/c.ud_UnknownDriver";
 import lbl_ud_TruckID from "@salesforce/label/c.ud_TruckID";
 import lbl_UD_FleetName from "@salesforce/label/c.UD_FleetName";
-
+import lbl_ud_udconnectedservices from "@salesforce/label/c.ud_udconnectedservices";
 import lbl_excel from "@salesforce/label/c.ud_excel";
+import lbl_ud_FleetStatusOverview from "@salesforce/label/c.ud_FleetStatusOverview";
+import lbl_ud_vehicle_specification from "@salesforce/label/c.ud_vehicle_specification";
+import lbl_ud_Fleet from "@salesforce/label/c.ud_Fleet";
+import lbl_ud_status from "@salesforce/label/c.ud_status";
+import lbl_ud_report from "@salesforce/label/c.ud_report";
+
 
 export default {
+  lbl_ud_report,
+  lbl_ud_status,
+  lbl_ud_Fleet,
+  lbl_ud_vehicle_specification,
+  lbl_ud_FleetStatusOverview,
+  lbl_ud_udconnectedservices,
   lbl_fleetstatus,
   lbl_chassisid, // Chassis ID
   lbl_reg_no,

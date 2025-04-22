@@ -72,8 +72,12 @@ import lbl_ud_nodataforselectedperiod from "@salesforce/label/c.ud_nodataforsele
 import lbl_ud_rangeexceeds14days from "@salesforce/label/c.ud_rangeexceeds14days";
 import lbl_ud_systemdatefuture from "@salesforce/label/c.ud_systemdatefuture";
 import lbl_ud_range from "@salesforce/label/c.ud_range";
+import lbl_ud_trace from "@salesforce/label/c.ud_trace";
+import lbl_ud_history from "@salesforce/label/c.ud_history";
 
 export default {
+  lbl_ud_history,
+  lbl_ud_trace,
   lbl_ud_range,
   lbl_ud_rangeexceeds14days,
   lbl_ud_nodataforselectedperiod,
