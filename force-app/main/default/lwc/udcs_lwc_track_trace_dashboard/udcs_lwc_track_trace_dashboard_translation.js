@@ -28,7 +28,6 @@ import lbl_reg_no from "@salesforce/label/c.ud_reg_no";
 import lbl_ud_driver from "@salesforce/label/c.ud_driver";
 import lbl_ud_TruckID from "@salesforce/label/c.ud_TruckID";
 import lbl_west from "@salesforce/label/c.ud_west";
-
 import lbl_excessiveidlingend from "@salesforce/label/c.ud_excessiveidlingend";
 import lbl_excessiveidlingstart from "@salesforce/label/c.ud_excessiveidlingstart";
 import lbl_fuelleveldecrease from "@salesforce/label/c.ud_fuelleveldecrease";
@@ -53,15 +52,12 @@ import lbl_custom from "@salesforce/label/c.ud_custom";
 import lbl_last2hours from "@salesforce/label/c.ud_last2hours";
 import lbl_last12hours from "@salesforce/label/c.ud_last12hours";
 import lbl_last24hours from "@salesforce/label/c.ud_last24hours";
-
 import lbl_back from "@salesforce/label/c.ud_back";
 import lbl_ud_placeholder from "@salesforce/label/c.ud_placeholder";
 import lbl_ud_Add from "@salesforce/label/c.ud_Add";
 import lbl_ud_km from "@salesforce/label/c.ud_km";
 import lbl_ud_km_h from "@salesforce/label/c.ud_km_h";
-
 import lbl_export from "@salesforce/label/c.ud_export";
-
 import lbl_excessiveidlingstart_end from "@salesforce/label/c.ud_excessiveidlingstart_end";
 import lbl_overspeedingstart_end from "@salesforce/label/c.ud_overspeedingstart_end";
 import lbl_overrevvingstart_end from "@salesforce/label/c.ud_overrevvingstart_end";
@@ -74,8 +70,36 @@ import lbl_ud_systemdatefuture from "@salesforce/label/c.ud_systemdatefuture";
 import lbl_ud_range from "@salesforce/label/c.ud_range";
 import lbl_ud_trace from "@salesforce/label/c.ud_trace";
 import lbl_ud_history from "@salesforce/label/c.ud_history";
+import lbl_ud_backtodetails from "@salesforce/label/c.ud_backtodetails";
+import lbl_ud_distancecovered from "@salesforce/label/c.ud_distancecovered";
+import lbl_ud_total_fuel_consumed from "@salesforce/label/c.ud_total_fuel_consumed";
+import lbl_ud_maximum_speed from "@salesforce/label/c.ud_maximum_speed";
+import lbl_ud_areyousureclosetracehistory from "@salesforce/label/c.ud_areyousureclosetracehistory";
+import lbl_ud_cancel from "@salesforce/label/c.ud_cancel";
+import lbl_ud_showevents from "@salesforce/label/c.ud_showevents";
+import lbl_ud_routesummary from "@salesforce/label/c.ud_routesummary";
+import lbl_ud_totalfuelefficiency from "@salesforce/label/c.ud_totalfuelefficiency";
+import lbl_ud_totalenginehours from "@salesforce/label/c.ud_totalenginehours";
+import lbl_ud_ok from "@salesforce/label/c.ud_ok";
+import lbl_ud_showlist from "@salesforce/label/c.ud_showlist";
+import lbl_ud_chassisplaceholder from "@salesforce/label/c.ud_chassisplaceholder";
+import lbl_ud_hidelist from "@salesforce/label/c.ud_hidelist";
 
 export default {
+  lbl_ud_hidelist,
+  lbl_ud_chassisplaceholder,
+  lbl_ud_showlist,
+  lbl_ud_ok,
+  lbl_ud_totalenginehours,
+  lbl_ud_totalfuelefficiency,
+  lbl_ud_routesummary,
+  lbl_ud_showevents,
+  lbl_ud_cancel,
+  lbl_ud_areyousureclosetracehistory,
+  lbl_ud_maximum_speed,
+  lbl_ud_total_fuel_consumed,
+  lbl_ud_distancecovered,
+  lbl_ud_backtodetails,
   lbl_ud_history,
   lbl_ud_trace,
   lbl_ud_range,
