@@ -601,6 +601,9 @@
           document.querySelector(".scroll-trace-history-items").classList.remove("trace-history-height");
           isJapan = false;
         }
+        if(receivedfromLWC.track_trace==false){
+          $(".tracehistory").hide();
+        }
       } else if (receivedfromLWC.source == "openvehicledetailssidebar") {
         $("#vehicleDetails").show();
       } else if (receivedfromLWC.source == "calendarback") {
