@@ -88,10 +88,10 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
   close_btn;
   technical_issue;
   isShowMapMenuButtonEvtDetails = false;
-  mobileSearchPlaceHolder = "Chassis ID / Reg.No. / Truck ID";
+  mobileSearchPlaceHolder = label.lbl_ud_chassisplaceholder;
 
   message = "Swipe Detector";
-  showHideList = "Show List";
+  showHideList = label.lbl_ud_showlist;
   isSwipeUp = true;
 
   initialFilter = [];
@@ -135,7 +135,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.template.querySelector(".track_trace_vehicle_category_group").style.display = "block";
       this.template.querySelector(".track_trace_ffs_sidebar_search_container").style.position = "absolute";
       this.template.querySelector(".track_trace_vehicle_dropdown_swiper").style.position = "relative";
-      this.showHideList = "Hide List";
+      this.showHideList = label.lbl_ud_hidelist;
     } else {
       this.template.querySelector(".track_trace_vehiclecontainer").classList.remove("swipe_up");
       this.template.querySelector(".track_trace_vehicle_dropdown_body").style.display = "none";
@@ -143,7 +143,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.template.querySelector(".track_trace_vehicle_category_group").style.display = "none";
       this.template.querySelector(".track_trace_ffs_sidebar_search_container").style.position = "absolute";
       this.template.querySelector(".track_trace_vehicle_dropdown_swiper").style.position = "absolute";
-      this.showHideList = "Show List";
+      this.showHideList = label.lbl_ud_showlist;
     }
     this.isSwipeUp = !this.isSwipeUp;
     this.setAppHeight();
@@ -171,7 +171,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.template.querySelector(".track_trace_vehicle_dropdown_swiper").style.zIndex = 1;
       this.template.querySelector(".vfFrame").style.position = "relative";
       this.template.querySelector(".vfFrameparent").style.zIndex = "0";
-      this.showHideList = "Hide List";
+      this.showHideList = label.lbl_ud_hidelist;
       this.isSwipeUp = false;
     } else {
       this.template.querySelector(".track_trace_ffs_sidebar_search_container").style.position = "relative";
@@ -801,7 +801,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
             this.showTitleMenu = true;
           } else {
             this.openVehicles();
-            this.showHideList = "Show List";
+            this.showHideList = label.lbl_ud_showlist;
             this.isSwipeUp = false;
             this.handleSwipe();
             this.template.querySelector(".track_trace_ffs_sidebar_search_container.mobile_search").style.zIndex = 1;
