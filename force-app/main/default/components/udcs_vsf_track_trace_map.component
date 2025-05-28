@@ -40,7 +40,7 @@
       <div class="top"></div>
       <div class="top">
         <!-- cat -->
-        <div class="modal-subheader">Assets</div>
+        <div class="modal-subheader">{!$Label.ud_assets}</div>
         <!-- <div class="line disablediv"> -->
         <div class="line">
           <p>{!$Label.ud_vehicles}</p>

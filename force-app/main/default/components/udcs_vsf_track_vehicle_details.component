@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="trace-history-items trace-history-container disable-touch" style="border-bottom: 0.5px solid #a6a6a6; margin: 0px">
+    <div class="trace-history-items trace-history-container disable-touch tracehistory" style="border-bottom: 0.5px solid #a6a6a6; margin: 0px">
       <div>
         <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/trace_history.svg')}" />
       </div>

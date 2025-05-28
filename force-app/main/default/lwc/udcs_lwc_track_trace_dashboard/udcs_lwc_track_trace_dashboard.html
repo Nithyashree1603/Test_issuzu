@@ -58,14 +58,14 @@
             <template if:true={isShowMapMenuButton}>
                 <div class="mapMenu" onclick={openSidebar}>
                     <img src={icons.common.mapMenuIcon} alt="Map Menu" class="mapMenu_icon" onclick={openSidebar}></img>
-                    <div>Back to details</div>
+                    <div>{label.lbl_ud_backtodetails}</div>
                 </div>
             </template>
             <template if:true={isShowMapMenuButtonEvtDetails}>
                 <div class="mapMenuEvtDetials" onclick={openEvtDetails}>
                     <img src={icons.common.mapMenuIcon} alt="Map Menu" class="mapMenu_icon"
                         onclick={openEvtDetails}></img>
-                    <div>Back to details</div>
+                    <div>{label.lbl_ud_backtodetails}</div>
                 </div>
             </template>
         </template>
@@ -405,10 +405,10 @@
                         <div class="trace_history_modal_wrapper">
                             <div class="trace_history_modal">
                                 <div class="trace_history_modal_desc">
-                                    Are you sure close trace history?
+                                    {label.lbl_ud_areyousureclosetracehistory}
                                 </div>
                                 <div class="trace_history_modal_buttons">
-                                    <div class="trace_history_modal_cancel" onclick={traceModalCancel}>Cancel</div>
+                                    <div class="trace_history_modal_cancel" onclick={traceModalCancel}>{label.lbl_ud_cancel}</div>
                                     <div class="trace_history_modal_close" onclick={traceModalClose}>{label.lbl_ud_close}</div>
                                 </div>
                             </div>
@@ -427,13 +427,13 @@
                         <div class="cal-back_button" onclick={backToVehicleDetails}>
                             <img style="cursor: pointer" src={icons.common.left_arrow.left_arrow_dark_gray} width="15"
                                 height="15" class="cal-left_arrow_back" />
-                            <div class="cal-back">Back</div>
+                            <div class="cal-back">{label.lbl_back}</div>
                         </div>
-                        <p>Trace History</p>
+                        <p>{label.lbl_tracehistory}</p>
                     </div>
                 </template>
                 <c-udcs_lwc_calender_v1 class="c-udcs-calander" oncalenderclose={handleCalendarClose}
-                    onokclick={handleOkClick} config-type="8" from-date-time={fromDateTime} to-date-time={toDateTime}
+                    onokclick={handleOkClick} config-type="12" from-date-time={fromDateTime} to-date-time={toDateTime}
                     current-sel-option={selectedOption} chassis-id={currentTrackVehicleChassisID}
                     onokodoclick={handleOdoClick} start-range={startRange} end-range={endRange}></c-udcs_lwc_calender_v1>
             </template>
@@ -442,14 +442,14 @@
             <template if:true={isMobile}>
                 <template if:true={isEnableShowRouteTraceSummary}>
                     <div class="show_events_route_summary">
-                        <div class="show_events" onclick={showEventsHistory}>Show Events</div>
-                        <div class="route_summary" onclick={showRouteSummary}>Route Summary</div>
+                        <div class="show_events" onclick={showEventsHistory}>{label.lbl_ud_showevents}</div>
+                        <div class="route_summary" onclick={showRouteSummary}>{label.lbl_ud_routesummary}</div>
                     </div>
                 </template>
                 <template if:true={isShowEventsHistory}>
                     <div class="events_history_mobile">
                         <div class="events_history_mobile_header">
-                            <div class="events">Events</div>
+                            <div class="events">{label.lbl_events}</div>
                             <div class="close_icon_events">
                                 <img src={icons.common.close_icon} onclick={closeEventsPanel} style="cursor:pointer;"
                                     width="15" height="15"></img>
@@ -476,7 +476,6 @@
                                                     height="20" data-value={trh.key}
                                                     onclick={toggleTraceEventsByDate}></img>
                                             </template>
-
                                             {trh.key}
                                         </div>
                                         <div class="track_trace_grrup_2">
@@ -517,7 +516,7 @@
                 <template if:true={isShowRouteSummary}>
                     <div class="route_summary_mobile_wrapper">
                         <div class="route_summary_mobile_header">
-                            <div class="title_summary">Route Summary</div>
+                            <div class="title_summary">{label.lbl_ud_routesummary}</div>
                             <div class="close_icon_summery">
                                 <img src={icons.common.close_icon} onclick={closeRouteSummary} style="cursor:pointer;"
                                     width="15" height="15"></img>
@@ -526,7 +525,7 @@
                         <div class="route_summary_mobile_body">
                             <div class="route_summary_body_elemeny">
                                 <div class="title">
-                                    Range
+                                    {label.lbl_ud_range}
                                 </div>
                                 <div class="value">
                                     <div class="value-from">{summaryFrom}</div>
@@ -535,23 +534,23 @@
                                 </div>
                             </div>
                             <div class="route_summary_body_elemeny">
-                                <div class="title">Distance Covered</div>
+                                <div class="title">{label.lbl_ud_distancecovered}</div>
                                 <div class="value">{summaryDistanceCovered}</div>
                             </div>
                             <div class="route_summary_body_elemeny">
-                                <div class="title">Total Fuel Consumed</div>
+                                <div class="title">{label.lbl_ud_total_fuel_consumed}</div>
                                 <div class="value">{summaryTotalFuelConsumed}</div>
                             </div>
                             <div class="route_summary_body_elemeny">
-                                <div class="title">Maximum Speed</div>
+                                <div class="title">{label.lbl_ud_maximum_speed}</div>
                                 <div class="value">{summaryMaximumSpeed}</div>
                             </div>
                             <div class="route_summary_body_elemeny">
-                                <div class="title">Total Fuel Efficiency</div>
+                                <div class="title">{label.lbl_ud_totalfuelefficiency}</div>
                                 <div class="value">{summaryTotalFE}</div>
                             </div>
                             <div class="route_summary_body_elemeny">
-                                <div class="title">Total Engine Hours</div>
+                                <div class="title">{label.lbl_ud_totalenginehours}</div>
                                 <div class="value">{summaryTotalEH}</div>
                             </div>
                         </div>
@@ -571,12 +570,12 @@
                 <!--<div class="technical-issue-title">
                     <img src={technical_issue} class="technical-issue-icon"> ET201-2 Technical issue
                 </div>-->
-                <div class="technical-issue-description">There is no data for the selected period</div>
+                <div class="technical-issue-description">{label.lbl_ud_nodataforselectedperiod}</div>
                 <div class="technical-issue-close-icon" onclick={closeTechnicalIssue}><img src={close_btn}
                         alt="close button">
                 </div>
                 <div class="technical-issue-button-container">
-                    <button class="back-to-calendar" type="submit" onclick={closeTechnicalIssue}>Back to Page</button>
+                    <button class="back-to-calendar" type="submit" onclick={closeTechnicalIssue}>{label.lbl_ud_backtopage}</button>
                 </div>
             </div>
         </div>
@@ -585,7 +584,7 @@
         <div class="session_limit_exceeded_wrapper">
             <div class="session_limit_exceeded_container">
                 <div class="session_limit_exceeded_header">
-                    Range Exceeds 14 days
+                    {label.lbl_ud_rangeexceeds14days}
                 </div>
                 <div class="session_limit_exceeded_text slds-text-align_center">
                     {odoErrorMessage}
@@ -606,7 +605,7 @@
                     <img src={icons.flc.information} alt="Information">
                 </div>
                 <div class="toast_text">
-                    System date appears set to future. Displaying report relevant to current time.
+                    {label.lbl_ud_systemdatefuture}
                 </div>
                 <div class="toast_close" onclick={closeToast}>
                     <img src={icons.flc.close} alt="Information">
