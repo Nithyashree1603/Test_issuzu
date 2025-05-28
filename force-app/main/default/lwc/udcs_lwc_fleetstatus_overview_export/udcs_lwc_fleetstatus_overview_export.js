@@ -606,7 +606,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
               }
             },
             {
-              v: "Events Details",
+              v: label.lbl_ud_event_details,
               t: "s",
               s: {
                 font: {
