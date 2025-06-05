@@ -4,7 +4,7 @@
   <div id="vehicleDetails" class="sidebar-body" style="display: none">
     <div class="sidebar-header">
       <div class="back_button" id="back_button">
-        <img style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow.svg')}" width="15" height="15" class="left_arrow_back" /> Back
+        <img style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow.svg')}" width="15" height="15" class="left_arrow_back" /> {!$Label.ud_back}
       </div>
       <p>{!$Label.ud_vehicles_details}</p>
       <div id="vehicleDetailsclose">

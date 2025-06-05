@@ -2,9 +2,9 @@
   <div class="evt_container" id="eventdetailspanel">
     <div class="sidebar-header-evt-details">
       <div class="back_button_evt_details" id="back_button">
-        <img style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow.svg')}" width="15" height="15" class="left_arrow_back" /> Back
+        <img style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/left_arrow.svg')}" width="15" height="15" class="left_arrow_back" /> {!$Label.ud_back}
       </div>
-      <p>Event Details</p>
+      <p>{!$Label.ud_event_details}</p>
       <div id="vehicleDetailsclose" class="closeIcon">
         <img class="location_icon" style="cursor: pointer" src="{!URLFOR($Resource.udcs_connectx,'/icons/common/location.svg')}" width="28" height="28" />
       </div>
