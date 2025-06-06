@@ -22,7 +22,7 @@ export default class Udcs_lwc_mutiselect_count extends LightningElement {
   connectedCallback() {
     this.isMobile = mobileDeviceCheck();
     if (this.isMobile) {
-      this.selectOptionValueParameter = "Filter";
+      this.selectOptionValueParameter = label.lbl_ud_filter;
     }
     let result = this.optionData;
     let events = result;

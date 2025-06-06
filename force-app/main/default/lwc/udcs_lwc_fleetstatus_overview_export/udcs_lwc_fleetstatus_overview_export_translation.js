@@ -27,9 +27,11 @@ import lbl_ud_Fleet from "@salesforce/label/c.ud_Fleet";
 import lbl_ud_status from "@salesforce/label/c.ud_status";
 import lbl_ud_report from "@salesforce/label/c.ud_report";
 import lbl_ud_event_details from "@salesforce/label/c.ud_event_details";
+import lbl_ud_FleetStatusOverviewreport from "@salesforce/label/c.ud_FleetStatusOverviewreport";
 
 
 export default {
+  lbl_ud_FleetStatusOverviewreport,
   lbl_ud_event_details,
   lbl_ud_report,
   lbl_ud_status,
