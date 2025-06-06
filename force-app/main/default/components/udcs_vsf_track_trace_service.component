@@ -119,7 +119,7 @@
         labels: true,
 
         disableDefaultUI: true,
-
+        mapId: "DEMO_MAP_ID",
         center: new google.maps.LatLng(0, 0),
         zoom: Math.ceil(Math.log2($(window).width())) - 8,
         scaleControl: false,
@@ -617,7 +617,7 @@
           console.log(error);
         }
         try {
-          all_markers.forEach((a) => a.setMap(null));
+          all_markers.filter(Boolean).forEach((a) => a.map = null);
         } catch (error) {
           console.log(error);
         }
@@ -952,11 +952,11 @@
       if (vehiclestogglebutton.checked === true) {
         on1button.style.display = "block";
         off1button.style.display = "none";
-        all_markers.forEach((a) => a.setMap(map));
+        all_markers.filter(Boolean).forEach((a) => a.map = map);
       } else {
         on1button.style.display = "none";
         off1button.style.display = "block";
-        all_markers.forEach((a) => a.setMap(null));
+        all_markers.filter(Boolean).forEach((a) => a.map = null);
       }
     });
 
@@ -1023,7 +1023,7 @@
         console.log(error);
       }
       try {
-        all_markers.forEach((a) => a.setMap(null));
+        all_markers.filter(Boolean).forEach((a) => a.map = null);
       } catch (error) {
         console.log(error);
       }
@@ -1231,17 +1231,23 @@
         }
       }
     }
-    function addPositionToMap(position, urlIcon, direction_icon) {
-      let marker_image = new google.maps.MarkerImage(urlIcon, null, null, null, new google.maps.Size(direction_icon ? 50 : 30, direction_icon ? 50 : 30));
-      return new google.maps.Marker({
+    function addPositionToMap(position, urlIcon, direction_icon) { 
+      const size = direction_icon ? 50 : 30;
+      const markerImage = document.createElement("img");
+      markerImage.src = urlIcon;
+      markerImage.style.width = `${size}px`;
+      markerImage.style.height = `${size}px`;
+      markerImage.style.cursor = "grab";
+      const marker = new google.maps.marker.AdvancedMarkerElement({
         position: {
           lat: position.lat,
           lng: position.lng
         },
         map,
-        icon: marker_image,
-        cursor: "grab"
+        content: markerImage,
+        gmpClickable: true,
       });
+      return marker;
     }
     let tooltip2 = document.querySelectorAll(".content-section-text + blockquote");
     window.onmousemove = function (e) {
@@ -1447,35 +1453,30 @@
               url: traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]
             };
           } else {
-            svgImage = {
-              path: google.maps.SymbolPath.CIRCLE,
-              fillColor: "#f3f6f4",
-              fillOpacity: 1,
-              strokeColor: "#4D4E53",
-              strokeWeight: 0,
-              scale: 5
-            };
-          }
-          let marker = new google.maps.Marker({
+          const markerContent = document.createElement("div");
+          markerContent.style.width = "10px";  // scale * 2
+          markerContent.style.height = "10px";
+          markerContent.style.borderRadius = "50%";
+          markerContent.style.backgroundColor = "#f3f6f4";
+          markerContent.style.border = "0px solid #4D4E53";
+          const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat, lng },
-            map,
-            icon: svgImage
+            map: maplocation.show !== false ? map : null,
+            content: markerContent,
+            gmpClickable: true,
           });
-          if (maplocation.show == false) {
-            marker.setMap(null);
-          }
           trace_history_polyline.push({ lat, lng });
           if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
             trace_history_markers.push(marker);
             trace_history_markers_map[maplocation.unique_key] = marker;
             traceMarker(marker, maplocation);
           } else {
-            marker.setMap(null);
+            marker.map = null;
             trace_history_markers_position.push(marker);
             traceMarker(marker, maplocation);
           }
         }
-      });
+      }});
       if (trace_history_markers_position.length) {
         $("#positionfilter").show();
         positionfilterFlag = false;
@@ -1639,7 +1640,7 @@
     }
     // Track related functions
     function initializeTrackMarkers() {
-      all_markers.forEach((a) => a.setMap(null));
+      all_markers.filter(Boolean).forEach((a) => a.map = null);
       all_markers = [];
       all_markers_map = new Map();
       all_statusicon_markers_map = new Map();
@@ -1754,25 +1755,26 @@
           chassisId: vehicle.ChassisNumber
         },
         tracksvgIcons[vehicle.icon],
-        vehicle.direction_icon
+        vehicle.direction_icon,
+        { cursor: "pointer"}
       );
-      marker.setCursor("pointer");
-      marker.addListener("mouseover", function () {
-        if (infoWindow.getContent(infowindowcontent) != infowindowcontent) {
+       if (marker.element) {
+        marker.element.style.cursor = "pointer";  
+        marker.element.addEventListener("mouseover", () => {
+        if (infoWindow.getContent() !== infowindowcontent) {
           resetTrackMarkerSize(marker);
           infoWindow.setContent(infowindowcontent);
           infoWindow.setOptions({});
-          marker.setIcon(tracksvgIconsZoom[icon]);
+          marker.icon = tracksvgIconsZoom[icon];
           infoWindow.open(map, marker);
         }
-      });
-      marker.addListener("click", function () {
-        getCurrentBound(map);
-        if (!isMobileClicked()) {
-          infoWindow.setContent(infowindowcontent);
-          infoWindow.open(map, marker);
-        }
-        try {
+        });
+    marker.element.addEventListener("click", () => {
+      getCurrentBound(map);
+      if (!isMobileClicked()) {
+        infoWindow.setContent(infowindowcontent);
+        infoWindow.open(map, marker);
+      }
           try {
             window.parent.postMessage({ source: "SelectedTrackEventhighlight", data: vehicle.key, name: vehicle.name }, window.location.origin);
           } catch (error) {
@@ -1783,10 +1785,7 @@
           resetTrackMarkerSize(marker, true);
           marker.setIcon(tracksvgIconsZoom[icon]);
           map.setZoom(13);
-        } catch (e) {
-          console.log(e);
-        }
-      });
+    });}
       return marker;
     }
     function fitAllMarkersInMap() {
@@ -1802,7 +1801,7 @@
       if (!trackMarkersLoaded) {
         map.fitBounds(newBoundary);
       }
-      all_markers.forEach((a) => a.setMap(null));
+      all_markers.filter(Boolean).forEach((a) => a.map = null);
       if (marker_Clusterer) {
         marker_Clusterer.clearMarkers();
       }
@@ -1848,26 +1847,30 @@
                                           </filter>
                                       </defs>
                                       </svg>`);
-          return new google.maps.Marker({
-            icon: {
-              url: `data:image/svg+xml;base64,${svg}`,
-              scaledSize: new google.maps.Size(size, size)
-            },
-            label: {
-              color: "white",
-              textAlign: "center",
-              fontSize: "11px",
-              fontWeight: "bold",
-              fontStyle: "normal",
-              fontFamily: "Arial,sans-serif",
-              backgroundPosition: "0 0",
-              text: String(count)
-            },
-            position,
-            zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
-          });
-        }
-      };
+                const markerDiv = document.createElement("div");
+                markerDiv.style.position = "relative";
+                markerDiv.style.width = `${size}px`;
+                markerDiv.style.height = `${size}px`;
+                markerDiv.style.backgroundImage = `url(data:image/svg+xml;base64,${svg})`;
+                markerDiv.style.backgroundSize = "cover";
+                markerDiv.style.display = "flex";
+                markerDiv.style.alignItems = "center";
+                markerDiv.style.justifyContent = "center";
+                markerDiv.style.color = "white";
+                markerDiv.style.fontSize = "11px";
+                markerDiv.style.fontWeight = "bold";
+                markerDiv.style.fontFamily = "Arial, sans-serif";
+                markerDiv.textContent = String(count);
+                const marker = new google.maps.marker.AdvancedMarkerElement({
+                  position,
+                  map,
+                  zIndex: google.maps.Marker.MAX_ZINDEX + count,
+                  content: markerDiv,
+                  gmpClickable: true
+                });
+                return marker;
+                }
+                };
       marker_Clusterer = new markerClusterer.MarkerClusterer({
         map,
         markers: all_markers,
