@@ -129,7 +129,7 @@
                     $('#search').show();
                     $("#addressinfo").hide();
                     try {
-                        placeMarker.setMap(null);
+                        placeMarker.map =  null;
                     } catch (error) {
 
                     }
@@ -180,7 +180,7 @@
             $('.datastatic').on('click', function (event) {
                 event.stopPropagation();
                 try {
-                    placeMarker.setMap(null);
+                    placeMarker.map = null;
                 } catch (error) {
                 }
                 window.parent.postMessage({
@@ -196,14 +196,14 @@
         function track_googleplaceSearch(event) {
             event.stopPropagation();
             try {
-                placeMarker.setMap(null);
+                placeMarker.map = null;
             } catch (error) {
             }
             $('#search').hide();
             $("#addressinfo").show();
             let lng = parseFloat($(this).attr('lng'));
             let lat = parseFloat($(this).attr('lat'));
-            placeMarker = new google.maps.Marker({ position: { lat: lat, lng: lng }, map });
+            placeMarker = new AdvancedMarkerElement({ map, position: { lat: lat, lng: lng } });            
             map.setCenter(new google.maps.LatLng(lat, lng));
             let request = {
                 placeId: $(this).attr('place_id'),
