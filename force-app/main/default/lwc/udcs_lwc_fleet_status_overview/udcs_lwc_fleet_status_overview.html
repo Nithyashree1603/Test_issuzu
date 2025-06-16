@@ -81,9 +81,8 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortTruckID} class="header-head">
-                                        <p>{label.lbl_ud_TruckID}
-
+                                    <th onclick={customSortVehicleGroup} class="header-head">
+                                        <p>{label.lbl_ud_vehicle_group}
                                             <template if:true={ascending2}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -92,8 +91,9 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortDateTime} style="cursor: pointer;" class="header-head">
-                                        <p>{label.lbl_ud_date_time} (UTC{timezone})
+                                    <th onclick={customSortTruckID} class="header-head">
+                                        <p>{label.lbl_ud_TruckID}
+
                                             <template if:true={ascending3}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -102,8 +102,8 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortDriver} class="header-head">
-                                        <p>{label.lbl_ud_driver}
+                                    <th onclick={customSortDateTime} style="cursor: pointer;" class="header-head">
+                                        <p>{label.lbl_ud_date_time} (UTC{timezone})
                                             <template if:true={ascending4}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -112,8 +112,8 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortFuelLevel} class="header-head">
-                                        <p>{label.lbl_fuellevel_pr}
+                                    <th onclick={customSortDriver} class="header-head">
+                                        <p>{label.lbl_ud_driver}
                                             <template if:true={ascending5}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -122,8 +122,8 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortAdblueLevel} class="header-head">
-                                        <p>{label.lbl_adbluelevel_pr}
+                                    <th onclick={customSortFuelLevel} class="header-head">
+                                        <p>{label.lbl_fuellevel_pr}
                                             <template if:true={ascending6}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -132,8 +132,8 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortSpeed} class="header-head">
-                                        <p>{label.lbl_speed_km_h}
+                                    <th onclick={customSortAdblueLevel} class="header-head">
+                                        <p>{label.lbl_adbluelevel_pr}
                                             <template if:true={ascending7}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -142,8 +142,8 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortOdometer} class="header-head">
-                                        <p>{label.lbl_ud_odometer_km}
+                                    <th onclick={customSortSpeed} class="header-head">
+                                        <p>{label.lbl_speed_km_h}
                                             <template if:true={ascending8}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
@@ -152,12 +152,22 @@
                                             </template>
                                         </p>
                                     </th>
-                                    <th onclick={customSortEngineHours} class="header-head">
-                                        <p>{label.lbl_UD_Enginehours_hh_mm}
+                                    <th onclick={customSortOdometer} class="header-head">
+                                        <p>{label.lbl_ud_odometer_km}
                                             <template if:true={ascending9}>
                                                 <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
                                             </template>
                                             <template if:false={ascending9}>
+                                                <img src={icons.common.ascending} alt="" class="descendingicon"></img>
+                                            </template>
+                                        </p>
+                                    </th>
+                                    <th onclick={customSortEngineHours} class="header-head">
+                                        <p>{label.lbl_UD_Enginehours_hh_mm}
+                                            <template if:true={ascending10}>
+                                                <img src={icons.common.ascending} alt="" class="ascendingicon"></img>
+                                            </template>
+                                            <template if:false={ascending10}>
                                                 <img src={icons.common.ascending} alt="" class="descendingicon"></img>
                                             </template>
                                         </p>
@@ -195,7 +205,7 @@
                                         <td class="vehicleid">
                                             {vh.chassisNumber} <br>{vh.registrationNumber}
                                         </td>
-                                        <!-- <td>{vh.truckID}</td> -->
+                                        <td>{vh.groupName}</td>
                                         <td>{vh.truckId}</td>
                                         <td>{vh.formattedTriggerDateTime}</td>
                                         <td><span class="truncate" title={vh.driverName}> {vh.driverName}</span></td>

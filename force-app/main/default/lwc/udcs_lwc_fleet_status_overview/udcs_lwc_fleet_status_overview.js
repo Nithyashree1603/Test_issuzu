@@ -60,52 +60,58 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
     this.sortingWithEmpty(this.selectedRows, this.ascending1, "chassisNumber");
   }
 
-  customSortTruckID() {
+  customSortVehicleGroup() {
     this.resetSort(2);
     this.ascending2 = !this.ascending2;
-    this.sortingWithEmpty(this.selectedRows, this.ascending2, "truckId");
+    this.sortingWithEmpty(this.selectedRows, this.ascending2, "groupName");
+  }
+
+  customSortTruckID() {
+    this.resetSort(3);
+    this.ascending3 = !this.ascending3;
+    this.sortingWithEmpty(this.selectedRows, this.ascending3, "truckId");
   }
 
   customSortDateTime() {
-    this.resetSort(3);
-    this.ascending3 = !this.ascending3;
-    this.sortingWithTime(this.selectedRows, this.ascending3, "formattedTriggerDateTime", "DD/MM/YYYY HH:mm");
+    this.resetSort(4);
+    this.ascending4 = !this.ascending4;
+    this.sortingWithTime(this.selectedRows, this.ascending4, "formattedTriggerDateTime", "DD/MM/YYYY HH:mm");
   }
 
   customSortDriver() {
-    this.resetSort(4);
-    this.ascending4 = !this.ascending4;
-    this.sortingWithEmpty(this.selectedRows, this.ascending4, "driverName");
+    this.resetSort(5);
+    this.ascending5 = !this.ascending5;
+    this.sortingWithEmpty(this.selectedRows, this.ascending5, "driverName");
   }
 
   customSortFuelLevel() {
-    this.resetSort(5);
-    this.ascending5 = !this.ascending5;
-    this.sortingWithEmpty(this.selectedRows, this.ascending5, "diesel");
+    this.resetSort(6);
+    this.ascending6 = !this.ascending6;
+    this.sortingWithEmpty(this.selectedRows, this.ascending6, "diesel");
   }
 
   customSortAdblueLevel() {
-    this.resetSort(6);
-    this.ascending6 = !this.ascending6;
-    this.sortingWithEmpty(this.selectedRows, this.ascending6, "Adblue");
+    this.resetSort(7);
+    this.ascending7 = !this.ascending7;
+    this.sortingWithEmpty(this.selectedRows, this.ascending7, "Adblue");
   }
 
   customSortSpeed() {
-    this.resetSort(7);
-    this.ascending7 = !this.ascending7;
-    this.sortingWithEmpty(this.selectedRows, this.ascending7, "wheelBasedSpeed");
+    this.resetSort(8);
+    this.ascending8 = !this.ascending8;
+    this.sortingWithEmpty(this.selectedRows, this.ascending8, "wheelBasedSpeed");
   }
 
   customSortOdometer() {
-    this.resetSort(8);
-    this.ascending8 = !this.ascending8;
-    this.sortingWithEmpty(this.selectedRows, this.ascending8, "odometerSort");
+    this.resetSort(9);
+    this.ascending9 = !this.ascending9;
+    this.sortingWithEmpty(this.selectedRows, this.ascending9, "odometerSort");
   }
 
   customSortEngineHours() {
-    this.resetSort(9);
-    this.ascending9 = !this.ascending9;
-    this.sortingWithEmpty(this.selectedRows, this.ascending9, "enginehours");
+    this.resetSort(10);
+    this.ascending10 = !this.ascending10;
+    this.sortingWithEmpty(this.selectedRows, this.ascending10, "enginehours");
   }
   customSortVehicleStatus() {
     this.resetSort(11);
@@ -215,6 +221,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
     this.filteredRows = this.datamap;
     for (let a of this.allTrackEventsData) {
       a.driverName = a.driverName === "-" ? `${label.lbl_ud_UnknownDriver}` : a.driverName;
+      a.groupName = a.groupName ? a.groupName : "-";
       a.enginehours = parseFloat(a.enginehours);
       let hours = Math.floor(a.enginehours / 3600);
       let minutes = Math.floor((a.enginehours % 3600) / 60);
@@ -553,6 +560,10 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
 
     if (type !== 9) {
       this.ascending9 = true;
+    }
+
+    if (type !== 10) {
+      this.ascending10 = true;
     }
     if (type !== 11) {
       this.ascending11 = true;

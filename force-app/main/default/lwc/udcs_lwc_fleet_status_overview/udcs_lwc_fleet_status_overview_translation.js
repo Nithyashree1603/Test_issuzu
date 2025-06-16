@@ -19,8 +19,10 @@ import lbl_ud_TruckID from "@salesforce/label/c.ud_TruckID";
 import lbl_ud_export from "@salesforce/label/c.ud_export";
 import lbl_ud_placeholder from "@salesforce/label/c.ud_VehicleIdTruckIdDriver";
 import lbl_ud_h from "@salesforce/label/c.ud_h";
+import lbl_ud_vehicle_group from "@salesforce/label/c.ud_vehicle_group";
 
 export default {
+  lbl_ud_vehicle_group,
   lbl_fleetstatus,
   lbl_chassisid, // Chassis ID
   lbl_reg_no,

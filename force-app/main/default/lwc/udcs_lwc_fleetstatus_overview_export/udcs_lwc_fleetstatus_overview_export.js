@@ -7,7 +7,7 @@ import label from "./udcs_lwc_fleetstatus_overview_export_translation";
 import { executeParallelActions } from "c/udcs_lwc_ui_service";
 import { dateUtil, libraries } from "c/udcs_lwc_utils";
 
-const NUM_COLUMNS = 14;
+const NUM_COLUMNS = 15;
 
 export default class Udcs_lwc_fleetstatus_overview_export extends LightningElement {
   librariesLoaded = false;
@@ -759,6 +759,38 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
               }
             },
             {
+              v: this.label.lbl_ud_vehicle_group,
+              t: "s",
+              s: {
+                font: {
+                  name: "Calibri",
+                  sz: 9,
+                  color: { rgb: "FFFFFFFF" },
+                  bold: true
+                },
+                fill: { fgColor: { rgb: "008295" } },
+                border: {
+                  left: {
+                    style: "thin",
+                    color: { rgb: "00000000" }
+                  },
+                  right: {
+                    style: "thin",
+                    color: { rgb: "00000000" }
+                  },
+                  top: {
+                    style: "thin",
+                    color: { rgb: "00000000" }
+                  },
+                  bottom: {
+                    style: "thin",
+                    color: { rgb: "00000000" }
+                  }
+                },
+                alignment: { vertical: "center", horizontal: "center", wrapText: true }
+              }
+            },
+            {
               v: label.lbl_ud_vehicle_specification,
               t: "s",
               s: {
@@ -1153,6 +1185,36 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
           });
           rowData.push({
             v: a.truckId,
+            t: "s",
+            s: {
+              font: {
+                name: "Calibri",
+                sz: 10,
+                color: { rgb: "000000" }
+              },
+              fill: { fgColor: { rgb: "F2F2F2" } },
+              border: {
+                left: {
+                  style: "thin",
+                  color: { rgb: "00000000" }
+                },
+                right: {
+                  style: "thin",
+                  color: { rgb: "00000000" }
+                },
+                top: {
+                  style: "thin",
+                  color: { rgb: "00000000" }
+                },
+                bottom: {
+                  style: "thin",
+                  color: { rgb: "00000000" }
+                }
+              }
+            }
+          });
+          rowData.push({
+            v: a.groupName === "" ? "-" : a.groupName,
             t: "s",
             s: {
               font: {
