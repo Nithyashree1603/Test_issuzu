@@ -203,15 +203,7 @@
             $("#addressinfo").show();
             let lng = parseFloat($(this).attr('lng'));
             let lat = parseFloat($(this).attr('lat'));
-<<<<<<< Updated upstream
-            placeMarker = new AdvancedMarkerElement({ map, position: { lat: lat, lng: lng } });            
-=======
-<<<<<<< Updated upstream
-            placeMarker = new google.maps.Marker({ position: { lat: lat, lng: lng }, map });
-=======
             placeMarker = new google.maps.marker.AdvancedMarkerElement({ map, position: { lat: lat, lng: lng } });            
->>>>>>> Stashed changes
->>>>>>> Stashed changes
             map.setCenter(new google.maps.LatLng(lat, lng));
             let request = {
                 placeId: $(this).attr('place_id'),

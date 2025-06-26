@@ -357,6 +357,7 @@
       if (traceInfoWindow != undefined && traceInfoWindow.close != undefined) {
         traceInfoWindow.close();
       }
+      resetTrackMarkerSize(null, false);
       if (infoWindow != undefined && infoWindow.close != undefined) {
         infoWindow.close();
       }
@@ -530,6 +531,7 @@
         $("#eventsfilter").hide();
         $("#positionfilter").hide();
         trace_history_markers = [];
+        clusterAllMarkers(all_markers);
       } else if (receivedfromLWC.source == "defaultLocation") {
         currentUserCountry = receivedfromLWC.data.country;
       } else if (receivedfromLWC.source == "closeVehicleDetails") {
@@ -566,13 +568,15 @@
           console.log(error);
         }
         try {
-          trace_history_markers.forEach((a) => a.setMap(null));
-          trace_history_markers_position.forEach((a) => a.setMap(null));
+          trace_history_markers.forEach((a) => a.map = null);
+          trace_history_markers_position.forEach((a) => a.map =null);
         } catch (e) {
           console.log(e);
         }
         try {
+        if (ployline) {
           ployline.setMap(null);
+        }     
         } catch (error) {
           console.log(error);
         }
@@ -687,13 +691,19 @@
 
         if (vehicledata.icon !== "NoData") {
           if (isAlreadyDetailsPanelRendering == false || isMobile) {
-            map.setZoom(13);
+            map.setZoom(30);
             focusMarker(vehicledata.PositionLatitude, vehicledata.PositionLongitude);
           }
           marker_Clusterer.clearMarkers();
           let marker = all_markers_map.get(vehicledata.key);
           resetTrackMarkerSize(marker, true);
-          marker.setIcon(tracksvgIconsZoom[vehicledata.icon]);
+          const svgUrl = tracksvgIconsZoom[vehicledata.icon];
+          const size = tracksvgIconsZoomSize || 60;
+          const iconImg = document.createElement("img");
+          iconImg.src = svgUrl;
+          iconImg.style.width = `${size}px`;
+          iconImg.style.height = `${size}px`;
+          marker.content = iconImg;
         } else {
         }
       } catch (e) {
@@ -804,10 +814,10 @@
       $("#positionfilter").on("click", () => {
         positionfilterFlag = !positionfilterFlag;
         if (positionfilterFlag) {
-          trace_history_markers_position.forEach((a) => a.setMap(map));
+          trace_history_markers_position.forEach((a) => a.map =map);
           $("#positionfilter_img").attr("src", position_on);
         } else {
-          trace_history_markers_position.forEach((a) => a.setMap(null));
+          trace_history_markers_position.forEach((a) => a.map = null);
           $("#positionfilter_img").attr("src", position_off);
         }
       });
@@ -816,19 +826,19 @@
         try {
           if (eventsfilterFlag) {
             for (let trace_event of traceAllIconList) {
-              trace_history_markers_map[trace_event.unique_key]?.setMap(map);
+              trace_history_markers_map[trace_event.unique_key].map =map;
             }
             $("#eventsfilter_img").attr("src", eventsfilter_on);
           } else {
-            trace_history_markers.forEach((a) => a.setMap(null));
+            trace_history_markers.forEach((a) => a.map =null);
             $("#eventsfilter_img").attr("src", eventsfilter_off);
           }
         } catch (error) {
           console.log(error);
         }
         if (trace_history_markers && trace_history_markers.length) {
-          trace_history_markers[0].setMap(map);
-          trace_history_markers[trace_history_markers.length - 1].setMap(map);
+          trace_history_markers[0].map = map;
+          trace_history_markers[trace_history_markers.length - 1].map = map;
         }
         ploylineHighligher(tracedirectionflag, eventsfilterFlag);
       });
@@ -1074,13 +1084,23 @@
       $("#vehicleDetails").hide();
       isVehicleDetailsShowing = false;
       window.parent.postMessage({ source: "closeVehicleDetailsPanel" }, window.location.origin);
-      for (let a of all_markers_map.keys()) {
-        all_markers_map.get(a).setIcon(all_markers_map.get(a).icon);
-      }
+      map.setZoom(13)
+      // for (let a of all_markers_map.keys()) {
+      //   all_markers_map.get(a).setIcon(all_markers_map.get(a).icon);
+      // }
+      //  for (let a of all_markers_map.keys()) {
+      //   const marker = all_markers_map.get(a);
+      //     resetTrackMarkerSize(marker)
+      //     // const img = new Image();
+      //     // img.src = marker.content.src
+      //     // img.style.width = marker.style.width;
+      //     // img.style.height =  marker.style.height;
+      //     // marker.content = img; 
+      // };
+      resetTrackMarkerSize(null)
+
     });
 
-    //---------Helper Functions ------------
-    //Onmouseover tooltip move
     let tooltip = document.querySelectorAll(".toolhere + section");
     document.onmousemove = function (e) {
       var x = e.pageX + 2 + "px",
@@ -1219,7 +1239,7 @@
     function resetTrackMarkerSize(marker, isMapSet) {
       for (let tempMarker of all_markers) {
         if (isMapSet) {
-          tempMarker.setMap(map);
+          tempMarker.map = map;
         }
       }
       for (let vStatus of all_statusicon_markers_map.keys()) {
@@ -1227,7 +1247,14 @@
           if (marker == tempMarker) {
             continue;
           }
-          tempMarker.setIcon({ url: tempMarker.icon.url ? tempMarker.icon.url : tempMarker.icon, scaledSize: new google.maps.Size(vStatus === "Moving" ? 50 : 30, vStatus === "Moving" ? 50 : 30) });
+          const isMoving = vStatus === "Moving";
+          const size = isMoving ? 50 : 30;
+          const image = new Image();
+          image.src = tempMarker.content.src
+          image.width = size;
+          image.height = size;
+          tempMarker.content = image;
+          // tempMarker.setIcon({ url: tempMarker.getIcon().url ? tempMarker.getIcon().url : tempMarker.icon, scaledSize: new google.maps.Size(vStatus === "Moving" ? 50 : 30, vStatus === "Moving" ? 50 : 30) });
         }
       }
     }
@@ -1247,6 +1274,7 @@
         content: markerImage,
         gmpClickable: true,
       });
+      marker.icon = markerImage;
       return marker;
     }
     let tooltip2 = document.querySelectorAll(".content-section-text + blockquote");
@@ -1419,8 +1447,8 @@
       let lat = "";
       let lng = "";
       try {
-        trace_history_markers.forEach((a) => a.setMap(null));
-        trace_history_markers_position.forEach((a) => a.setMap(null));
+        trace_history_markers.forEach((a) => a.map = null);
+        trace_history_markers_position.forEach((a) => a.map = null);
         trace_history_markers_position = [];
         trace_history_markers = [];
         trace_history_markers_map = {};
@@ -1446,25 +1474,49 @@
         if (maplocation.position != undefined && maplocation.position.longitude != undefined) {
           lat = parseFloat(maplocation.position.latitude);
           lng = parseFloat(maplocation.position.longitude);
-          let svgImage = "data:image/svg+xml;utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg"  ></svg>');
-          if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
-            svgImage = {
-              anchor: new google.maps.Point(16, 16),
-              url: traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]
-            };
+          // let svgImage = "data:image/svg+xml;utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg"  ></svg>');
+          // if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
+          //   svgImage = {
+          //     anchor: new google.maps.Point(16, 16),
+          //     url: traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]
+          //   };
+          // } else {
+          // const markerContent = document.createElement("div");
+          // markerContent.style.width = "10px";  
+          // markerContent.style.height = "10px";
+          // markerContent.style.borderRadius = "50%";
+          // markerContent.style.backgroundColor = "#f3f6f4";
+          // markerContent.style.border = "0px solid #4D4E53";
+          // const marker = new google.maps.marker.AdvancedMarkerElement({
+          //   position: { lat, lng },
+          //   map: maplocation.show !== false ? map : null,
+          //   content: markerContent,
+          //   gmpClickable: true,
+          // });
+          const position = { lat, lng };
+          let iconElement;
+          const iconKey = maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "");
+          if (traceSvgIcons[iconKey]) {
+            const svgUrl = traceSvgIcons[iconKey];
+            iconElement = document.createElement('img');
+            iconElement.src = svgUrl;
+            iconElement.style.width = "32px";  
+            iconElement.style.height = "32px";
           } else {
-          const markerContent = document.createElement("div");
-          markerContent.style.width = "10px";  // scale * 2
-          markerContent.style.height = "10px";
-          markerContent.style.borderRadius = "50%";
-          markerContent.style.backgroundColor = "#f3f6f4";
-          markerContent.style.border = "0px solid #4D4E53";
+            iconElement = document.createElement('div');
+            iconElement.style.width = "10px";
+            iconElement.style.height = "10px";
+            iconElement.style.borderRadius = "50%";
+            iconElement.style.backgroundColor = "#f3f6f4";
+            iconElement.style.border = "2px solid #4D4E53";
+          }
           const marker = new google.maps.marker.AdvancedMarkerElement({
-            position: { lat, lng },
-            map: maplocation.show !== false ? map : null,
-            content: markerContent,
-            gmpClickable: true,
+            map,
+            position,
+            content: iconElement
           });
+          marker.icon = iconElement;
+
           trace_history_polyline.push({ lat, lng });
           if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
             trace_history_markers.push(marker);
@@ -1476,7 +1528,7 @@
             traceMarker(marker, maplocation);
           }
         }
-      }});
+      });
       if (trace_history_markers_position.length) {
         $("#positionfilter").show();
         positionfilterFlag = false;
@@ -1526,10 +1578,10 @@
         ]
       });
       if (trace_history_markers.length) {
-        trace_history_markers[0].setMap(map);
-        trace_history_markers[0].setTitle("Ignition Off");
-        trace_history_markers[trace_history_markers.length - 1].setMap(map);
-        trace_history_markers[trace_history_markers.length - 1].setTitle("Ignition On");
+        trace_history_markers[0].map = map;
+        trace_history_markers[0].title = "Ignition Off";
+        trace_history_markers[trace_history_markers.length - 1].map=map;
+        trace_history_markers[trace_history_markers.length - 1].title ="Ignition On";
       }
       ployline.setMap(map);
       ploylineMarker.setMap(map);
@@ -1600,45 +1652,78 @@
         traceInfoWindow.setContent(infoWidgetContent);
         traceInfoWindow.open(map, marker);
         for (let tempMarker of trace_history_markers) {
-          if (tempMarker.getTitle() == undefined && marker !== tempMarker) {
-            tempMarker.setIcon({
-              url: tempMarker.getIcon().url,
-              scaledSize: new google.maps.Size(20, 20)
-            });
+          if (!tempMarker.title && marker !== tempMarker) {
+            const imgEl = tempMarker.content?.querySelector('img');
+            if (imgEl) {
+              const src = imgEl.src;
+
+              const newImg = new Image();
+              newImg.src = src;
+              newImg.width = 20;
+              newImg.height = 20;
+              newImg.style.cursor = "pointer";
+
+              tempMarker.content = newImg; // Replace the content with resized image
+            }
           }
         }
-        if (marker.getTitle() == undefined) {
-          if (maplocation.triggerType !== "Position" && maplocation.triggerType !== "No Movement" && maplocation.triggerType !== "Movement") {
-            marker.setIcon({
-              url: marker.getIcon().url,
-              scaledSize: new google.maps.Size(isMobile ? 30 : 50, isMobile ? 30 : 50)
-            });
-          } else {
+        if (!marker.title) {
+          const isSpecial = maplocation.triggerType !== "Position" &&
+                            maplocation.triggerType !== "No Movement" &&
+                            maplocation.triggerType !== "Movement";
+
+          if (isSpecial) {
+            const imgEl = marker.content?.querySelector('img');
+            if (imgEl) {
+              const src = imgEl.src;
+
+              const newImg = new Image();
+              const size = isMobile ? 30 : 50;
+              newImg.src = src;
+              newImg.width = size;
+              newImg.height = size;
+              newImg.style.cursor = "pointer";
+
+              marker.content = newImg;
+            }
           }
         }
+
       });
       google.maps.event.addListener(marker, "temp_mouseover", function () {
         if (sendTraceSelectedMarkerInfoToLWC) {
           sendTraceSelectedMarkerInfoToLWC = true;
           window.parent.postMessage({ source: "SelectedTraceEventhighlight", highlightbottompannel: true, data: maplocation.unique_key }, window.location.origin);
         }
-        for (let tempMarker of trace_history_markers) {
-          if (tempMarker.getTitle() == undefined && marker !== tempMarker) {
-            tempMarker.setIcon({
-              url: tempMarker.getIcon().url,
-              scaledSize: new google.maps.Size(20, 20)
-            });
+         for (let tempMarker of trace_history_markers) {
+          if (!tempMarker.title && marker !== tempMarker) {
+            const imgEl = tempMarker.content?.querySelector('img');
+            if (imgEl) {
+              const src = imgEl.src;
+              const newImg = new Image();
+              newImg.src = src;
+              newImg.width = 20;
+              newImg.height = 20;
+              newImg.style.cursor = "pointer";
+              tempMarker.content = newImg; 
+            }
           }
         }
-        if (marker.getTitle() == undefined) {
-          marker.setIcon({
-            url: marker.getIcon().url,
-            scaledSize: new google.maps.Size(isMobile ? 30 : 50, isMobile ? 30 : 50)
-          });
+        if (!marker.title) {
+            const imgEl = marker.content?.querySelector('img');
+            if (imgEl) {
+              const src = imgEl.src;
+              const newImg = new Image();
+              const size = isMobile ? 30 : 50;
+              newImg.src = src;
+              newImg.width = size;
+              newImg.height = size;
+              newImg.style.cursor = "pointer";
+              marker.content = newImg;
+          }
         }
       });
     }
-    // Track related functions
     function initializeTrackMarkers() {
       all_markers.filter(Boolean).forEach((a) => a.map = null);
       all_markers = [];
@@ -1761,14 +1846,25 @@
        if (marker.element) {
         marker.element.style.cursor = "pointer";  
         marker.element.addEventListener("mouseover", () => {
-        if (infoWindow.getContent() !== infowindowcontent) {
-          resetTrackMarkerSize(marker);
-          infoWindow.setContent(infowindowcontent);
-          infoWindow.setOptions({});
-          marker.icon = tracksvgIconsZoom[icon];
-          infoWindow.open(map, marker);
-        }
+          if (infoWindow.getContent() !== infowindowcontent) {
+            resetTrackMarkerSize(marker);
+            infoWindow.setContent(infowindowcontent);
+            infoWindow.setOptions({});
+            const svgUrl = tracksvgIconsZoom[icon]; 
+            const size = tracksvgIconsZoomSize || 60;
+            const iconImg = document.createElement("img");
+            iconImg.src = svgUrl;
+            iconImg.style.width = `${size}px`;
+            iconImg.style.height = `${size}px`;
+            marker.content = iconImg;
+            infoWindow.open(map, marker);
+          }
         });
+        // marker.element.addEventListener("mouseout", () => {
+        //   infoWindow.close();
+        //   marker.content = marker.icon;
+        //   infoWindow.setContent(null);       
+        //  });
     marker.element.addEventListener("click", () => {
       getCurrentBound(map);
       if (!isMobileClicked()) {
@@ -1783,7 +1879,14 @@
           currentInfo = infoWindow;
           marker_Clusterer.clearMarkers();
           resetTrackMarkerSize(marker, true);
-          marker.setIcon(tracksvgIconsZoom[icon]);
+          const svgUrl = tracksvgIconsZoom[icon];
+          console.log(svgUrl)
+          const size = tracksvgIconsZoomSize || 60;
+          const iconImg = document.createElement("img");
+          iconImg.src = svgUrl;
+          iconImg.style.width = `${size}px`;
+          iconImg.style.height = `${size}px`;
+          marker.content = iconImg;
           map.setZoom(13);
     });}
       return marker;
@@ -1805,6 +1908,7 @@
       if (marker_Clusterer) {
         marker_Clusterer.clearMarkers();
       }
+
       let tempMarkers = [];
       for (let vStatus of all_statusicon_markers_map.keys()) {
         if (SelectedvehicleFilter != undefined && SelectedvehicleFilter != vStatus) {
@@ -1817,7 +1921,7 @@
       if (!trackMarkersLoaded) {
         clusterAllMarkers(tempMarkers);
       } else {
-        tempMarkers.forEach((a) => a.setMap(map));
+        tempMarkers.forEach((a) => a.map = map);
         map.setZoom(map.getZoom());
       }
       trackMarkersLoaded = true;
@@ -1830,23 +1934,8 @@
     function clusterAllMarkers(all_markers) {
       const renderer = {
         render: ({ count, position }) => {
-          const size = count > 10 ? 43 : 35;
-          const svg = window.btoa(`<svg width="${size}" height="${size}" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                      <g filter="url(#filter0_d_1699_90070)">
-                                          <circle cx="18.9675" cy="17.3776" r="14.5" transform="rotate(-30 18.9675 17.3776)" fill="#00829B"/>
-                                      </g>
-                                      <defs>
-                                          <filter id="filter0_d_1699_90070" x="0.464844" y="0.875183" width="37.0039" height="37.0049" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                                          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                                          <feOffset dy="2"/>
-                                          <feGaussianBlur stdDeviation="2"/>
-                                          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
-                                          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1699_90070"/>
-                                          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1699_90070" result="shape"/>
-                                          </filter>
-                                      </defs>
-                                      </svg>`);
+                const size = count > 10 ? 43 : 35;
+                const svg = window.btoa(`<svg width="${size}" height="${size}" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg"><g filter="url(#filter0_d_1699_90070)"><circle cx="18.9675" cy="17.3776" r="14.5" transform="rotate(-30 18.9675 17.3776)" fill="#00829B"/></g><defs><filter id="filter0_d_1699_90070" x="0.464844" y="0.875183" width="37.0039" height="37.0049" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dy="2"/><feGaussianBlur stdDeviation="2"/><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1699_90070"/><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1699_90070" result="shape"/></filter></defs></svg>`);
                 const markerDiv = document.createElement("div");
                 markerDiv.style.position = "relative";
                 markerDiv.style.width = `${size}px`;
@@ -1861,13 +1950,14 @@
                 markerDiv.style.fontWeight = "bold";
                 markerDiv.style.fontFamily = "Arial, sans-serif";
                 markerDiv.textContent = String(count);
-                const marker = new google.maps.marker.AdvancedMarkerElement({
-                  position,
-                  map,
-                  zIndex: google.maps.Marker.MAX_ZINDEX + count,
-                  content: markerDiv,
-                  gmpClickable: true
-                });
+                  const marker = new google.maps.marker.AdvancedMarkerElement({
+                    position,
+                    map,
+                    zIndex: google.maps.Marker.MAX_ZINDEX + count,
+                    content: markerDiv,
+                    gmpClickable: true
+                  });
+                  marker.icon = markerDiv;
                 return marker;
                 }
                 };

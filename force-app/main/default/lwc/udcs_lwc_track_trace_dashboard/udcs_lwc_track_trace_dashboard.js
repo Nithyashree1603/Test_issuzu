@@ -1275,6 +1275,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     }, 1000);
   }
 
+  //todo  ign icon not there 
   reloadDataOnRefresh() {
     if (this.isMobile) {
       return;

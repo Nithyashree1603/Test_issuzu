@@ -24,7 +24,7 @@
             </div>
             <template lwc:if={isMobile}></template>
             <template lwc:else>
-                <div class="refresh-button">
+                <!-- <div class="refresh-button">
                     <template if:false={showtracehistory}>
                         <div style="cursor: pointer;" onclick={reloadDataOnRefresh}>
                             <svg width="87" height="26" viewBox="0 0 87 26" fill="none"
@@ -44,6 +44,28 @@
                                     </clipPath>
                                 </defs>
                             </svg>
+                        </div>
+                        <p class="refresh-timing">{assetsAPIReloadTime}</p>
+                    </template>
+                </div> -->
+                <div class="refresh-button">
+                    <template if:false={showtracehistory}>
+                        <div style="cursor: pointer;" onclick={reloadDataOnRefresh}>
+
+                            <div class="refresh">
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_63644_9626)">
+                                <path d="M13.2373 4.7625C12.1498 3.675 10.6573 3 8.99982 3C5.68482 3 3.00732 5.685 3.00732 9C3.00732 12.315 5.68482 15 8.99982 15C11.7973 15 14.1298 13.0875 14.7973 10.5H13.2373C12.6223 12.2475 10.9573 13.5 8.99982 13.5C6.51732 13.5 4.49982 11.4825 4.49982 9C4.49982 6.5175 6.51732 4.5 8.99982 4.5C10.2448 4.5 11.3548 5.0175 12.1648 5.835L9.74982 8.25H14.9998V3L13.2373 4.7625Z" fill="white"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_63644_9626">
+                                <rect width="18" height="18" fill="white"/>
+                                </clipPath>
+                                </defs>
+                                </svg>
+                                Refresh
+                            </div>
+                            
                         </div>
                         <p class="refresh-timing">{assetsAPIReloadTime}</p>
                     </template>
