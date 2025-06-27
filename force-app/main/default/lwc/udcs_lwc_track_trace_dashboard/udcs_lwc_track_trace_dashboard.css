@@ -575,8 +575,12 @@ iframe.vfFrame {
   cursor: default;
 }
 
+.refresh-icon{
+  margin-right: 2px;
+}
+
 .refresh{
-  width: 87px;
+  /* width: 87px; */
   height: 26px;
   background: gray;
   color: white;
