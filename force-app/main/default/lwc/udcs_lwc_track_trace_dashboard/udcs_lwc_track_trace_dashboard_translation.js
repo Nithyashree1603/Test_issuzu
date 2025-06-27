@@ -84,10 +84,10 @@ import lbl_ud_ok from "@salesforce/label/c.ud_ok";
 import lbl_ud_showlist from "@salesforce/label/c.ud_showlist";
 import lbl_ud_chassisplaceholder from "@salesforce/label/c.ud_chassisplaceholder";
 import lbl_ud_hidelist from "@salesforce/label/c.ud_hidelist";
-import lbl_ud_refresh from "@salesforce/label/c.ud_refresh";
+// import lbl_ud_refresh from "@salesforce/label/c.ud_refresh";
 
 export default {
-  lbl_ud_refresh,
+  // lbl_ud_refresh,
   lbl_ud_hidelist,
   lbl_ud_chassisplaceholder,
   lbl_ud_showlist,
