@@ -531,7 +531,8 @@
         $("#eventsfilter").hide();
         $("#positionfilter").hide();
         trace_history_markers = [];
-        clusterAllMarkers(all_markers);
+        //todo check this
+        // clusterAllMarkers(all_markers);
       } else if (receivedfromLWC.source == "defaultLocation") {
         currentUserCountry = receivedfromLWC.data.country;
       } else if (receivedfromLWC.source == "closeVehicleDetails") {
@@ -1493,6 +1494,8 @@
           //   content: markerContent,
           //   gmpClickable: true,
           // });
+
+          //check
           const position = { lat, lng };
           let iconElement;
           const iconKey = maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "");
@@ -1500,8 +1503,8 @@
             const svgUrl = traceSvgIcons[iconKey];
             iconElement = document.createElement('img');
             iconElement.src = svgUrl;
-            iconElement.style.width = "32px";  
-            iconElement.style.height = "32px";
+            // iconElement.style.width = "32px";  
+            // iconElement.style.height = "32px";
           } else {
             iconElement = document.createElement('div');
             iconElement.style.width = "10px";
@@ -1702,8 +1705,8 @@
               const src = imgEl.src;
               const newImg = new Image();
               newImg.src = src;
-              newImg.width = 20;
-              newImg.height = 20;
+              newImg.width = 70;
+              newImg.height = 70;
               newImg.style.cursor = "pointer";
               tempMarker.content = newImg; 
             }
@@ -1971,6 +1974,10 @@
   <style>
     .gm-style-iw-tc {
       display: none;
+    }
+
+    .gm-style-iw-ch{
+      padding-top: 0px !important;
     }
   </style>
 </apex:component>
