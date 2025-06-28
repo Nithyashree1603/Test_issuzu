@@ -1262,7 +1262,8 @@
             continue;
           }
           const isMoving = vStatus === "Moving";
-          const size = isMoving ? 50 : 30;
+          // const size = isMoving ? 50 : 30;
+          const size = 30;
           const image = new Image();
           image.src = tempMarker.content.src
           image.width = size;
@@ -1879,6 +1880,8 @@
         marker.element.addEventListener("mouseout", () => {
           // infoWindow.close();
           // marker.content = marker.icon;
+          iconImg.style.width = `30px`;
+          iconImg.style.height = `30px`;
           infoWindow.setContent(null);       
          });
     marker.element.addEventListener("click", () => {
