@@ -1864,7 +1864,7 @@
         marker.element.style.cursor = "pointer";  
         marker.element.addEventListener("mouseover", () => {
           if (infoWindow.getContent() !== infowindowcontent) {
-            resetTrackMarkerSize(marker);
+            // resetTrackMarkerSize(marker);
             infoWindow.setContent(infowindowcontent);
             infoWindow.setOptions({});
             const svgUrl = tracksvgIconsZoom[icon]; 
@@ -1880,8 +1880,15 @@
         marker.element.addEventListener("mouseout", () => {
           // infoWindow.close();
           // marker.content = marker.icon;
-          iconImg.style.width = `30px`;
-          iconImg.style.height = `30px`;
+          // iconImg.style.width = `30px`;
+          // iconImg.style.height = `30px`;
+           const svgUrl = tracksvgIconsZoom[icon]; 
+            const size = 30;
+            const iconImg = document.createElement("img");
+            iconImg.src = svgUrl;
+            iconImg.style.width = `${size}px`;
+            iconImg.style.height = `${size}px`;
+            marker.content = iconImg;
           infoWindow.setContent(null);       
          });
     marker.element.addEventListener("click", () => {
