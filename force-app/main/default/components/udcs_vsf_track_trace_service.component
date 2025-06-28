@@ -431,6 +431,7 @@
         $("#tracedirection_img").attr("src", tracedirection_on);
         $("#eventsfilter_img").attr("src", eventsfilter_on);
       } else if (receivedfromLWC.source == "eventdetailspanel") {
+        // vehiclestogglebutton.style.
         eventhistorylist = JSON.parse(receivedfromLWC.eventhistorylist);
         traceAllIconList = eventhistorylist;
         if (traceAllIconList.length === 0) {
@@ -1863,11 +1864,11 @@
             infoWindow.open(map, marker);
           }
         });
-        // marker.element.addEventListener("mouseout", () => {
-        //   infoWindow.close();
-        //   marker.content = marker.icon;
-        //   infoWindow.setContent(null);       
-        //  });
+        marker.element.addEventListener("mouseout", () => {
+          // infoWindow.close();
+          // marker.content = marker.icon;
+          infoWindow.setContent(null);       
+         });
     marker.element.addEventListener("click", () => {
       getCurrentBound(map);
       if (!isMobileClicked()) {

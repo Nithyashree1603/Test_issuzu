@@ -47,7 +47,7 @@
           <p id="on1">On</p>
           <p id="off1">Off</p>
           <label class="switch">
-            <input type="checkbox" checked="togglechecked1" id="vehiclestoggle" />
+            <input type="checkbox" checked="togglechecked1" id="vehiclestoggle" disabled={isTraceOpen}/>
             <span class="slider round"></span>
           </label>
         </div>
