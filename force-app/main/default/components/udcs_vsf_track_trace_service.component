@@ -827,9 +827,18 @@
         eventsfilterFlag = !eventsfilterFlag; // Work on this variable
         try {
           if (eventsfilterFlag) {
+            // for (let trace_event of traceAllIconList) {
+            //   trace_history_markers_map[trace_event.unique_key].map =map;
+            // }
             for (let trace_event of traceAllIconList) {
-              trace_history_markers_map[trace_event.unique_key].map =map;
-            }
+  const marker = trace_history_markers_map[trace_event.unique_key];
+  if (marker) {
+    marker.map = map;
+  } else {
+    console.warn(`Marker not found for key: ${trace_event.unique_key}`);
+  }
+}
+
             $("#eventsfilter_img").attr("src", eventsfilter_on);
           } else {
             trace_history_markers.forEach((a) => a.map =null);
@@ -960,6 +969,8 @@
     });
 
     vehiclestogglebutton.addEventListener("click", () => {
+      if (!isTraceOpen)
+    {
       togglechecked1 = !togglechecked1;
       if (vehiclestogglebutton.checked === true) {
         on1button.style.display = "block";
@@ -970,6 +981,7 @@
         off1button.style.display = "block";
         all_markers.filter(Boolean).forEach((a) => a.map = null);
       }
+    }
     });
 
     geofencestogglebutton.addEventListener("click", () => showCorrectGeofence());
