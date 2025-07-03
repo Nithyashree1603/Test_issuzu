@@ -339,6 +339,13 @@
         });
       });
       google.maps.event.addListener(map, "click", closeinfowindow);
+      google.maps.event.addListener(map, "click", ()=>{
+        for (let tempMarker of trace_history_markers) {
+            const el = tempMarker.content;
+            el.style.width = '20px';
+            el.style.height = '20px';
+        }
+      });
       $("#btnReset").on("click", closeinfowindow);
       document.getElementById("map").addEventListener("wheel", function (event) {
         if (event.deltaY && event.deltaY < 0) {
@@ -531,8 +538,10 @@
         $("#eventsfilter").hide();
         $("#positionfilter").hide();
         trace_history_markers = [];
-        //todo check this
-        // clusterAllMarkers(all_markers);
+         trackMarkersLoaded = false;
+          fitAllMarkersInMap();
+        // if (!isTraceOpen)
+          // clusterAllMarkers(all_markers);
       } else if (receivedfromLWC.source == "defaultLocation") {
         currentUserCountry = receivedfromLWC.data.country;
       } else if (receivedfromLWC.source == "closeVehicleDetails") {
@@ -826,19 +835,19 @@
         eventsfilterFlag = !eventsfilterFlag; // Work on this variable
         try {
           if (eventsfilterFlag) {
+            $("#eventsfilter_img").attr("src", eventsfilter_on);
             // for (let trace_event of traceAllIconList) {
             //   trace_history_markers_map[trace_event.unique_key].map =map;
             // }
+            console.log(trace_history_markers_map)
             for (let trace_event of traceAllIconList) {
-  const marker = trace_history_markers_map[trace_event.unique_key];
-  if (marker) {
-    marker.map = map;
-  } else {
-    console.warn(`Marker not found for key: ${trace_event.unique_key}`);
-  }
-}
-
-            $("#eventsfilter_img").attr("src", eventsfilter_on);
+              const marker = trace_history_markers_map[trace_event.unique_key];
+              if (marker) {
+                marker.map = map;
+              } else {
+                console.warn(`Marker not found for key: ${trace_event.unique_key}`);
+              }
+            }
           } else {
             trace_history_markers.forEach((a) => a.map =null);
             $("#eventsfilter_img").attr("src", eventsfilter_off);
@@ -910,8 +919,16 @@
           isVehicleDetailsShowing = false;
           trackMarkersLoaded = false;
           fitAllMarkersInMap();
+          // togglechecked1 = true;
+          vehiclestogglebutton.checked = true;
+           on1button.style.display = "block";
+        off1button.style.display = "none";
         } else {
           map.fitBounds(newBoundarytrace);
+          // togglechecked1 = true;
+          vehiclestogglebutton.checked = true;
+           on1button.style.display = "block";
+        off1button.style.display = "none";
         }
       } catch (error) {
         console.log(error);
@@ -1128,7 +1145,9 @@
       try {
         sendTraceSelectedMarkerInfoToLWC = false;
         if (eventselected) {
-          google.maps.event.trigger(trace_history_markers_map[eventData.unique_key], "temp_mouseover");
+        const marker = trace_history_markers_map[eventData.unique_key];
+        marker.content.dispatchEvent(new CustomEvent("temp_mouseover"));
+          // google.maps.event.trigger(trace_history_markers_map[eventData.unique_key], "temp_mouseover");
         }
       } catch (error) {
         console.log(error);
@@ -1264,11 +1283,9 @@
           const isMoving = vStatus === "Moving";
           // const size = isMoving ? 50 : 30;
           const size = 30;
-          const image = new Image();
-          image.src = tempMarker.content.src
-          image.width = size;
-          image.height = size;
-          tempMarker.content = image;
+          const el = tempMarker.content
+          el.width = size;
+          el.height = size;
           // tempMarker.setIcon({ url: tempMarker.getIcon().url ? tempMarker.getIcon().url : tempMarker.icon, scaledSize: new google.maps.Size(vStatus === "Moving" ? 50 : 30, vStatus === "Moving" ? 50 : 30) });
         }
       }
@@ -1337,7 +1354,7 @@
                 scale: 3
               },
               offset: "100%",
-              repeat: "500px"
+              repeat: "100px"
             }
           ]
         });
@@ -1361,7 +1378,7 @@
                 scale: 3
               },
               offset: "100%",
-              repeat: "500px"
+              repeat: "100px"
             }
           ]
         });
@@ -1473,43 +1490,13 @@
         trace_history_markers_map = {};
         console.log(e);
       }
-      try {
-        ployline.setMap(null);
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        ploylineMarker.setMap(null);
-      } catch (error) {
-        console.log(error);
-      }
+      
 
       isTraceLoadingFirstTime = true;
       eventhistorylist.forEach((maplocation) => {
         if (maplocation.position != undefined && maplocation.position.longitude != undefined) {
           lat = parseFloat(maplocation.position.latitude);
           lng = parseFloat(maplocation.position.longitude);
-          // let svgImage = "data:image/svg+xml;utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg"  ></svg>');
-          // if (traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]) {
-          //   svgImage = {
-          //     anchor: new google.maps.Point(16, 16),
-          //     url: traceSvgIcons[maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "")]
-          //   };
-          // } else {
-          // const markerContent = document.createElement("div");
-          // markerContent.style.width = "10px";  
-          // markerContent.style.height = "10px";
-          // markerContent.style.borderRadius = "50%";
-          // markerContent.style.backgroundColor = "#f3f6f4";
-          // markerContent.style.border = "0px solid #4D4E53";
-          // const marker = new google.maps.marker.AdvancedMarkerElement({
-          //   position: { lat, lng },
-          //   map: maplocation.show !== false ? map : null,
-          //   content: markerContent,
-          //   gmpClickable: true,
-          // });
-
-          //check
           const position = { lat, lng };
           let iconElement;
           const iconKey = maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "");
@@ -1517,8 +1504,8 @@
             const svgUrl = traceSvgIcons[iconKey];
             iconElement = document.createElement('img');
             iconElement.src = svgUrl;
-            // iconElement.style.width = "32px";  
-            // iconElement.style.height = "32px";
+            iconElement.style.width = "20px";  
+            iconElement.style.height = "20px";
           } else {
             iconElement = document.createElement('div');
             iconElement.style.width = "10px";
@@ -1527,6 +1514,7 @@
             iconElement.style.backgroundColor = "#f3f6f4";
             iconElement.style.border = "2px solid #4D4E53";
           }
+          
           const marker = new google.maps.marker.AdvancedMarkerElement({
             map,
             position,
@@ -1565,6 +1553,18 @@
       } else {
         map.setCenter(new google.maps.LatLng(lat, lng));
       }
+
+      try {
+        ployline.setMap(null);
+      } catch (error) {
+        console.log(error);
+      }
+      try {
+        ploylineMarker.setMap(null);
+      } catch (error) {
+        console.log(error);
+      }
+
       ployline = new google.maps.Polyline({
         path: trace_history_polyline,
         geodesic: true,
@@ -1603,6 +1603,7 @@
       ployline.setMap(map);
       ploylineMarker.setMap(map);
     }
+
     function traceInfoWindowContent(maplocation) {
       let tempDataItem = new Map();
       for (let a of maplocation.dataItems) {
@@ -1650,9 +1651,10 @@
           </div></div>
           `;
     }
+
     function traceMarker(marker, maplocation) {
       let infoWidgetContent = traceInfoWindowContent(maplocation);
-      google.maps.event.addListener(marker, "click", function () {
+      marker.addListener("click",  () => {
         if (sendTraceSelectedMarkerInfoToLWC) {
           if (maplocation.triggerType !== "Position" && maplocation.triggerType !== "No Movement" && maplocation.triggerType !== "Movement") {
             sendTraceSelectedMarkerInfoToLWC = true;
@@ -1670,77 +1672,49 @@
         traceInfoWindow.open(map, marker);
         for (let tempMarker of trace_history_markers) {
           if (!tempMarker.title && marker !== tempMarker) {
-            const imgEl = tempMarker.content?.querySelector('img');
-            if (imgEl) {
-              const src = imgEl.src;
-
-              const newImg = new Image();
-              newImg.src = src;
-              newImg.width = 20;
-              newImg.height = 20;
-              newImg.style.cursor = "pointer";
-
-              tempMarker.content = newImg; // Replace the content with resized image
-            }
+            const el = tempMarker.content;
+            el.style.width = '20px';
+            el.style.height = '20px';
           }
         }
-        if (!marker.title) {
-          const isSpecial = maplocation.triggerType !== "Position" &&
-                            maplocation.triggerType !== "No Movement" &&
-                            maplocation.triggerType !== "Movement";
+        // if (!marker.title) {
+          // const isSpecial = maplocation.triggerType !== "Position" &&
+          //                   maplocation.triggerType !== "No Movement" &&
+          //                   maplocation.triggerType !== "Movement";
+          // if (isSpecial) {
+          // const el = marker.content;
+          // const size = isMobile ? 30 : 50;
 
-          if (isSpecial) {
-            const imgEl = marker.content?.querySelector('img');
-            if (imgEl) {
-              const src = imgEl.src;
-
-              const newImg = new Image();
-              const size = isMobile ? 30 : 50;
-              newImg.src = src;
-              newImg.width = size;
-              newImg.height = size;
-              newImg.style.cursor = "pointer";
-
-              marker.content = newImg;
-            }
-          }
-        }
+          // el.style.width = `${size}px`;
+          // el.style.height = `${size}px`;
+          // }
+        // }
 
       });
-      google.maps.event.addListener(marker, "temp_mouseover", function () {
+      marker.content.addEventListener("temp_mouseover",  () => {
+        console.log("hovered")
         if (sendTraceSelectedMarkerInfoToLWC) {
           sendTraceSelectedMarkerInfoToLWC = true;
           window.parent.postMessage({ source: "SelectedTraceEventhighlight", highlightbottompannel: true, data: maplocation.unique_key }, window.location.origin);
         }
-         for (let tempMarker of trace_history_markers) {
+
+        for (let tempMarker of trace_history_markers) {
           if (!tempMarker.title && marker !== tempMarker) {
-            const imgEl = tempMarker.content?.querySelector('img');
-            if (imgEl) {
-              const src = imgEl.src;
-              const newImg = new Image();
-              newImg.src = src;
-              newImg.width = 70;
-              newImg.height = 70;
-              newImg.style.cursor = "pointer";
-              tempMarker.content = newImg; 
-            }
+            const el = tempMarker.content;
+            el.style.width = '20px';
+            el.style.height = '20px';
           }
         }
         if (!marker.title) {
-            const imgEl = marker.content?.querySelector('img');
-            if (imgEl) {
-              const src = imgEl.src;
-              const newImg = new Image();
-              const size = isMobile ? 30 : 50;
-              newImg.src = src;
-              newImg.width = size;
-              newImg.height = size;
-              newImg.style.cursor = "pointer";
-              marker.content = newImg;
-          }
+            const el = marker.content;
+            const size = isMobile ? 30 : 50;
+            el.style.width = `${size}px`;
+            el.style.height = `${size}px`;
         }
       });
     }
+
+  
     function initializeTrackMarkers() {
       all_markers.filter(Boolean).forEach((a) => a.map = null);
       all_markers = [];
@@ -2002,5 +1976,10 @@
     .gm-style-iw-ch{
       padding-top: 0px !important;
     }
+
+    .gm-style-iw-d {
+  max-height: none !important;
+}
+
   </style>
 </apex:component>

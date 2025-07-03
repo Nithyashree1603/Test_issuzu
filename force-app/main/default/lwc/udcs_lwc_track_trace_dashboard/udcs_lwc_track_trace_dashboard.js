@@ -319,6 +319,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
           this.template.querySelector(`[data-value="${temptrackingEvents_eventDetailsPanel[0].unique_key}"`).classList.add("SelectedTraceEvent");
         }
         this.prvSelectedTraceEvent = temptrackingEvents_eventDetailsPanel[0].unique_key;
+        console.log(this.prvSelectedTraceEvent)
       }
       this.trackingEventsHistory = [...trackingEventsHistory];
       this.uniqueEvents = [...this.uniqueEvents];
