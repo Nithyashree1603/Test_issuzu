@@ -339,13 +339,13 @@
         });
       });
       google.maps.event.addListener(map, "click", closeinfowindow);
-      google.maps.event.addListener(map, "click", ()=>{
-        for (let tempMarker of trace_history_markers) {
-            const el = tempMarker.content;
-            el.style.width = '20px';
-            el.style.height = '20px';
-        }
-      });
+      // google.maps.event.addListener(map, "click", ()=>{
+      //   for (let tempMarker of trace_history_markers) {
+      //       const el = tempMarker.content;
+      //       el.style.width = '20px';
+      //       el.style.height = '20px';
+      //   }
+      // });
       $("#btnReset").on("click", closeinfowindow);
       document.getElementById("map").addEventListener("wheel", function (event) {
         if (event.deltaY && event.deltaY < 0) {
@@ -538,10 +538,9 @@
         $("#eventsfilter").hide();
         $("#positionfilter").hide();
         trace_history_markers = [];
-         trackMarkersLoaded = false;
-          fitAllMarkersInMap();
-        // if (!isTraceOpen)
-          // clusterAllMarkers(all_markers);
+        if (!isTraceOpen && !isVehicleDetailsShowing) {
+          clusterAllMarkers(all_markers);
+        }
       } else if (receivedfromLWC.source == "defaultLocation") {
         currentUserCountry = receivedfromLWC.data.country;
       } else if (receivedfromLWC.source == "closeVehicleDetails") {
@@ -1115,7 +1114,7 @@
       $("#vehicleDetails").hide();
       isVehicleDetailsShowing = false;
       window.parent.postMessage({ source: "closeVehicleDetailsPanel" }, window.location.origin);
-      map.setZoom(13)
+      // map.setZoom(13)
       // for (let a of all_markers_map.keys()) {
       //   all_markers_map.get(a).setIcon(all_markers_map.get(a).icon);
       // }
@@ -1743,7 +1742,6 @@
         isDefaultLocationShown = true;
         utils.setCenter(currentUserCountry);
       }
-      // Work on this condition
       if (isVehicleDetailsShowing) {
         for (const vehicle of receivedfromLWC.data["{!$Label.ud_vehicles}"].Connected.vechicles) {
           if (vehicle.key === trackCurrentSelectedVehicle.key) {
@@ -1887,7 +1885,7 @@
           iconImg.style.width = `${size}px`;
           iconImg.style.height = `${size}px`;
           marker.content = iconImg;
-          map.setZoom(13);
+          // map.setZoom(13);
     });}
       return marker;
     }
@@ -1932,6 +1930,10 @@
       }
     }
     function clusterAllMarkers(all_markers) {
+      if (marker_Clusterer) {
+    marker_Clusterer.clearMarkers();
+    marker_Clusterer.setMap(null);
+  }
       const renderer = {
         render: ({ count, position }) => {
                 const size = count > 10 ? 43 : 35;
