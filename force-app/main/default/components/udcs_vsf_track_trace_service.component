@@ -516,6 +516,7 @@
         SelectedvehicleFilter = receivedfromLWC.data;
         trackMarkersLoaded = false;
         fitAllMarkersInMap();
+        clusterAllMarkers(all_markers);
         $("#vehicleDetails").hide();
         isVehicleDetailsShowing = false;
         if (isMobileClicked()) {
@@ -526,8 +527,8 @@
           marker_Clusterer.clearMarkers();
           marker_Clusterer = null;
           resetTrackMarkerSize(null, false);
-          clusterAllMarkers(all_markers);
         }
+        clusterAllMarkers(all_markers);
       } else if (receivedfromLWC.source == "showtrackMapMarkers") {
         isTraceOpen = false;
         clearGeofences();
@@ -539,6 +540,7 @@
         $("#positionfilter").hide();
         trace_history_markers = [];
         if (!isTraceOpen && !isVehicleDetailsShowing) {
+          fitAllMarkersInMap();
           clusterAllMarkers(all_markers);
         }
       } else if (receivedfromLWC.source == "defaultLocation") {
@@ -562,6 +564,7 @@
       } else if (receivedfromLWC.source == "hideeventdetailspanel") {
         document.querySelector(".evt_container").style.display = "none";
       } else if (receivedfromLWC.source == "closeCalandar") {
+
         $("#opened-modal").removeClass("trace_opened_model");
         $("#eventdetailspanel").hide();
         $("#calwidget").hide();
@@ -917,6 +920,7 @@
           $("#vehicleDetails").hide();
           isVehicleDetailsShowing = false;
           trackMarkersLoaded = false;
+                  if (!isTraceOpen)
           fitAllMarkersInMap();
           // togglechecked1 = true;
           vehiclestogglebutton.checked = true;

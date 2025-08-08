@@ -603,6 +603,7 @@ border: 1.5px white solid;
 .refresh-button {
   display: flex;
   padding-right: 35px;
+  align-items: "center";
 }
 
 .refresh-timing {
