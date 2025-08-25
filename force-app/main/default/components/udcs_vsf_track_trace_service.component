@@ -545,6 +545,10 @@
         }
       } else if (receivedfromLWC.source == "defaultLocation") {
         currentUserCountry = receivedfromLWC.data.country;
+        const geofenceValue = receivedfromLWC.data.featureVisibilityData.geofence;
+        window.dispatchEvent(new CustomEvent("geofenceUpdate", {
+        detail: { geofence: geofenceValue }
+        }));
       } else if (receivedfromLWC.source == "closeVehicleDetails") {
         $("#vehicleDetails").hide();
         isVehicleDetailsShowing = false;

@@ -1,4 +1,17 @@
 <apex:component >
+<script>
+  let geofenceValue;
+  document.addEventListener("DOMContentLoaded", () => {
+      window.addEventListener("geofenceUpdate", (event) => {
+          geofenceValue = event.detail.geofence;
+          const geofenceSection = document.getElementById("geofence-section");
+          if (geofenceSection) {
+              geofenceSection.style.display = geofenceValue ? "flex" : "none";
+          }
+
+      });
+  });
+</script>
   <head> </head>
   <div id="map"></div>
   <c:udcs_vsf_eventdetails_panel />
@@ -51,7 +64,7 @@
             <span class="slider round"></span>
           </label>
         </div>
-        <div class="line">
+        <div class="line" id="geofence-section" style="display:none;">
           <p>{!$Label.ud_geofences}</p>
           <p id="on2">On</p>
           <p id="off2">Off</p>

@@ -15,10 +15,12 @@ import { getLocalFormatedDate, setStyle, isDebugMode, static_resources, icons, l
 import udcs_flc_icons from "@salesforce/resourceUrl/udcs_flc_icons";
 import user_Info from "@salesforce/apex/udcs_apex_connect.userInfo";
 import { NavigationMixin } from "lightning/navigation";
+import { getFeatureVisibilityData } from "c/udcs_lwc_utils";
 
 const COMMON_TRIGER = ["MOVEMENT", "NO_MOVEMENT", "PERIODIC_WITH_ENGINE_ON"];
 
 export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(LightningElement) {
+  featureVisibilityData = getFeatureVisibilityData();
   assetsAPIReloadTime = "03:00";
   assetsAPIReloadTimeInterval = undefined;
   shortID = null;
@@ -1240,7 +1242,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     let result = this.action_data[0];
     if (result.status === "fulfilled") {
       this.currentMarket = getCountryName(result.value.currentMarketName);
-      this.postMessages("defaultLocation", { country: this.currentMarket });
+      this.postMessages("defaultLocation", { country: this.currentMarket, featureVisibilityData: this.featureVisibilityData});
     } else {
       this.logToConsoleError(result.reason);
     }
