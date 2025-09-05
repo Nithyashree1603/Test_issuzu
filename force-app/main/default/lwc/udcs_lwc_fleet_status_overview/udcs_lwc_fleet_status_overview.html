@@ -229,14 +229,20 @@
                                             </template>
                                         </td>
                                         <td class="showaddress">
-                                            <template if:true={vh.showAddress}>
+                                            <template if:true={vh.isLoading}> 
+                                                <div class="cell-spinner">
+                                                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                                                </div>                                            </template> 
+                                            <template if:false={vh.isLoading}>
+                                              <template if:true={vh.showAddress}>
                                                 <span class="reverseaddress" data-value={vh.location}
                                                     data-key={vh.spanKey}>
                                                     {vh.reverseGeoAddress}
                                                 </span>
-                                            </template>
+                                              </template>
                                             <template if:false={vh.showAddress}>
                                                 -
+                                            </template>
                                             </template>
                                         </td>
                                         <!-- <td>

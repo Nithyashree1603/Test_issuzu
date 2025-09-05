@@ -18,7 +18,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
   allTrackEventsData;
   allTrackEvents_Export = [];
   totalItems = 0;
-  pageSize = 50;
+  pageSize = 10;
   enablePrv = false;
   enableNxt = false;
   labelName = "";
@@ -136,6 +136,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
   displayData() {
     if (this.totalNumberOfPages !== 0) {
       this.resetSort();
+      this.reverseGeoAddress();
       this.selectedRows = this.datamap[this.currentPage].data;
       console.log("this.selectedRows", this.selectedRows);
       this.sortingWithEmpty(this.selectedRows, this.ascending1, "chassisNumber");
@@ -195,7 +196,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
       if (temp.registrationNumber && temp.registrationNumber.trim() === "") {
         temp.registrationNumber = "-";
       }
-
+      temp.isLoading = true;
       temp.reverseGeoAddress = "";
       temp.showAddress = temp.location.indexOf("undefined") === -1;
       if (temp.icon === "NoData") {
@@ -216,6 +217,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
     this.allTrackEventsData = sampleArray;
     this.totalItems = this.allTrackEventsData.length;
     this.utility(sampleArray);
+    this.reverseGeoAddress();
     this.selectedRows = this.totalItems !== 0 ? this.datamap[1].data : [];
     this.labelName = this.totalItems !== 0 ? this.datamap[1].labelName : "";
     this.filteredRows = this.datamap;
@@ -236,20 +238,55 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
       }
       a.enginehours = isNaN(a.enginehours) ? "-" : hours + ":" + minutes;
     }
-
     this.timezone = dateUtil.getUtcOffset();
-
-    this.reverseGeoAddress();
   }
-
-  reverseGeoAddress() {
-    // this.reverseGeoAddressObj={}
-    (async () => {
-      for (let temp of this.allTrackEventsData) {
+ async reverseGeoAddressSearch(){
+      let i = 0;
+      while (i<this.selectedRows.length) {
+        let temp = this.selectedRows[i];
         if (temp.showAddress) {
           temp.key += "a";
+          temp.isLoading = true;
           if (this.reverseGeoAddressObj[temp.location]) {
             temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
+            temp.isLoading = false;
+            i++;
+            continue;
+          }
+          await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
+          let result = this.action_data[0];
+          if (result.status === "fulfilled") {
+            result = result.value;
+            console.log("resuly called here", JSON.stringify(result))
+            try {
+              temp.isLoading = false;
+              let address = result.results[0].formatted_address;
+              temp.reverseGeoAddress = address;
+              this.reverseGeoAddressObj[temp.location] = address;
+            } catch (e) {
+              temp.isLoading = false;
+              temp.reverseGeoAddress = "Address Not Found";
+              this.reverseGeoAddressObj[temp.location] = "Address Not Found";
+            }
+          } else {
+            console.log(result.reason);
+          }
+        }
+        i++;
+      }
+  }
+  async reverseGeoAddress() {
+      let start = (this.currentPage-1)*10+1;
+      let i = start;
+      while (i<start+this.pageSize) {
+        let temp = this.allTrackEventsData[i];
+        if (temp.showAddress) {
+          temp.key += "a";
+          temp.isLoading = true;
+          if (this.reverseGeoAddressObj[temp.location]) {
+            temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
+            temp.isLoading = false;
+            i++;
             continue;
           }
           // eslint-disable-next-line no-await-in-loop
@@ -259,10 +296,12 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
             result = result.value;
 
             try {
+              temp.isLoading = false;
               let address = result.results[0].formatted_address;
               temp.reverseGeoAddress = address;
               this.reverseGeoAddressObj[temp.location] = address;
             } catch (e) {
+              temp.isLoading = false;
               temp.reverseGeoAddress = "Address Not Found";
               this.reverseGeoAddressObj[temp.location] = "Address Not Found";
             }
@@ -270,13 +309,13 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
             console.log(result.reason);
           }
         }
+        i++;
       }
       let tempSelectedRows = [];
       for (let a of this.selectedRows) {
         tempSelectedRows.push(a);
       }
       this.selectedRows = tempSelectedRows;
-    })();
   }
 
   renderedCallback() {}
@@ -370,7 +409,6 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
         }
       }
     }
-    this.reverseGeoAddress();
   }
 
   trackDataSearch() {
@@ -391,7 +429,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
           this.selectedRows.push(this.allTrackEventsData[i]);
         }
       }
-
+      this.reverseGeoAddressSearch(this.selectedRows);
       this.totalItems = this.selectedRows.length;
       this.utility(this.selectedRows);
       this.selectedRows = this.totalItems !== 0 ? this.datamap[1].data : [];
@@ -570,7 +608,6 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
     }
   }
 
-  //Default Utility function for development
   logToConsoleInfo(message) {
     if (isDebugMode) {
       console.log(message);
