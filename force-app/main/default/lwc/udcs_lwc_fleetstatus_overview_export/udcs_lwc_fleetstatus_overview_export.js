@@ -5,7 +5,7 @@ import { loadScript } from "lightning/platformResourceLoader";
 import user_Info from "@salesforce/apex/udcs_apex_connect.userInfo";
 import label from "./udcs_lwc_fleetstatus_overview_export_translation";
 import { executeParallelActions } from "c/udcs_lwc_ui_service";
-import { dateUtil, libraries } from "c/udcs_lwc_utils";
+import { dateUtil, libraries, sendEventToGA4 } from "c/udcs_lwc_utils";
 
 const NUM_COLUMNS = 15;
 
@@ -36,6 +36,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
     this.timezone = dateUtil.getUtcOffset();
   }
   download() {
+    sendEventToGA4("Download Fleet Status Overview");
     try {
       this.isLoaded = true;
       setTimeout(() => {

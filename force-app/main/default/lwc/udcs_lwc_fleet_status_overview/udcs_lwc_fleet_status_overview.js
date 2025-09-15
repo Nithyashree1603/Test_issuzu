@@ -3,7 +3,7 @@ import parseJSONResponse from "@salesforce/apex/udcs_apex_reversegeo_api_call.pa
 import label from "./udcs_lwc_fleet_status_overview_translation";
 import { executeParallelActions } from "c/udcs_lwc_ui_service";
 import { loadScript } from "lightning/platformResourceLoader";
-import { dateUtil, isDebugMode, setStyle, icons, libraries, getLocalFormatedDateTimeInHH } from "c/udcs_lwc_utils";
+import { dateUtil, isDebugMode, setStyle, icons, libraries, getLocalFormatedDateTimeInHH, sendEventToGA4 } from "c/udcs_lwc_utils";
 
 export default class Udcs_lwc_fleet_status_overview extends LightningElement {
   @track
@@ -160,6 +160,7 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
   }
 
   openModal() {
+    sendEventToGA4("Fleet Status Overview from MAP screen");
     this.getLoad = false;
     // eslint-disable-next-line @lwc/lwc/no-async-operation
     setTimeout(() => {

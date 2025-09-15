@@ -11,7 +11,7 @@ import getTrackingEventsHistorynew from "./udcs_lwc_track_trace_dashboard_trace"
 import getActiveGeofenceForFleet from "@salesforce/apex/udcs_apex_geo_fence.getActiveGeofenceForFleet";
 import getActiveGeofenceForVehicle from "@salesforce/apex/udcs_apex_geo_fence.getActiveGeofenceForVehicle";
 import { executeParallelActions, executeParallelActionsNew, executeAction } from "c/udcs_lwc_ui_service";
-import { getLocalFormatedDate, setStyle, isDebugMode, static_resources, icons, libraries, getCountryName, mobileDeviceCheck, stringUtils } from "c/udcs_lwc_utils";
+import { getLocalFormatedDate, setStyle, isDebugMode, static_resources, icons, libraries, getCountryName, mobileDeviceCheck, stringUtils, sendEventToGA4 } from "c/udcs_lwc_utils";
 import udcs_flc_icons from "@salesforce/resourceUrl/udcs_flc_icons";
 import user_Info from "@salesforce/apex/udcs_apex_connect.userInfo";
 import { NavigationMixin } from "lightning/navigation";
@@ -362,6 +362,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       await this.loadLocation();
       loadAssetData(this);
     } else if (message.data.source === "showtracehistory") {
+      sendEventToGA4("Trace History from MAP screen");
       try {
         clearInterval(this._interval);
       } catch (error) {
@@ -1116,6 +1117,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
   }
 
   async handleExport() {
+    sendEventToGA4("Download Trace History report");
     if (!this.isTraceExport) {
       return;
     }
