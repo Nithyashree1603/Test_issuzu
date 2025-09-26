@@ -1288,7 +1288,7 @@
             continue;
           }
           const isMoving = vStatus === "Moving";
-          const size = isMoving ? 50 : 30;
+          const size = isMoving ? 60 : 30;
           const el = tempMarker.content
           el.width = size;
           el.height = size;
@@ -1297,7 +1297,7 @@
       }
     }
     function addPositionToMap(position, urlIcon, direction_icon) { 
-      const size = direction_icon ? 50 : 30;
+      const size = direction_icon ? 60 : 30;
       const markerImage = document.createElement("img");
       markerImage.src = urlIcon;
       markerImage.style.width = `${size}px`;
@@ -1847,8 +1847,8 @@
             infoWindow.setContent(infowindowcontent);
             infoWindow.setOptions({});
             const svgUrl = tracksvgIconsZoom[icon]; 
-            const isMoving = icon.includes("Moving");
-            const size = isMoving ? 90 : (tracksvgIconsZoomSize || 60);
+            const isMoving = icon.startsWith("Moving");
+            const size = isMoving ? 95 : (tracksvgIconsZoomSize || 60);
             const iconImg = document.createElement("img");
             iconImg.src = svgUrl;
             iconImg.style.width = `${size}px`;
@@ -1863,8 +1863,8 @@
           // iconImg.style.width = `30px`;
           // iconImg.style.height = `30px`;
            const svgUrl = tracksvgIconsZoom[icon]; 
-            const isMoving = icon.includes("Moving");
-            const size = isMoving ? 50 : 30;
+            const isMoving = icon.startsWith("Moving");
+            const size = isMoving ? 60 : 30;
             const iconImg = document.createElement("img");
             iconImg.src = svgUrl;
             iconImg.style.width = `${size}px`;
