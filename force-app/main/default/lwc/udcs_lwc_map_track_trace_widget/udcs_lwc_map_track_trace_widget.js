@@ -27,7 +27,7 @@ export default class Udcs_lwc_map_track_trace_widget extends LightningElement {
         detail: "Map Dashboard"
       })
     );
-    sendEventToGA4("Track & Trace from Dashboard");
+    // sendEventToGA4("Track & Trace from Dashboard");
   }
 
   async connectedCallback() {
