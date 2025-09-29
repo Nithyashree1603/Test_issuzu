@@ -603,6 +603,10 @@
         }
       } else if (receivedfromLWC.source == "vehicledashboardsidebar") {
         cameFrom = receivedfromLWC.cameFrom;
+        if (map.getStreetView().getVisible()) {
+          map.getStreetView().setVisible(false); 
+        }
+
         if (isMobileClicked()) {
           document.querySelector(".close_button").classList.add("hidden");
           document.querySelector(".back_button").classList.remove("hidden");
