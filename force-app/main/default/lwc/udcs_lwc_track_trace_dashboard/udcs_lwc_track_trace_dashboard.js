@@ -195,9 +195,8 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
         if (cat.show === true) {
           cat.vechicles.map((vehicle) => {
             vehicle.show =
-              this.isJS && vehicle.RegistrationNumber != null
-                ? vehicle.RegistrationNumber?.toUpperCase()?.trim()?.indexOf(this.SearchText) > -1
-                : vehicle.RegistrationNumber?.toUpperCase()?.trim()?.indexOf(this.SearchText) > -1 ||
+              vehicle.RegistrationNumber != null &&
+                vehicle.RegistrationNumber?.toUpperCase()?.trim()?.indexOf(this.SearchText) > -1 ||
                   (vehicle.ChassisSeries + "-" + vehicle.ChassisNumber)?.toUpperCase()?.trim()?.indexOf(this.SearchText) > -1 ||
                   vehicle.truckId?.toUpperCase()?.trim()?.indexOf(this.SearchText) > -1;
 
