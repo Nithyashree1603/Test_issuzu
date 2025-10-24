@@ -11,11 +11,13 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
   label = label;
   icons = icons;
   libraries = libraries;
+  iconSrc = icons.common.export.turquoise;
   action_data = [];
   inputTextbox_placeholder = label.lbl_reg_no + " / " + label.lbl_chassisid + " / " + label.lbl_ud_TruckID + " / " + label.lbl_ud_driver;
   @api
   allTrackEvents;
   allTrackEventsData;
+  @api
   allTrackEvents_Export = [];
   totalItems = 0;
   pageSize = 10;
@@ -43,6 +45,26 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
   timezone = "";
   @track getLoad = true;
   @track isModalOpen = false;
+
+  calldownload() {
+    const exportButton = this.template.querySelector(".export-button");
+    const exportText = this.template.querySelector(".export_text");
+    if (exportButton && exportText) {
+        exportButton.classList.add('gray');
+        exportText.classList.add('gray');
+        this.iconSrc = icons.common.export.light_gray;
+    }
+    this.reverseGeoAddressAll().then(() => {
+      const childComponent = this.template.querySelector("c-udcs_lwc_fleetstatus_overview_export");
+      if (childComponent) {
+        childComponent.download();
+      }
+      if (exportButton && exportText) {
+            exportButton.classList.remove('gray');
+            exportText.classList.remove('gray');
+      this.iconSrc = icons.common.export.turquoise;        }
+    });
+  }
 
   showExport() {
     setStyle(this.template.querySelector(".head-right-export"), "toggleClass", "show");
@@ -187,8 +209,6 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
 
   async connectedCallback() {
     await Promise.allSettled([loadScript(this, this.libraries.moment.v1_0)]);
-
-    this.showExport();
     let sampleArray = [];
     for (let temp of JSON.parse(JSON.stringify(this.allTrackEvents))) {
       if (temp.registrationNumber === undefined) {
@@ -241,85 +261,125 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
     }
     this.timezone = dateUtil.getUtcOffset();
   }
- async reverseGeoAddressSearch(){
-      let i = 0;
-      while (i<this.selectedRows.length) {
-        let temp = this.selectedRows[i];
-        if (temp.showAddress) {
-          temp.key += "a";
-          temp.isLoading = true;
-          if (this.reverseGeoAddressObj[temp.location]) {
-            temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
-            temp.isLoading = false;
-            i++;
-            continue;
-          }
-          await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
-          let result = this.action_data[0];
-          if (result.status === "fulfilled") {
-            result = result.value;
-            console.log("resuly called here", JSON.stringify(result))
-            try {
-              temp.isLoading = false;
-              let address = result.results[0].formatted_address;
-              temp.reverseGeoAddress = address;
-              this.reverseGeoAddressObj[temp.location] = address;
-            } catch (e) {
-              temp.isLoading = false;
-              temp.reverseGeoAddress = "Address Not Found";
-              this.reverseGeoAddressObj[temp.location] = "Address Not Found";
-            }
-          } else {
-            console.log(result.reason);
-          }
+  async reverseGeoAddressSearch() {
+    let i = 0;
+    while (i < this.selectedRows.length) {
+      let temp = this.selectedRows[i];
+      if (temp.showAddress) {
+        temp.key += "a";
+        temp.isLoading = true;
+        if (this.reverseGeoAddressObj[temp.location]) {
+          temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
+          temp.isLoading = false;
+          i++;
+          continue;
         }
-        i++;
+        await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
+        let result = this.action_data[0];
+        if (result.status === "fulfilled") {
+          result = result.value;
+          console.log("resuly called here", JSON.stringify(result))
+          try {
+            temp.isLoading = false;
+            let address = result.results[0].formatted_address;
+            temp.reverseGeoAddress = address;
+            this.reverseGeoAddressObj[temp.location] = address;
+          } catch (e) {
+            temp.isLoading = false;
+            temp.reverseGeoAddress = "Address Not Found";
+            this.reverseGeoAddressObj[temp.location] = "Address Not Found";
+          }
+        } else {
+          console.log(result.reason);
+        }
       }
+      i++;
+    }
   }
   async reverseGeoAddress() {
-      let start = (this.currentPage-1)*10+1;
-      let i = start;
-      while (i<start+this.pageSize) {
-        let temp = this.allTrackEventsData[i];
-        if (temp.showAddress) {
-          temp.key += "a";
-          temp.isLoading = true;
-          if (this.reverseGeoAddressObj[temp.location]) {
-            temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
+    let start = (this.currentPage - 1) * 10 + 1;
+    let i = start;
+    while (i < start + this.pageSize) {
+      let temp = this.allTrackEventsData[i];
+      if (temp.showAddress) {
+        temp.key += "a";
+        temp.isLoading = true;
+        if (this.reverseGeoAddressObj[temp.location]) {
+          temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
+          temp.isLoading = false;
+          i++;
+          continue;
+        }
+        // eslint-disable-next-line no-await-in-loop
+        await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
+        let result = this.action_data[0];
+        if (result.status === "fulfilled") {
+          result = result.value;
+
+          try {
             temp.isLoading = false;
-            i++;
-            continue;
+            let address = result.results[0].formatted_address;
+            temp.reverseGeoAddress = address;
+            this.reverseGeoAddressObj[temp.location] = address;
+          } catch (e) {
+            temp.isLoading = false;
+            temp.reverseGeoAddress = "Address Not Found";
+            this.reverseGeoAddressObj[temp.location] = "Address Not Found";
           }
-          // eslint-disable-next-line no-await-in-loop
+        } else {
+          console.log(result.reason);
+        }
+      }
+      i++;
+    }
+    let tempSelectedRows = [];
+    for (let a of this.selectedRows) {
+      tempSelectedRows.push(a);
+    }
+    this.selectedRows = tempSelectedRows;
+  }
+
+  async reverseGeoAddressAll() {
+    let i = 0;
+    let newArray = [];
+
+    while (i < this.allTrackEventsData.length) {
+      let temp = this.allTrackEventsData[i];
+      if (temp.showAddress) {
+        temp.key += "a";
+        temp.isLoading = true;
+        if (this.reverseGeoAddressObj[temp.location]) {
+          temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
+          temp.isLoading = false;
+          newArray.push({ ...temp });
+          // Only increment i here, as we've processed this item
+        } else {
           await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
           let result = this.action_data[0];
           if (result.status === "fulfilled") {
             result = result.value;
-
             try {
               temp.isLoading = false;
               let address = result.results[0].formatted_address;
               temp.reverseGeoAddress = address;
               this.reverseGeoAddressObj[temp.location] = address;
+              newArray.push({ ...temp });
             } catch (e) {
               temp.isLoading = false;
               temp.reverseGeoAddress = "Address Not Found";
               this.reverseGeoAddressObj[temp.location] = "Address Not Found";
+              newArray.push({ ...temp });
             }
           } else {
             console.log(result.reason);
+            newArray.push({ ...temp, reverseGeoAddress: "Address Not Found" });
           }
         }
-        i++;
       }
-      let tempSelectedRows = [];
-      for (let a of this.selectedRows) {
-        tempSelectedRows.push(a);
-      }
-      this.selectedRows = tempSelectedRows;
+      i++;
+    }
+    this.allTrackEvents_Export = newArray;
   }
-
-  renderedCallback() {}
 
   @api
   updateAssetsData(allTrackEvents) {

@@ -16,7 +16,7 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
   timezone = "";
   label = label;
   isLoaded = false;
-  @track xlsData = []; // store all tables data
+  @track xlsData = []; 
   @api allTrackEvents = [];
   action_data = [];
 
@@ -35,7 +35,10 @@ export default class Udcs_lwc_fleetstatus_overview_export extends LightningEleme
 
     this.timezone = dateUtil.getUtcOffset();
   }
+
+  @api
   download() {
+    console.log("download called")
     sendEventToGA4("Download Fleet Status Overview");
     try {
       this.isLoaded = true;

@@ -49,15 +49,16 @@
                             <div class="export-button" onclick={showExport}>
                                 <div class="backdrop" onclick={closeDrop}></div>
                                 <div class="head2-right-icon">
-                                    <img src={icons.common.export.turquoise} width="20" height="17" alt=""></img>
+                                    <img src={iconSrc} width="20" height="17" alt="" />
                                 </div>
                                 <div class="head2-right-text export_text">{label.lbl_ud_export}</div>
 
                                 <div class="head-right-export">
-                                    <div>
+                                    <div class="child-comp">
                                         <c-udcs_lwc_fleetstatus_overview_export all-track-events={allTrackEvents_Export}>
                                         </c-udcs_lwc_fleetstatus_overview_export>
                                     </div>
+                                      <p class="excelbtn" onclick={calldownload}>{label.lbl_excel}</p>
                                     <div class="triangle"></div>
                                 </div>
                             </div>

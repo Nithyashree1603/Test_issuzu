@@ -20,6 +20,7 @@ import lbl_ud_export from "@salesforce/label/c.ud_export";
 import lbl_ud_placeholder from "@salesforce/label/c.ud_VehicleIdTruckIdDriver";
 import lbl_ud_h from "@salesforce/label/c.ud_h";
 import lbl_ud_vehicle_group from "@salesforce/label/c.ud_vehicle_group";
+import lbl_excel from "@salesforce/label/c.ud_excel";
 
 export default {
   lbl_ud_vehicle_group,
@@ -32,6 +33,7 @@ export default {
   lbl_adbluelevel_pr,
   lbl_speed_km_h,
   // lbl_ud_enginehours,
+  lbl_excel,
   lbl_UD_Enginehours_hh_mm,
   lbl_vehiclestatus,
   lbl_location,
