@@ -48,10 +48,12 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
 
   calldownload() {
     const exportButton = this.template.querySelector(".export-button");
+    const excelButton = this.template.querySelector(".head-right-export");
     const exportText = this.template.querySelector(".export_text");
     if (exportButton && exportText) {
         exportButton.classList.add('gray');
         exportText.classList.add('gray');
+        excelButton.classList.add('hide');
         this.iconSrc = icons.common.export.light_gray;
     }
     this.reverseGeoAddressAll().then(() => {
@@ -62,6 +64,9 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
       if (exportButton && exportText) {
             exportButton.classList.remove('gray');
             exportText.classList.remove('gray');
+                    excelButton.classList.remove('hide');
+                    excelButton.classList.remove('show');
+
       this.iconSrc = icons.common.export.turquoise;        }
     });
   }
@@ -246,18 +251,20 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
       a.driverName = a.driverName === "-" ? `${label.lbl_ud_UnknownDriver}` : a.driverName;
       a.groupName = a.groupName ? a.groupName : "-";
       a.enginehours = parseFloat(a.enginehours);
-      let hours = Math.floor(a.enginehours / 3600);
-      let minutes = Math.floor((a.enginehours % 3600) / 60);
-      if (hours == "0") {
-        hours = "00";
-      } else if (hours <= "9" && hours > "0") {
-        hours = "0" + hours;
-      } else if (hours == "undefined" || hours == "-") {
-        hours = "-";
-      } else {
-        hours = "" + hours;
-      }
-      a.enginehours = isNaN(a.enginehours) ? "-" : hours + ":" + minutes;
+     let hours = Math.floor(a.enginehours / 3600);
+let minutes = Math.floor((a.enginehours % 3600) / 60);
+let seconds = Math.floor(a.enginehours % 60);
+
+if (isNaN(a.enginehours) || a.enginehours === undefined || a.enginehours === "-") {
+  a.enginehours = "-";
+} else {
+  hours = hours < 10 ? "0" + hours : "" + hours;
+  minutes = minutes < 10 ? "0" + minutes : "" + minutes;
+  seconds = seconds < 10 ? "0" + seconds : "" + seconds;
+
+  a.enginehours = `${hours}:${minutes}:${seconds}`;
+}
+
     }
     this.timezone = dateUtil.getUtcOffset();
   }
