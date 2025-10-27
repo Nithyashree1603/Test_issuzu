@@ -401,8 +401,8 @@
           data = temp.get("Total Engine Hours");
           if (data) {
             let evd_temp = data.itemValue.split(":");
-            if (evd_temp?.length == 2) {
-              evd_temp = evd_temp[0] + "{!$Label.ud_h} " + evd_temp[1] + "m";
+            if (evd_temp?.length >= 2) {
+    evd_temp = evd_temp[0] + "{!$Label.ud_h} " + evd_temp[1] + "m " + (evd_temp[2] ?? 0) + "s";
               $("#evt_TotalEngineHours").text(evd_temp);
             } else {
               $("#evt_TotalEngineHours").text("-");
@@ -756,18 +756,19 @@
         }
         try {
           let evd_temp = parseFloat(vehicledata.enginehours);
-          let hours = Math.floor(evd_temp / 3600);
-          let minutes = Math.floor((evd_temp % 3600) / 60);
-          if (hours == "0") {
-            hours = "00";
-          } else if (hours <= "9" && hours > "0") {
-            hours = "0" + hours;
-          } else if (hours == "undefined" || hours == "-") {
-            hours = "-";
-          } else {
-            hours = "" + hours;
-          }
-          evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m";
+let hours = Math.floor(evd_temp / 3600);
+let minutes = Math.floor((evd_temp % 3600) / 60);
+let seconds = Math.floor(evd_temp % 60);
+if (hours == "0") {
+  hours = "00";
+} else if (hours <= "9" && hours > "0") {
+  hours = "0" + hours;
+} else if (hours == "undefined" || hours == "-") {
+  hours = "-";
+} else {
+  hours = "" + hours;
+}
+evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + seconds + "s";
           $("#evd_totalEngineHours").text(evd_temp);
         } catch (error) {
           $("#evd_totalEngineHours").text("-");
@@ -1247,6 +1248,7 @@
         let evd_temp = parseFloat(temp.get("lovEngineTime"));
         let hours = Math.floor(evd_temp / 3600);
         let minutes = Math.floor((evd_temp % 3600) / 60);
+        let seconds = Math.floor(evd_temp % 60); 
         if (hours == "0") {
           hours = "00";
         } else if (hours <= "9" && hours > "0") {
@@ -1256,7 +1258,15 @@
         } else {
           hours = "" + hours;
         }
-        evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m";
+        if (minutes <= 9) {
+          minutes = "0" + minutes;
+        }
+        if (seconds <= 9) {
+          seconds = "0" + seconds; 
+        } else {
+          seconds = "" + seconds; 
+        }
+evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + seconds + "s";
         $("#lovEngineTime").text(evd_temp);
       } catch (error) {
         $("#lovEngineTime").text("-");
