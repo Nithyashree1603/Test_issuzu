@@ -30,6 +30,7 @@ async function loadAssetData(that) {
   let result = that.action_data[0];
   if (result.status === "fulfilled") {
     let assetsObj = vehicleDataTransform(result);
+    console.log("assetsObj", JSON.stringify(assetsObj));
     that.categories = [{ name: label.lbl_vehicles, count: assetsObj.length }];
     that.categoryvehicles[label.lbl_vehicles].Connected.vechicles.length = 0;
     let groups = new Set();
@@ -74,6 +75,10 @@ async function loadAssetData(that) {
         try {
           icon = that.getVehicleStatus(triggerType, ignitionStatus, hours, speed);
         } catch (error) {
+          icon = "NoData";
+        }
+
+        if (that.isJS && (["05", "16"].includes(vehicle.ProductClass))) {
           icon = "NoData";
         }
         vehicle.heading_translated = heading_translated;
