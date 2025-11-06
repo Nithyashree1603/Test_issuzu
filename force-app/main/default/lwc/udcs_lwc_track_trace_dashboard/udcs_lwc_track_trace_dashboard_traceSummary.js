@@ -22,7 +22,7 @@ function traceSummary(that, result) {
   data = temp.get("Total Engine Hours");
   if (data) {
     let evd_temp = data.itemValue.split(":");
-    evd_temp = evd_temp[0] + "h " + evd_temp[1] + "m" + evd_temp[2] + "s";
+    evd_temp = evd_temp[0] + "h " + evd_temp[1] + "m";
     that.summaryTotalEH = evd_temp;
   } else {
     that.summaryTotalEH = "-";

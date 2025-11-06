@@ -578,7 +578,3 @@ td :nth-child(5) {
     color: #cccccc;  
     border-color: #cccccc;  
 }
-
-.hide{
-  visibility: hidden;
-}
