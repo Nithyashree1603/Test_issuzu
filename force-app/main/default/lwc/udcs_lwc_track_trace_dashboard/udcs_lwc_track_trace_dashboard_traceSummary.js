@@ -6,7 +6,7 @@ function traceSummary(that, result) {
   let data = temp.get("Distance Covered");
   if (data) {
     let evd_temp = parseFloat(data.itemValue).toFixed(2);
-    evd_temp = isNaN(evd_temp) ? "-" : evd_temp.toLocaleString() + ` km`; //data.measurementSystem
+    evd_temp = isNaN(evd_temp) ? "-" : evd_temp.toLocaleString() + data.measurementSystem
     that.summaryDistanceCovered = evd_temp;
   } else {
     that.summaryDistanceCovered = "-";
@@ -14,15 +14,14 @@ function traceSummary(that, result) {
   data = temp.get("Total Fuel Consumed");
   if (data) {
     let evd_temp = parseFloat(data.itemValue).toFixed(2);
-    evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + ` L`; //data.measurementSystem
+    evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + data.measurementSystem
     that.summaryTotalFuelConsumed = evd_temp;
   } else {
     that.summaryTotalFuelConsumed = "-";
   }
   data = temp.get("Total Engine Hours");
   if (data) {
-    let evd_temp = data.itemValue.split(":");
-    evd_temp = evd_temp[0] + "h " + evd_temp[1] + "m" + evd_temp[2] + "s";
+    let evd_temp = data.itemValue + data.measurementSystem;
     that.summaryTotalEH = evd_temp;
   } else {
     that.summaryTotalEH = "-";
@@ -30,7 +29,7 @@ function traceSummary(that, result) {
   data = temp.get("Total Fuel Efficiency");
   if (data) {
     let evd_temp = parseFloat(data.itemValue).toFixed(2);
-    evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + ` km/L`; //data.measurementSystem);
+    evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + data.measurementSystem;
     that.summaryTotalFE = evd_temp;
   } else {
     that.summaryTotalFE = "-";
@@ -39,7 +38,7 @@ function traceSummary(that, result) {
   data = temp.get("Maximum Speed");
   if (data) {
     let evd_temp = parseFloat(data.itemValue).toFixed(0);
-    evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + ` km/h`; // data.measurementSystem
+    evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + data.measurementSystem; 
     that.summaryMaximumSpeed = evd_temp;
   } else {
     that.summaryMaximumSpeed = "-";

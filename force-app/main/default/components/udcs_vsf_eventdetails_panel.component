@@ -84,7 +84,7 @@
                   <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/speed_dark_gray_fill.svg')}" />
                 </div>
                 <blockquote class="tooltiptext1">{!$Label.ud_speed}</blockquote>
-                <div class="content-section-text" id="speed">-</div>
+                <div class="content-section-text" id="speedKilometersPerHour">-</div>
                 <blockquote class="tooltiptext1">{!$Label.ud_speed}</blockquote>
               </div>
               <div class="left-content-section">
@@ -92,7 +92,7 @@
                   <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/fuel_level_dark_gray_fill.svg')}" />
                 </div>
                 <blockquote class="tooltiptext1">{!$Label.ud_fuellevel_pr}</blockquote>
-                <div class="content-section-text" id="totalFuelLevel">-</div>
+                <div class="content-section-text" id="totalFuelLevelDieselPercent">-</div>
                 <blockquote class="tooltiptext1">{!$Label.ud_fuellevel_pr}</blockquote>
               </div>
               <div class="left-content-section">
@@ -118,7 +118,7 @@
                   <img src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/engine_hours_dark_gray_fill.svg')}" />
                 </div>
                 <blockquote class="tooltiptext1">{!$Label.ud_Enginehours_hhmm}</blockquote>
-                <div class="content-section-text" id="lovEngineTime">-</div>
+                <div class="content-section-text" id="lovEngineTimeSeconds">-</div>
                 <blockquote class="tooltiptext1">{!$Label.ud_Enginehours_hhmm}</blockquote>
               </div>
               <div class="left-content-section">

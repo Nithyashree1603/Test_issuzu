@@ -7,7 +7,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
   
       udcs_apex_request_params requestParams = new udcs_apex_request_params();
       string requestBody;
-      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACESUMMARYV2);
+      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACESUMMARYV3);
       requestBody =
         '{"mapScreen": true,"rangeType": "' +
         rangeType +
@@ -34,7 +34,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
     public static string getTraceSummaryNew(String reqBody) {
       udcs_apex_request_params requestParams = new udcs_apex_request_params();
   
-      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACESUMMARY);
+      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACESUMMARYV3);
       requestParams.Method = 'POST';
       requestParams.Accept = '*/*';
       requestParams.ContentType = 'application/vnd.com.ud.cs.trackingandutilization-repository.TraceSummaryRequest.v1.0+json';
@@ -103,14 +103,14 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
         '","timeType": "TRIGGER_TIME",' +
         '"fuelType": "DIESEL",' +
         '"sort": "DESC",' +
-        '"dataItemNames": ["adBlueLevel","totalFuelLevel","totalConsumption","lovEngineTime","lovVehicleDistance","speed","adBlueLevelLowIndicator"],' +
+        '"dataItemNames": ["adBlueLevel","totalFuelLevel","totalConsumption","lovEngineTime","lovVehicleDistance","speed","adBlueLevelLowIndicator","location","position","wiperIndicator","fuelLevelChangedWhileStopped"],' +
         '"triggerTypes":' +
         triggerTypes +
         ',"pagination": {"limit": 5000,"offset": "' +
         offset +
         '","totalCount": 0}}';
   
-      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACKINGEVENTSHISTORYV2);
+      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACKINGEVENTSHISTORYV3);
       requestParams.Method = 'POST';
       requestParams.Body = requestBody;
       // requestParams.Token = InitialAccessToken;
@@ -199,7 +199,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
       System.debug('>>>>>>>>>>>> ' + requestBody);
   
       requestParams.Body = requestBody;
-      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACKINGEVENTSHISTORYREPORTV2); //'https://qa.api.telematics.udtrucks.com/trackingEvents/trackingEventsHistoryReport';
+      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACKINGEVENTSHISTORYREPORTV3); //'https://qa.api.telematics.udtrucks.com/trackingEvents/trackingEventsHistoryReport';
       requestParams.ContentType = 'application/json';
       requestParams.Token = initialAccessToken;
       requestParams.Method = 'POST';
@@ -213,7 +213,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
     public static string getTnuOdometer(String userTimezone, String chassisId) {
       udcs_apex_request_params requestParams = new udcs_apex_request_params();
   
-      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TNUODOMETERE) + chassisId + '?userTimezone=' + userTimezone;
+      requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TNUODOMETEREV3) + chassisId + '?userTimezone=' + userTimezone;
       requestParams.Method = 'GET';
       requestParams.Accept = '*/*';
       requestParams.Token = null;

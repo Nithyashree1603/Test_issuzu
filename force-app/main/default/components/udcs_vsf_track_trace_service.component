@@ -1166,8 +1166,8 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
       }
       sendTraceSelectedMarkerInfoToLWC = true;
       $("#eventtitle").text(eventData.triggerType_trl);
-      if (eventData.position != undefined && eventData.position.latitude != undefined) {
-        focusMarker(parseFloat(eventData.position.latitude), parseFloat(eventData.position.longitude));
+      if (eventData.position != undefined && eventData.position.x != undefined) {
+        focusMarker(parseFloat(eventData.position.x), parseFloat(eventData.position.y));
         if (isTraceLoadingFirstTime) {
           isTraceLoadingFirstTime = false;
           map.fitBounds(newBoundarytrace);
@@ -1186,16 +1186,16 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
           $("#altitude").text("-");
           console.log(error);
         }
-        $("#latlng").text(eventData.position.latitude + "," + eventData.position.longitude);
-        if (isNaN(eventData.position.latitude) || isNaN(eventData.position.longitude)) {
+        $("#latlng").text(eventData.position.x + "," + eventData.position.y);
+        if (isNaN(eventData.position.x) || isNaN(eventData.position.y)) {
           $("#latlng").text("-");
         }
         $("#heading").text(eventData.heading_translated || "");
         try {
           const geocoder = new google.maps.Geocoder();
           const latlng = {
-            lat: parseFloat(eventData.position.latitude),
-            lng: parseFloat(eventData.position.longitude)
+            lat: parseFloat(eventData.position.x),
+            lng: parseFloat(eventData.position.y)
           };
           geocoder
             .geocode({ location: latlng })
@@ -1224,28 +1224,36 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
         $("#triggerTime").text("-");
         console.log(err);
       }
-      let temp = new Map();
-      for (let a of eventData.dataItems) {
-        temp.set(a.dataItemName, a.dataItemValue);
-      }
+      //todo
+      let temp = {};
+      temp = {
+        lovVehicleDistanceMeters: eventData.lovVehicleDistanceMeters,
+        lovEngineTimeSeconds: eventData.lovEngineTimeSeconds,
+        speedKilometersPerHour: eventData.speedKilometersPerHour,
+        adBlueLevelPercent: eventData.adBlueLevelPercent,
+        adBlueLevelLowIndicator: eventData.adBlueLevelLowIndicator,
+        totalFuelLevelChangeDieselPercent: eventData.totalFuelLevelChangeDieselPercent,
+        totalFuelLevelDieselPercent: eventData.totalFuelLevelDieselPercent,          
+        totalConsumptionDieselLiters: eventData.totalConsumptionDieselLiters
+      };
       try {
-        let evd_temp = Math.round(temp.get("speed"));
+        let evd_temp = Math.round(temp.speedKilometersPerHour);
         evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + ` {!$Label.ud_km_h}`;
-        $("#speed").text(evd_temp);
+        $("#speedKilometersPerHour").text(evd_temp);
       } catch (error) {
-        $("#speed").text("-");
+        $("#speedKilometersPerHour").text("-");
         console.log(error);
       }
       try {
-        let evd_temp = parseFloat(temp.get("totalFuelLevel")).toFixed(0);
+        let evd_temp = parseFloat(temp.totalFuelLevelDieselPercent).toFixed(0);
         evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + "%";
-        $("#totalFuelLevel").text(evd_temp);
+        $("#totalFuelLevelDieselPercent").text(evd_temp);
       } catch (error) {
-        $("#totalFuelLevel").text("-");
+        $("#totalFuelLevelDieselPercent").text("-");
         console.log(error);
       }
       try {
-        let evd_temp = parseFloat(temp.get("lovEngineTime"));
+        let evd_temp = parseFloat(temp.lovEngineTimeSeconds);
         let hours = Math.floor(evd_temp / 3600);
         let minutes = Math.floor((evd_temp % 3600) / 60);
         let seconds = Math.floor(evd_temp % 60); 
@@ -1267,13 +1275,13 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
           seconds = "" + seconds; 
         }
 evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + seconds + "s";
-        $("#lovEngineTime").text(evd_temp);
+        $("#lovEngineTimeSeconds").text(evd_temp);
       } catch (error) {
-        $("#lovEngineTime").text("-");
+        $("#lovEngineTimeSeconds").text("-");
         console.log(error);
       }
       try {
-        let evd_temp = parseFloat(temp.get("adBlueLevel")).toFixed(0);
+        let evd_temp = parseFloat(temp.adBlueLevelPercent).toFixed(0);
         evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + "%";
         $("#evdadBlueLevel").text(evd_temp);
       } catch (error) {
@@ -1281,7 +1289,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + 
         console.log(error);
       }
       try {
-        let evd_temp = parseFloat(temp.get("lovVehicleDistance") / 1000).toFixed(2);
+        let evd_temp = parseFloat(temp.lovVehicleDistanceMeters / 1000).toFixed(2);
         evd_temp = isNaN(evd_temp) ? "-" : new Intl.NumberFormat(navigator.language).format(parseFloat(evd_temp)) + ` {!$Label.ud_km}`;
         $("#evd_lovVehicleDistance").text(evd_temp);
       } catch (error) {
@@ -1515,8 +1523,8 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + 
       isTraceLoadingFirstTime = true;
       eventhistorylist.forEach((maplocation) => {
         if (maplocation.position != undefined && maplocation.position.longitude != undefined) {
-          lat = parseFloat(maplocation.position.latitude);
-          lng = parseFloat(maplocation.position.longitude);
+          lat = parseFloat(maplocation.position.x);
+          lng = parseFloat(maplocation.position.y);
           const position = { lat, lng };
           let iconElement;
           const iconKey = maplocation.triggerTypeMapIcon.toLowerCase().replaceAll(" ", "");
@@ -1625,11 +1633,20 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + 
     }
 
     function traceInfoWindowContent(maplocation) {
-      let tempDataItem = new Map();
-      for (let a of maplocation.dataItems) {
-        tempDataItem.set(a.dataItemName, a.dataItemValue);
+      let tempDataItem = {};
+      for (let a of maplocation) {
+        tempDataItem = {
+          lovVehicleDistanceMeters: a.lovVehicleDistanceMeters,
+          lovEngineTimeSeconds: a.lovEngineTimeSeconds,
+          speedKilometersPerHour: a.speedKilometersPerHour,
+          adBlueLevelPercent: a.adBlueLevelPercent,
+          adBlueLevelLowIndicator: a.adBlueLevelLowIndicator,
+          totalFuelLevelChangeDieselPercent: a.totalFuelLevelChangeDieselPercent,
+          totalFuelLevelDieselPercent: a.totalFuelLevelDieselPercent,
+          totalConsumptionDieselLiters: a.totalConsumptionDieselLiters
+        };
       }
-      let fuelPercent = parseFloat(tempDataItem.get("totalFuelLevel")).toFixed(0);
+      let fuelPercent = parseFloat(tempDataItem.totalFuelLevelDieselPercent).toFixed(0);
       fuelPercent = isNaN(fuelPercent) ? "-" : parseFloat(fuelPercent).toLocaleString() + "%";
       return `
 <div class="event-popup" style="height:212.5px;width:209px;border-radius: 0px;box-shadow: 0px 0px 10px 0px;background-color: #fff;">
@@ -1645,7 +1662,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + 
               <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
                   <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/odometer_dark_gray_fill.svg')}" />
               </div>
-              <div style="display:inline-block">${maplocation.lovVehicleDistance}</div>
+              <div style="display:inline-block">${maplocation.lovVehicleDistanceMeters}</div>
           </div>
           <div style="padding-bottom:9px;padding-top:0px;">
               <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
