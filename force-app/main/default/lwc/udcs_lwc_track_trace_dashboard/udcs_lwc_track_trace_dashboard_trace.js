@@ -209,21 +209,28 @@ async function getTrackingEventsHistorynew(that) {
           a.heading = "-";
           a.heading_translated = "-";
         }
-        let tempDataItems = new Map();
-        for (let b of a.dataItems) {
-          tempDataItems.set(b.dataItemName, b.dataItemValue);
-        }
-        if (tempDataItems.get("speed")) {
-          let evd_temp = Math.round(tempDataItems.get("speed"));
+        let tempDataItems = {};
+        tempDataItems = {
+          lovVehicleDistanceMeters: a.lovVehicleDistanceMeters,
+          lovEngineTimeSeconds: a.lovEngineTimeSeconds,
+          speedKilometersPerHour: a.speedKilometersPerHour,
+          adBlueLevelPercent: a.adBlueLevelPercent,
+          adBlueLevelLowIndicator: a.adBlueLevelLowIndicator,
+          totalFuelLevelChangeDieselPercent: a.totalFuelLevelChangeDieselPercent,
+          totalFuelLevelDieselPercent: a.totalFuelLevelDieselPercent,
+          totalConsumptionDieselLiters: a.totalConsumptionDieselLiters
+        };
+        if (tempDataItems.speedKilometersPerHour) {
+          let evd_temp = Math.round(tempDataItems.speedKilometersPerHour);
           evd_temp = isNaN(evd_temp) ? "-" : parseFloat(evd_temp).toLocaleString() + " " + label.lbl_ud_km_h;
           a.vehicleSpeed = evd_temp;
         } else {
           a.vehicleSpeed = "";
         }
         try {
-          a.lovVehicleDistance = getLocalNumberWithDecimal(tempDataItems.get("lovVehicleDistance") / 1000) + " " + label.lbl_ud_km;
+          a.lovVehicleDistanceMeters = getLocalNumberWithDecimal(tempDataItems.lovVehicleDistanceMeters / 1000) + " " + label.lbl_ud_km;
         } catch (error) {
-          a.lovVehicleDistance = "";
+          a.lovVehicleDistanceMeters = "";
         }
 
         tempDate = moment(a.triggerTime);
