@@ -1274,13 +1274,8 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
         } else {
           seconds = "" + seconds; 
         }
-<<<<<<< HEAD
         evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + seconds + "s";
         $("#lovEngineTimeSeconds").text(evd_temp);
-=======
-evd_temp = isNaN(evd_temp) ? "-" : hours + "{!$Label.ud_h} " + minutes + "m " + seconds + "s";
-        $("#lovEngineTime").text(evd_temp);
->>>>>>> d326561 (engine hours)
       } catch (error) {
         $("#lovEngineTimeSeconds").text("-");
         console.log(error);
