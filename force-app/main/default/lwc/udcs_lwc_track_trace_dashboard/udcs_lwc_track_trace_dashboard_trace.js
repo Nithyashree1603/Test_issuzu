@@ -227,11 +227,11 @@ async function getTrackingEventsHistorynew(that) {
         } else {
           a.vehicleSpeed = "";
         }
-        try {
-          a.lovVehicleDistanceMeters = getLocalNumberWithDecimal(tempDataItems.lovVehicleDistanceMeters / 1000) + " " + label.lbl_ud_km;
-        } catch (error) {
-          a.lovVehicleDistanceMeters = "";
-        }
+        // try {
+        //   a.lovVehicleDistanceMeters = getLocalNumberWithDecimal(tempDataItems.lovVehicleDistanceMeters / 1000) + " " + label.lbl_ud_km;
+        // } catch (error) {
+        //   a.lovVehicleDistanceMeters = "";
+        // }
 
         tempDate = moment(a.triggerTime);
         if (!temp.get(tempDate.format("DD/MM/YYYY"))) {
