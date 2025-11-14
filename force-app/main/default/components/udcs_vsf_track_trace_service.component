@@ -62,8 +62,8 @@
     let trace_history_markers_map = {};
     let trace_history_polyline = [];
     let eventhistorylist;
-    let ployline = undefined;
-    let ploylineMarker = undefined;
+    let ployline;
+    let ploylineMarker;
     let receivedfromLWC = "";
     let SelectedvehicleFilter = undefined;
 
@@ -597,6 +597,7 @@
           console.log(error);
         }
         try {
+          if (ploylineMarker)
           ploylineMarker.setMap(null);
         } catch (error) {
           console.log(error);
@@ -1388,6 +1389,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
         });
         ploylineMarker.setMap(map);
       } else {
+        if (ploylineMarker)
         ploylineMarker.setMap(null);
         ploylineMarker = new google.maps.Polyline({
           path: trace_history_polyline,
@@ -1522,7 +1524,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
 
       isTraceLoadingFirstTime = true;
       eventhistorylist.forEach((maplocation) => {
-        if (maplocation.position != undefined && maplocation.position.longitude != undefined) {
+        if (maplocation.position != undefined && maplocation.position.y != undefined) {
           lat = parseFloat(maplocation.position.x);
           lng = parseFloat(maplocation.position.y);
           const position = { lat, lng };
@@ -1583,11 +1585,13 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
       }
 
       try {
+        if (ployline)
         ployline.setMap(null);
       } catch (error) {
         console.log(error);
       }
       try {
+        if (ploylineMarker)
         ploylineMarker.setMap(null);
       } catch (error) {
         console.log(error);
@@ -1633,20 +1637,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
     }
 
     function traceInfoWindowContent(maplocation) {
-      let tempDataItem = {};
-      for (let a of maplocation) {
-        tempDataItem = {
-          lovVehicleDistanceMeters: a.lovVehicleDistanceMeters,
-          lovEngineTimeSeconds: a.lovEngineTimeSeconds,
-          speedKilometersPerHour: a.speedKilometersPerHour,
-          adBlueLevelPercent: a.adBlueLevelPercent,
-          adBlueLevelLowIndicator: a.adBlueLevelLowIndicator,
-          totalFuelLevelChangeDieselPercent: a.totalFuelLevelChangeDieselPercent,
-          totalFuelLevelDieselPercent: a.totalFuelLevelDieselPercent,
-          totalConsumptionDieselLiters: a.totalConsumptionDieselLiters
-        };
-      }
-      let fuelPercent = parseFloat(tempDataItem.totalFuelLevelDieselPercent).toFixed(0);
+      let fuelPercent = parseFloat(maplocation.totalFuelLevelDieselPercent).toFixed(0);
       fuelPercent = isNaN(fuelPercent) ? "-" : parseFloat(fuelPercent).toLocaleString() + "%";
       return `
 <div class="event-popup" style="height:212.5px;width:209px;border-radius: 0px;box-shadow: 0px 0px 10px 0px;background-color: #fff;">

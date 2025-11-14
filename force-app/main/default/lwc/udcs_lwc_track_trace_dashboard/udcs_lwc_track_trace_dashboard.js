@@ -980,7 +980,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       setStyle(this.template.querySelector(`[data-value="${this.prvSelectedTraceEvent}"`), "addClassList", "SelectedTraceEvent");
     }
     try {
-      this.template.querySelector(`[data-value="${this.SelectedvehicleFilter}"`).classList.add("SelectedTraceEvent");
+      this.template.querySelector(`[data-value="${this.SelectedvehicleFilter}"`)?.classList.add("SelectedTraceEvent");
     } catch (e) {}
     this.addRangeBorder();
   }
