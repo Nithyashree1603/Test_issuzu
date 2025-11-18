@@ -1637,8 +1637,12 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
     }
 
     function traceInfoWindowContent(maplocation) {
-      let fuelPercent = parseFloat(maplocation.totalFuelLevelDieselPercent).toFixed(0);
-      fuelPercent = isNaN(fuelPercent) ? "-" : parseFloat(fuelPercent).toLocaleString() + "%";
+
+maplocation.speedKilometersPerHour = isNaN(Math.round(maplocation.speedKilometersPerHour)) ? "-" : Math.round(maplocation.speedKilometersPerHour).toLocaleString() + " {!$Label.ud_km_h}";
+maplocation.totalFuelLevelDieselPercent = isNaN(parseFloat(maplocation.totalFuelLevelDieselPercent)) ? "-" : parseFloat(maplocation.totalFuelLevelDieselPercent).toFixed(0).toLocaleString() + "%";
+const km = parseFloat(maplocation.lovVehicleDistanceMeters / 1000);
+maplocation.lovVehicleDistanceMeters = isNaN(km) ? "-" : new Intl.NumberFormat(navigator.language).format(parseFloat(km.toFixed(2))) + " {!$Label.ud_km}";
+
       return `
 <div class="event-popup" style="height:212.5px;width:209px;border-radius: 0px;box-shadow: 0px 0px 10px 0px;background-color: #fff;">
       <div style="height: 40px;width: 209px;padding-left:15px;padding-top:11px;background-color:#E1E1E1;/*padding-bottom:13px*/">${maplocation.triggerType_trl}</div>
@@ -1659,7 +1663,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
               <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
                   <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/speed_dark_gray_fill.svg')}" />
               </div>
-              <div style="display:inline-block">${maplocation.vehicleSpeed} </div>
+              <div style="display:inline-block">${maplocation.speedKilometersPerHour} </div>
           </div>
 
           <div style="padding-bottom:12px;padding-top:4px;">
@@ -1673,7 +1677,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
               <div style="padding-left:15.71px;display:inline-block;padding-right:11.71px;">
                   <img  width="20px" height="20px" src="{!URLFOR($Resource.udcs_connectx,'/icons/vehicle/details/fuel_level_dark_gray_fill.svg')}" />
               </div>
-              <div style="display:inline-block">${fuelPercent}</div>
+              <div style="display:inline-block">${maplocation.totalFuelLevelDieselPercent}</div>
           </div>
 
           </div></div>
@@ -1705,22 +1709,10 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
             el.style.height = '20px';
           }
         }
-        // if (!marker.title) {
-          // const isSpecial = maplocation.triggerType !== "Position" &&
-          //                   maplocation.triggerType !== "No Movement" &&
-          //                   maplocation.triggerType !== "Movement";
-          // if (isSpecial) {
-          // const el = marker.content;
-          // const size = isMobile ? 30 : 50;
-
-          // el.style.width = `${size}px`;
-          // el.style.height = `${size}px`;
-          // }
-        // }
-
       });
-      marker.content.addEventListener("temp_mouseover",  () => {
-        console.log("hovered")
+      marker.content.addEventListener("mouseover",  () => {
+         traceInfoWindow.setContent(infoWidgetContent);
+        traceInfoWindow.open(map, marker);
         if (sendTraceSelectedMarkerInfoToLWC) {
           sendTraceSelectedMarkerInfoToLWC = true;
           window.parent.postMessage({ source: "SelectedTraceEventhighlight", highlightbottompannel: true, data: maplocation.unique_key }, window.location.origin);
@@ -1894,30 +1886,30 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
             marker.content = iconImg;
           infoWindow.setContent(null);       
          });
-    marker.element.addEventListener("click", () => {
-      getCurrentBound(map);
-      if (!isMobileClicked()) {
-        infoWindow.setContent(infowindowcontent);
-        infoWindow.open(map, marker);
-      }
-          try {
-            window.parent.postMessage({ source: "SelectedTrackEventhighlight", data: vehicle.key, name: vehicle.name }, window.location.origin);
-          } catch (error) {
-            console.log(error);
-          }
-          currentInfo = infoWindow;
-          marker_Clusterer.clearMarkers();
-          resetTrackMarkerSize(marker, true);
-          const svgUrl = tracksvgIconsZoom[icon];
-          console.log(svgUrl)
-          const size = tracksvgIconsZoomSize || 60;
-          const iconImg = document.createElement("img");
-          iconImg.src = svgUrl;
-          iconImg.style.width = `${size}px`;
-          iconImg.style.height = `${size}px`;
-          marker.content = iconImg;
-          // map.setZoom(13);
-    });}
+      marker.element.addEventListener("click", () => {
+        getCurrentBound(map);
+        if (!isMobileClicked()) {
+          infoWindow.setContent(infowindowcontent);
+          infoWindow.open(map, marker);
+        }
+            try {
+              window.parent.postMessage({ source: "SelectedTrackEventhighlight", data: vehicle.key, name: vehicle.name }, window.location.origin);
+            } catch (error) {
+              console.log(error);
+            }
+            currentInfo = infoWindow;
+            marker_Clusterer.clearMarkers();
+            resetTrackMarkerSize(marker, true);
+            const svgUrl = tracksvgIconsZoom[icon];
+            console.log(svgUrl)
+            const size = tracksvgIconsZoomSize || 60;
+            const iconImg = document.createElement("img");
+            iconImg.src = svgUrl;
+            iconImg.style.width = `${size}px`;
+            iconImg.style.height = `${size}px`;
+            marker.content = iconImg;
+            // map.setZoom(13);
+      });}
       return marker;
     }
     function fitAllMarkersInMap() {
