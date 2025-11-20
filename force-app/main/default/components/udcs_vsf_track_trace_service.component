@@ -1159,7 +1159,7 @@ evd_temp = isNaN(evd_temp) ? "-" : hours + `{!$Label.ud_h} ` + minutes + "m " + 
         sendTraceSelectedMarkerInfoToLWC = false;
         if (eventselected) {
         const marker = trace_history_markers_map[eventData.unique_key];
-        marker.content.dispatchEvent(new CustomEvent("temp_mouseover"));
+        marker.content.dispatchEvent(new CustomEvent("mouseover"));
           // google.maps.event.trigger(trace_history_markers_map[eventData.unique_key], "temp_mouseover");
         }
       } catch (error) {
