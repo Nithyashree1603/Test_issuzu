@@ -48,7 +48,7 @@ async function getTrackingEventsHistorynew(that) {
   }
 
   that.uniqueEvents = [];
-  await executeParallelActions([gettraceSummary({ rangeType: rangeType, startRange: startRange, endRange: endRange, chassisId: that.currentTrackVehicleChassisID })], that);
+  await executeParallelActions([gettraceSummary({ rangeType: rangeType, startRange: startRange, endRange: endRange, chassisId: that.currentTrackVehicleChassisID,isMapScreen: that.selectedOption === "odometer" })], that);
   let result = that.action_data[0];
   if (result.status === "fulfilled") {
     result = result.value;
@@ -94,6 +94,7 @@ async function getTrackingEventsHistorynew(that) {
           endRange: endRange,
           chassisId: that.currentTrackVehicleChassisID,
           truckId: that.truckId,
+          isMapScreen: that.selectedOption === "odometer",
           now: new Date() + ""
         })
       ],
