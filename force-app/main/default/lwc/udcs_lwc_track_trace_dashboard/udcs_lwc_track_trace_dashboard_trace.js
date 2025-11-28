@@ -94,7 +94,7 @@ async function getTrackingEventsHistorynew(that) {
           endRange: endRange,
           chassisId: that.currentTrackVehicleChassisID,
           truckId: that.truckId,
-          isMapScreen: that.selectedOption === "odometer",
+          mapScreen: that.selectedOption === "odometer",
           now: new Date() + ""
         })
       ],
