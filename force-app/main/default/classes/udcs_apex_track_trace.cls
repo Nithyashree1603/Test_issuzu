@@ -88,7 +88,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
       udcs_apex_request_params requestParams = new udcs_apex_request_params();
       string requestBody;
       requestBody =
-        '{"language": "en_GB", "mapScreen":'+mapScreen+'"chassisId": "' +
+        '{"language": "en_GB", "mapScreen":'+mapScreen+',"chassisId": "' +
         chassisId +
         '","truckId": "' +
         truckId +
