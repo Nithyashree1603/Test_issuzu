@@ -9,7 +9,7 @@ public with sharing class udcs_apex_track_trace_test {
     System.runAs([SELECT Id, Name, profile.name FROM user WHERE profile.name = 'My UD Fleet User' AND IsActive = true LIMIT 1][0]) {
       Test.startTest();
       Test.setMock(HttpCalloutMock.class, new udcs_apex_http_callout_mock());
-      String response = udcs_apex_track_trace.gettraceSummary('2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '');
+      String response = udcs_apex_track_trace.gettraceSummary('2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '', true);
       Test.stopTest();
       System.debug(response);
     }
@@ -20,7 +20,7 @@ public with sharing class udcs_apex_track_trace_test {
     // System.runas([select Id,Name, profile.name from user where profile.name='My UD Fleet User' limit 1][0]){
     Test.startTest();
     Test.setMock(HttpCalloutMock.class, new udcs_apex_http_callout_mock());
-    String response = udcs_apex_track_trace.gettraceSummary('2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '');
+    String response = udcs_apex_track_trace.gettraceSummary('2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '', true);
     Test.stopTest();
     System.debug(response);
     // }
@@ -31,7 +31,7 @@ public with sharing class udcs_apex_track_trace_test {
     System.runAs([SELECT Id, Name, profile.name FROM user WHERE profile.name = 'My UD Fleet User' AND IsActive = true LIMIT 1][0]) {
       Test.startTest();
       Test.setMock(HttpCalloutMock.class, new udcs_apex_http_callout_mock());
-      String response = udcs_apex_track_trace.getTrackingEventsHistory('0', '2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '', '');
+      String response = udcs_apex_track_trace.getTrackingEventsHistory('0', '2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '', '', true);
       Test.stopTest();
       System.debug(response);
     }
@@ -42,7 +42,7 @@ public with sharing class udcs_apex_track_trace_test {
     // System.runas([select Id,Name, profile.name from user where profile.name='My UD Fleet User' limit 1][0]){
     Test.startTest();
     Test.setMock(HttpCalloutMock.class, new udcs_apex_http_callout_mock());
-    String response = udcs_apex_track_trace.getTrackingEventsHistory('0', '2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '', '');
+    String response = udcs_apex_track_trace.getTrackingEventsHistory('0', '2022-05-01T00:00:00.000Z', '2022-05-01T01:13:00.000Z', '["JNCU-104501"]', '', '', true);
     Test.stopTest();
     System.debug(response);
     // }
