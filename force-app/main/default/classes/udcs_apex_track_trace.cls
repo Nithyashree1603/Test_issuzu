@@ -1,6 +1,6 @@
 global class udcs_apex_track_trace extends udcs_apex_service_base {
     @AuraEnabled(cacheable=true)
-    global static string gettraceSummary(string rangeType, string startRange, string endRange, string chassisId) {
+    global static string gettraceSummary(string rangeType, string startRange, string endRange, string chassisId, Boolean mapScreen) {
       udcs_apex_udcs_domain.Token accessToken = (udcs_apex_udcs_domain.Token) udcs_apex_session_cache_manager.getAccessToken();
       String fleetIdentifier = ((udcs_apex_udcs_domain.AccessToken) (accessToken.decodedToken)).currentScope.fleetIdentifier;
       String InitialAccessToken = udcs_apex_session_cache_manager.getUDCSTokenString();
@@ -9,7 +9,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
       string requestBody;
       requestParams.EndPoint = udcs_apex_config_manager.getEndPointURL(udcs_apex_config_manager.Endpoint.TRACESUMMARYV3);
       requestBody =
-        '{"mapScreen": true,"rangeType": "' +
+        '{"mapScreen":'+mapScreen+',"rangeType": "' +
         rangeType +
         '","chassisId": "' +
         chassisId +
@@ -50,7 +50,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
     }
   
     @AuraEnabled(cacheable=true)
-    global static string getTrackingEventsHistory(string offset, string rangeType, string startRange, string endRange, string chassisId, string truckId) {
+    global static string getTrackingEventsHistory(string offset, string rangeType, string startRange, string endRange, string chassisId, string truckId, Boolean mapScreen) {
       udcs_apex_udcs_domain.UserCustomInfo userInfo = (udcs_apex_udcs_domain.UserCustomInfo) udcs_apex_session_cache_manager.getUserInfo();
       String currentFleetName = userInfo.currentFleet != null ? userInfo.currentFleet.nodeName : '';
       String countryCode = userInfo.currentMarket != null ? userInfo.currentMarket.nodeName : '';
@@ -88,7 +88,7 @@ global class udcs_apex_track_trace extends udcs_apex_service_base {
       udcs_apex_request_params requestParams = new udcs_apex_request_params();
       string requestBody;
       requestBody =
-        '{"language": "en_GB","chassisId": "' +
+        '{"language": "en_GB", "mapScreen":'+mapScreen+'"chassisId": "' +
         chassisId +
         '","truckId": "' +
         truckId +
