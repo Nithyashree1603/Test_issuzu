@@ -51,6 +51,7 @@ async function getTrackingEventsHistorynew(that) {
   await executeParallelActions([gettraceSummary({ rangeType: rangeType, startRange: startRange, endRange: endRange, chassisId: that.currentTrackVehicleChassisID, mapScreen: that.selectedOption === "odometer" })], that);
   let result = that.action_data[0];
   if (result.status === "fulfilled") {
+    let resultMessage = result?.message;
     result = result.value;
     that.traceSummaryData = result;
     if (that.isMobile) {
@@ -68,9 +69,9 @@ async function getTrackingEventsHistorynew(that) {
       that.setSelectedRangeUi(`${getLocalNumber(that.startRange)}km`, `${getLocalNumber(that.endRange)}km`, true);
     }
 
-    if (that.selectedOption === "odometer" && !stringUtils.isEmptyString(result?.message)) {
+    if (that.selectedOption === "odometer" && !stringUtils.isEmptyString(resultMessage)) {
       that.isOdoRangeMessage = true;
-      that.odoErrorMessage = result?.message;
+      that.odoErrorMessage = resultMessage;
     }
   } else {
     that.logToConsoleInfo("Get Trace Summary API - Failed");
