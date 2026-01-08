@@ -133,7 +133,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.template.querySelector(".track_trace_vehiclecontainer").classList.add("swipe_up");
       this.template.querySelector(".track_trace_vehicle_dropdown_body").style.display = "block";
       this.template.querySelector(".track_trace_dropdown_body").style.display = "flex";
-      this.template.querySelector(".track_trace_vehicle_category_group").style.display = "block";
       this.template.querySelector(".track_trace_ffs_sidebar_search_container").style.position = "absolute";
       this.template.querySelector(".track_trace_vehicle_dropdown_swiper").style.position = "relative";
       this.showHideList = label.lbl_ud_hidelist;
@@ -141,7 +140,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.template.querySelector(".track_trace_vehiclecontainer").classList.remove("swipe_up");
       this.template.querySelector(".track_trace_vehicle_dropdown_body").style.display = "none";
       this.template.querySelector(".track_trace_dropdown_body").style.display = "none";
-      this.template.querySelector(".track_trace_vehicle_category_group").style.display = "none";
       this.template.querySelector(".track_trace_ffs_sidebar_search_container").style.position = "absolute";
       this.template.querySelector(".track_trace_vehicle_dropdown_swiper").style.position = "absolute";
       this.showHideList = label.lbl_ud_showlist;
@@ -164,7 +162,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     this.template.querySelector(".track_trace_vehiclecontainer").classList.add("swipe_up");
     this.template.querySelector(".track_trace_vehicle_dropdown_body").style.display = "block";
     this.template.querySelector(".track_trace_dropdown_body").style.display = "flex";
-    this.template.querySelector(".track_trace_vehicle_category_group").style.display = "block";
     this.template.querySelector(".track_trace_vehicle_dropdown_swiper").style.position = "relative";
     if (this.isMobile) {
       this.template.querySelector(".track_trace_ffs_sidebar_search_container").style.position = "absolute";
@@ -403,14 +400,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       try {
         this.istogglSidebar = true;
         this.enableSidebar();
-        this.categoryHandleClick({
-          currentTarget: {
-            dataset: {
-              value: label.lbl_vehicles
-            }
-          }
-        });
-        this.categoryvehicles[label.lbl_vehicles].Connected.isChurnup = false;
         if (this.SelectedvehicleFilter !== undefined) {
           for (let cat of this.selectedcategoryvehicles) {
             cat.isChurnup = true;
@@ -431,7 +420,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
             cat.count = tempCount;
           }
         }
-        this.categoryvehicles[label.lbl_vehicles].Connected.isChurnup = false;
       } catch (error) {
         this.logToConsoleError(error);
       }
@@ -1020,42 +1008,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       source: "showtrackMapMarkers",
       data: this.categoryvehicles,
       isJapan: this.isJS
-    });
-  }
-
-  categoryHandleClick(evt) {
-    this.isShowcategoryvehicles = true;
-    this.selectedcategoryvehicles = this.categoryvehicles[evt.currentTarget.dataset.value] || [];
-    this.selectedcategoryvehicles = Object.values(this.selectedcategoryvehicles);
-    for (let cat of this.selectedcategoryvehicles) {
-      cat.isChurnup = true;
-      cat.show = true;
-      for (let vehicle of cat.vechicles) {
-        vehicle.show = true;
-      }
-    }
-    this.selectedcategory = evt.currentTarget.dataset.value;
-  }
-
-  showcategorypanel() {
-    this.isShowcategoryvehicles = false;
-    this.postMessage({
-      message: true,
-      source: "closeVehicleDetails"
-    });
-    this.traceBackbtn();
-  }
-
-  toggleCategoryGroup(event) {
-    if (this.categoryvehicles[this.selectedcategory][event.currentTarget.dataset.value].count !== 0) {
-      this.categoryvehicles[this.selectedcategory][event.currentTarget.dataset.value].isChurnup = !this.categoryvehicles[this.selectedcategory][event.currentTarget.dataset.value].isChurnup;
-      this.selectedcategoryvehicles = this.categoryvehicles[this.selectedcategory] || [];
-      this.selectedcategoryvehicles = Object.values(this.selectedcategoryvehicles);
-    }
-    this.template.querySelectorAll(".track_trace_category_item").forEach((element) => {
-      if (element.classList.contains("active")) {
-        element.classList.remove("active");
-      }
     });
   }
 

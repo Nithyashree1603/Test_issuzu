@@ -223,28 +223,10 @@ async function loadAssetData(that) {
       } catch (error) {}
     }
 
-    if (that.onload) {
-      that.categoryHandleClick({
-        currentTarget: {
-          dataset: {
-            value: label.lbl_vehicles
-          }
-        }
-      });
-    }
-
     if (that.onload && Object.keys(that.categoryvehicles[label.lbl_vehicles]).length === 1) {
       try {
         that.istogglSidebar = true;
         that.enableSidebar();
-        that.categoryHandleClick({
-          currentTarget: {
-            dataset: {
-              value: label.lbl_vehicles
-            }
-          }
-        });
-        that.categoryvehicles[label.lbl_vehicles].Connected.isChurnup = false;
         if (that.SelectedvehicleFilter !== undefined) {
           for (let cat of that.selectedcategoryvehicles) {
             cat.isChurnup = true;
@@ -265,7 +247,6 @@ async function loadAssetData(that) {
             cat.count = tempCount;
           }
         }
-        that.categoryvehicles[label.lbl_vehicles].Connected.isChurnup = false;
       } catch (error) {
         that.logToConsoleError(error);
       }
