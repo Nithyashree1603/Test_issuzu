@@ -7,6 +7,8 @@ import configs from "./udcs_lwc_track_trace_dashboard_configs";
 import { vehicleDataTransform, getLocalNumber, getLocalFormatedDateTimeInHH } from "c/udcs_lwc_utils";
 
 async function loadAssetData(that) {
+  // API DISABLED FOR DEPLOYMENT
+  console.log("API disabled for deployment - loadAssetData");
   let triggerType = "";
   let triggerTime = "";
   let currentTimeInUTC = moment.utc();
@@ -18,16 +20,16 @@ async function loadAssetData(that) {
   let heading_translated = "";
   that.allTrackEvents = [];
 
-  await executeParallelActions([assetsDataNew({ now: new Date() + "" })], that);
+  // await executeParallelActions([assetsDataNew({ now: new Date() + "" })], that);
   that.trackVehicleCount = {
     Moving: 0,
     IgntionOn: 0,
     IgntionOff: 0,
-    NonComm: 0,
-    NoData: 0
+    NonComm: 0
   };
 
-  let result = that.action_data[0];
+  let result = { status: "fulfilled", value: [] };
+  // let result = that.action_data[0];
   if (result.status === "fulfilled") {
     let assetsObj = vehicleDataTransform(result);
     console.log("assetsObj", JSON.stringify(assetsObj));
@@ -75,11 +77,11 @@ async function loadAssetData(that) {
         try {
           icon = that.getVehicleStatus(triggerType, ignitionStatus, hours, speed);
         } catch (error) {
-          icon = "NoData";
+          icon = "NonComm";
         }
 
         if (that.isJS && (["05", "16"].includes(vehicle.ProductClass))) {
-          icon = "NoData";
+          icon = "NonComm";
         }
         vehicle.heading_translated = heading_translated;
         vehicle.sidebarIcon = udcs_connectx + "/icons/track_directions/" + icon + ".svg";
@@ -103,10 +105,6 @@ async function loadAssetData(that) {
           vehicle.fleetStatusLabel = label.lbl_non_comm_non_communicating;
           vehicle.backgroundColor = "#EE8C22";
           vehicle.status_cardinal_number = 4;
-        } else if (icon === "NoData") {
-          vehicle.fleetStatusLabel = label.lbl_nodata;
-          vehicle.backgroundColor = "";
-          vehicle.status_cardinal_number = 5;
         }
 
         vehicle.direction_icon = false;

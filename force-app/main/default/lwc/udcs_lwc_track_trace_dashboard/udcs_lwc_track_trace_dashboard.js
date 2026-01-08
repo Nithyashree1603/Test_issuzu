@@ -69,8 +69,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     Moving: 0,
     IgntionOn: 0,
     IgntionOff: 0,
-    NonComm: 0,
-    NoData: 0
+    NonComm: 0
   };
   allTrackEvents = [];
 
@@ -481,24 +480,18 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
       this.showCalandar();
     } else if (message.data.source === "showGeofences") {
       try {
-        await executeParallelActionsNew([getActiveGeofenceForFleet()], this);
-        let result = this.action_data[0];
-        if (result.status === "fulfilled") {
-          this.postMessage({
-            message: true,
-            source: "geofenceshownontrack",
-            data: JSON.stringify(result)
-          });
-        } else console.error(result.reason);
+        // API DISABLED FOR DEPLOYMENT
+        // await executeParallelActionsNew([getActiveGeofenceForFleet()], this);
+        console.log("API disabled for deployment");
       } catch (err) {
         console.log(err);
       }
     } else if (message.data.source === "showVehicleGeofences") {
       const vehicleId = message.data.data;
       try {
-        await executeParallelActionsNew([getActiveGeofenceForVehicle({ id: vehicleId })], this);
-        let result = this.action_data[0];
-        console.log(JSON.stringify(result));
+        // API DISABLED FOR DEPLOYMENT
+        // await executeParallelActionsNew([getActiveGeofenceForVehicle({ id: vehicleId })], this);
+        console.log("API disabled for deployment");
         if (result.status === "fulfilled") {
           this.postMessage({
             message: true,
@@ -694,20 +687,24 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
         this.isLoadReady = true;
       });
 
-    await isJapanMarket()
-      .then((a) => {
-        this.isJS = a;
-      })
-      .catch(() => {});
+    // API DISABLED FOR DEPLOYMENT
+    // await isJapanMarket()
+    //   .then((a) => {
+    //     this.isJS = a;
+    //   })
+    //   .catch(() => {});
+    this.isJS = false;
 
     if (!this.isMobile) {
       // eslint-disable-next-line @lwc/lwc/no-async-operation
-      this._interval = setInterval(() => {
-        loadAssetData(this);
-        this.startTimer();
-        this.isLoadReady = true;
-      }, this.assetDataLoadInterval);
+      // API DISABLED FOR DEPLOYMENT
+      // this._interval = setInterval(() => {
+      //   loadAssetData(this);
+      //   this.startTimer();
+      //   this.isLoadReady = true;
+      // }, this.assetDataLoadInterval);
       this.startTimer();
+      this.isLoadReady = true;
     }
 
     window.addEventListener("message", this.handleResponse.bind(this), false);
@@ -1097,7 +1094,7 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
         icon = this.getIcon(ignitionStatus, hours, speed, "IgntionOn");
         break;
       default:
-        icon = "NoData";
+        icon = "NonComm";
         break;
     }
 
@@ -1143,45 +1140,47 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     }
 
     let dataItem = ["location", "position", "driverName", "lovEngineTime", "totalConsumption", "lovVehicleDistance", "speed", "totalFuelLevel", "adBlueLevel", "wiperIndicator"];
-    await executeAction(
-      [
-        getTrackingEventsHistoryExport({
-          chassisId: this.currentTrackVehicleChassisID,
-          truckId: this.truckId,
-          vehicleSpec: this.vehicleSpec,
-          rangeType,
-          startRange,
-          endRange,
-          triggerTypes: JSON.stringify(fillterdTriger),
-          dataItems: JSON.stringify(dataItem),
-          userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          registrationNumber: this.registrationNumber
-        })
-      ],
-      this
-    );
+    // API DISABLED FOR DEPLOYMENT
+    console.log("API disabled for deployment - export data");
+    // await executeAction(
+    //   [
+    //     getTrackingEventsHistoryExport({
+    //       chassisId: this.currentTrackVehicleChassisID,
+    //       truckId: this.truckId,
+    //       vehicleSpec: this.vehicleSpec,
+    //       rangeType,
+    //       startRange,
+    //       endRange,
+    //       triggerTypes: JSON.stringify(fillterdTriger),
+    //       dataItems: JSON.stringify(dataItem),
+    //       userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    //       registrationNumber: this.registrationNumber
+    //     })
+    //   ],
+    //   this
+    // );
 
-    let result = this.action_data[0];
-    if (result.status === "fulfilled") {
-      result = JSON.parse(result.value);
-      this.isShowToast = result.endDateInFuture;
-      const downloadContainer = this.template.querySelector(".download-container");
-      let a = document.createElement("a");
-      a.href = "data:application/octet-stream;base64," + result.reportsByteArray;
-      a.target = "_parent";
-      a.download = label.lbl_ud_trace + "_" + label.lbl_ud_history + "_" + this.currentTrackVehicleChassisID + "_" + moment().format("DD_MM_YYYY_HH_mm") + ".xlsx";
-      if (downloadContainer) {
-        downloadContainer.appendChild(a);
-      }
-      if (a.click) {
-        a.click();
-      }
-      downloadContainer.removeChild(a);
-      this.isTraceExport = true;
-    } else {
-      // eslint-disable-next-line no-alert
-      alert("No data found.");
-    }
+    // let result = this.action_data[0];
+    // if (result.status === "fulfilled") {
+    //   result = JSON.parse(result.value);
+    //   this.isShowToast = result.endDateInFuture;
+    //   const downloadContainer = this.template.querySelector(".download-container");
+    //   let a = document.createElement("a");
+    //   a.href = "data:application/octet-stream;base64," + result.reportsByteArray;
+    //   a.target = "_parent";
+    //   a.download = label.lbl_ud_trace + "_" + label.lbl_ud_history + "_" + this.currentTrackVehicleChassisID + "_" + moment().format("DD_MM_YYYY_HH_mm") + ".xlsx";
+    //   if (downloadContainer) {
+    //     downloadContainer.appendChild(a);
+    //   }
+    //   if (a.click) {
+    //     a.click();
+    //   }
+    //   downloadContainer.removeChild(a);
+    //   this.isTraceExport = true;
+    // } else {
+    //   // eslint-disable-next-line no-alert
+    //   alert("No data found.");
+    // }
   }
 
   //info: post message to iframe
@@ -1239,14 +1238,16 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
     this.isTechnicalIssue = false;
   }
   async loadLocation() {
-    await executeParallelActions([user_Info()], this);
-    let result = this.action_data[0];
-    if (result.status === "fulfilled") {
-      this.currentMarket = getCountryName(result.value.currentMarketName);
-      this.postMessages("defaultLocation", { country: this.currentMarket, featureVisibilityData: this.featureVisibilityData});
-    } else {
-      this.logToConsoleError(result.reason);
-    }
+    // API DISABLED FOR DEPLOYMENT
+    // await executeParallelActions([user_Info()], this);
+    // let result = this.action_data[0];
+    // if (result.status === "fulfilled") {
+    //   this.currentMarket = getCountryName(result.value.currentMarketName);
+    //   this.postMessages("defaultLocation", { country: this.currentMarket, featureVisibilityData: this.featureVisibilityData});
+    // } else {
+    //   this.logToConsoleError(result.reason);
+    // }
+    console.log("API disabled for deployment - loadLocation");
   }
   postMessages(source, data) {
     this.template.querySelector("iframe")?.contentWindow.postMessage({ message: true, source: source, data: data }, this.origin);
@@ -1360,9 +1361,6 @@ export default class Udcs_lwc_track_trace_dashboard extends NavigationMixin(Ligh
   }
   closeRouteSummary() {
     this.isShowRouteSummary = false;
-  }
-  get NoDataSelected() {
-    return this.SelectedvehicleFilter !== "NoData" ? "track_trace_items" : "track_trace_items SelectedTraceEvent";
   }
 
   unloadIframe() {

@@ -225,18 +225,6 @@ export default class Udcs_lwc_fleet_status_overview extends LightningElement {
       temp.isLoading = true;
       temp.reverseGeoAddress = "";
       temp.showAddress = temp.location.indexOf("undefined") === -1;
-      if (temp.icon === "NoData") {
-        temp.showAddress = false;
-        temp.truckID = "-";
-        temp.triggerTime = "-";
-        temp.wheelBasedSpeed = "-";
-        temp.diesel = "-";
-        temp.Adblue = "-";
-        temp.Odometer = "-";
-        temp.enginehours = "-";
-        temp.reverseGeoAddress = "";
-        temp.formattedTriggerDateTime = "-";
-      }
       sampleArray.push(temp);
       this.allTrackEvents_Export.push(temp);
     }
@@ -281,8 +269,12 @@ if (isNaN(a.enginehours) || a.enginehours === undefined || a.enginehours === "-"
           i++;
           continue;
         }
-        await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
-        let result = this.action_data[0];
+        // API DISABLED FOR DEPLOYMENT
+        // await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
+        // let result = this.action_data[0];
+        temp.isLoading = false;
+        temp.reverseGeoAddress = "Address Not Found";
+        let result = { status: "fulfilled", value: { results: [] } };
         if (result.status === "fulfilled") {
           result = result.value;
           console.log("resuly called here", JSON.stringify(result))
@@ -347,6 +339,8 @@ if (isNaN(a.enginehours) || a.enginehours === undefined || a.enginehours === "-"
   }
 
   async reverseGeoAddressAll() {
+    // API DISABLED FOR DEPLOYMENT
+    console.log("API disabled for deployment - reverseGeoAddressAll");
     let i = 0;
     let newArray = [];
 
@@ -354,33 +348,35 @@ if (isNaN(a.enginehours) || a.enginehours === undefined || a.enginehours === "-"
       let temp = this.allTrackEventsData[i];
       if (temp.showAddress) {
         temp.key += "a";
-        temp.isLoading = true;
+        temp.isLoading = false;
         if (this.reverseGeoAddressObj[temp.location]) {
           temp.reverseGeoAddress = this.reverseGeoAddressObj[temp.location];
           temp.isLoading = false;
           newArray.push({ ...temp });
           // Only increment i here, as we've processed this item
         } else {
-          await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
-          let result = this.action_data[0];
-          if (result.status === "fulfilled") {
-            result = result.value;
-            try {
-              temp.isLoading = false;
-              let address = result.results[0].formatted_address;
-              temp.reverseGeoAddress = address;
-              this.reverseGeoAddressObj[temp.location] = address;
-              newArray.push({ ...temp });
-            } catch (e) {
-              temp.isLoading = false;
-              temp.reverseGeoAddress = "Address Not Found";
-              this.reverseGeoAddressObj[temp.location] = "Address Not Found";
-              newArray.push({ ...temp });
-            }
-          } else {
-            console.log(result.reason);
-            newArray.push({ ...temp, reverseGeoAddress: "Address Not Found" });
-          }
+          // await executeParallelActions([parseJSONResponse({ latlng: temp.location })], this);
+          // let result = this.action_data[0];
+          // if (result.status === "fulfilled") {
+          //   result = result.value;
+          //   try {
+          //     temp.isLoading = false;
+          //     let address = result.results[0].formatted_address;
+          //     temp.reverseGeoAddress = address;
+          //     this.reverseGeoAddressObj[temp.location] = address;
+          //     newArray.push({ ...temp });
+          //   } catch (e) {
+          //     temp.isLoading = false;
+          //     temp.reverseGeoAddress = "Address Not Found";
+          //     this.reverseGeoAddressObj[temp.location] = "Address Not Found";
+          //     newArray.push({ ...temp });
+          //   }
+          // } else {
+          //   console.log(result.reason);
+          //   newArray.push({ ...temp, reverseGeoAddress: "Address Not Found" });
+          // }
+          temp.reverseGeoAddress = "Address Not Found";
+          newArray.push({ ...temp });
         }
       }
       i++;
@@ -404,32 +400,19 @@ if (isNaN(a.enginehours) || a.enginehours === undefined || a.enginehours === "-"
       }
       temp.reverseGeoAddress = "";
       temp.showAddress = temp.location.indexOf("undefined") === -1;
-      if (temp.icon === "NoData") {
-        temp.showAddress = false;
-        temp.truckID = "-";
-        temp.triggerTime = "-";
-        temp.wheelBasedSpeed = "-";
-        temp.diesel = "-";
-        temp.Adblue = "-";
-        temp.Odometer = "-";
-        temp.enginehours = "-";
-        temp.reverseGeoAddress = "";
-        temp.formattedTriggerDateTime = "-";
+      temp.enginehours = parseFloat(temp.enginehours);
+      let hours = Math.floor(temp.enginehours / 3600);
+      let minutes = Math.floor((temp.enginehours % 3600) / 60);
+      if (hours == "0") {
+        hours = "00";
+      } else if (hours <= "9" && hours > "0") {
+        hours = "0" + hours;
+      } else if (hours == "undefined" || hours == "-") {
+        hours = "-";
       } else {
-        temp.enginehours = parseFloat(temp.enginehours);
-        let hours = Math.floor(temp.enginehours / 3600);
-        let minutes = Math.floor((temp.enginehours % 3600) / 60);
-        if (hours == "0") {
-          hours = "00";
-        } else if (hours <= "9" && hours > "0") {
-          hours = "0" + hours;
-        } else if (hours == "undefined" || hours == "-") {
-          hours = "-";
-        } else {
-          hours = "" + hours;
-        }
-        temp.enginehours = isNaN(temp.enginehours) ? "-" : hours + ":" + minutes;
+        hours = "" + hours;
       }
+      temp.enginehours = isNaN(temp.enginehours) ? "-" : hours + ":" + minutes;
       sampleAssetsObj[temp.name] = temp;
       sampleArray.push(temp);
       this.allTrackEvents_Export.push(temp);

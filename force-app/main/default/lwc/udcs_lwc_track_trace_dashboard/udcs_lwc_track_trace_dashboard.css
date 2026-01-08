@@ -22,7 +22,7 @@
 .track_trace_container {
   display: flex;
   position: relative;
-  width: 100%;
+  /* width: 100%; */
   height: calc(100vh - 122px);
   overflow: hidden;
 }

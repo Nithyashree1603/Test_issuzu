@@ -32,7 +32,9 @@ export default class Udcs_lwc_map_track_trace_widget extends LightningElement {
 
   async connectedCallback() {
     this.isMobile = mobileDeviceCheck();
-    await this.loadAssetData();
+    // API DISABLED FOR DEPLOYMENT
+    // await this.loadAssetData();
+    console.log("API disabled for deployment - map widget loadAssetData");
   }
 
   async loadAssetData() {
@@ -41,8 +43,11 @@ export default class Udcs_lwc_map_track_trace_widget extends LightningElement {
 
     if (this.isJapanese === false) {
       if (this.featureVisibilityData.maps) {
-        await executeParallelActions([assetsDataNew()], this);
-        let result = this.action_data[0];
+        // API DISABLED FOR DEPLOYMENT
+        // await executeParallelActions([assetsDataNew()], this);
+        console.log("API disabled for deployment - assetsDataNew");
+        let result = { status: "fulfilled", value: { attributes: {}, records: [] } };
+        // let result = this.action_data[0];
         if (result.status === "fulfilled") {
           let assetsObj = vehicleDataTransform(result);
           this.count = assetsObj.length;

@@ -214,16 +214,11 @@
                                         <img src={icons.track.status.igntion_off} width="25" height="25"></img>
                                         <span style="font-size: 14px;">{trackVehicleCount.IgntionOff}</span>
                                     </div>
-                                    <div class="track_trace_items" data-value="NonComm" onclick={vehicleFilter}>
+                                    <div class="track_trace_items" data-value="NonComm" onclick={vehicleFilter}
+                                        style="border-right: none;">
                                         <div style="font-size: 10px;">{label.lbl_non_comm_non_communicating}</div>
                                         <img src={icons.track.status.non_comm} width="25" height="25"></img>
                                         <span style="font-size: 14px;">{trackVehicleCount.NonComm}</span>
-                                    </div>
-                                    <div class={NoDataSelected} data-value="NoData" onclick={vehicleFilter}
-                                        style="border-right: none;">
-                                        <div style="font-size: 10px;">{label.lbl_nodata}</div>
-                                        <img src={icons.track.status.no_data} width="25" height="25"></img>
-                                        <span style="font-size: 14px;">{trackVehicleCount.NoData}</span>
                                     </div>
                                 </div>
                             </div>

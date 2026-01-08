@@ -48,8 +48,11 @@ async function getTrackingEventsHistorynew(that) {
   }
 
   that.uniqueEvents = [];
-  await executeParallelActions([gettraceSummary({ rangeType: rangeType, startRange: startRange, endRange: endRange, chassisId: that.currentTrackVehicleChassisID, mapScreen: that.selectedOption === "odometer" })], that);
-  let result = that.action_data[0];
+  // API DISABLED FOR DEPLOYMENT
+  // await executeParallelActions([gettraceSummary({ rangeType: rangeType, startRange: startRange, endRange: endRange, chassisId: that.currentTrackVehicleChassisID, mapScreen: that.selectedOption === "odometer" })], that);
+  // let result = that.action_data[0];
+  console.log("API disabled for deployment - gettraceSummary");
+  let result = { status: "fulfilled", value: [] };
   if (result.status === "fulfilled") {
     result = result.value;
     that.traceSummaryData = result;
@@ -82,25 +85,28 @@ async function getTrackingEventsHistorynew(that) {
   let vehicleEvents = [];
   let flagMobile = false;
   let tempShowToast = false;
+  // API DISABLED FOR DEPLOYMENT
+  console.log("API disabled for deployment - getTrackingEventsHistory");
   // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (false) {
     // eslint-disable-next-line no-await-in-loop
-    await executeParallelActions(
-      [
-        getTrackingEventsHistory({
-          offset,
-          rangeType: rangeType,
-          startRange: startRange,
-          endRange: endRange,
-          chassisId: that.currentTrackVehicleChassisID,
-          truckId: that.truckId,
-          mapScreen: that.selectedOption === "odometer",
-          now: new Date() + ""
-        })
-      ],
-      that
-    );
-    result = that.action_data[0];
+    // await executeParallelActions(
+    //   [
+    //     getTrackingEventsHistory({
+    //       offset,
+    //       rangeType: rangeType,
+    //       startRange: startRange,
+    //       endRange: endRange,
+    //       chassisId: that.currentTrackVehicleChassisID,
+    //       truckId: that.truckId,
+    //       mapScreen: that.selectedOption === "odometer",
+    //       now: new Date() + ""
+    //     })
+    //   ],
+    //   that
+    // );
+    result = { status: "fulfilled", value: { pagination: { totalCount: 0 }, vehicleEvents: [], endDateInFuture: false } };
+    // result = that.action_data[0];
     if (result.status === "fulfilled") {
       flagMobile = true;
       result = result.value;
