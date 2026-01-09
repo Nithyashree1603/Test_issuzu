@@ -7,8 +7,6 @@ import configs from "./udcs_lwc_track_trace_dashboard_configs";
 import { vehicleDataTransform, getLocalNumber, getLocalFormatedDateTimeInHH } from "c/udcs_lwc_utils";
 
 async function loadAssetData(that) {
-  // API DISABLED FOR DEPLOYMENT
-  console.log("API disabled for deployment - loadAssetData");
   let triggerType = "";
   let triggerTime = "";
   let currentTimeInUTC = moment.utc();
@@ -20,7 +18,7 @@ async function loadAssetData(that) {
   let heading_translated = "";
   that.allTrackEvents = [];
 
-  // await executeParallelActions([assetsDataNew({ now: new Date() + "" })], that);
+  await executeParallelActions([assetsDataNew({ now: new Date() + "" })], that);
   that.trackVehicleCount = {
     Moving: 0,
     IgntionOn: 0,
@@ -28,15 +26,13 @@ async function loadAssetData(that) {
     NonComm: 0
   };
 
-  let result = { status: "fulfilled", value: [] };
-  // let result = that.action_data[0];
+  let result = that.action_data[0];
   if (result.status === "fulfilled") {
     let assetsObj = vehicleDataTransform(result);
     console.log("assetsObj", JSON.stringify(assetsObj));
     that.categories = [{ name: label.lbl_vehicles, count: assetsObj.length }];
-    that.categoryvehicles[label.lbl_vehicles].Connected.vechicles.length = 0;
-    let groups = new Set();
     let count = 1;
+    let flatVehicleList = [];
 
     if (assetsObj.length !== 0) {
       that.istogglSidebar = true;
@@ -45,9 +41,6 @@ async function loadAssetData(that) {
 
     for (let vehicle of assetsObj) {
       try {
-        // that.istogglSidebar = true;
-        // that.enableSidebar();
-        that.categoryvehicles[label.lbl_vehicles].Connected.vechicles.push(vehicle);
         vehicle.name = vehicle.ChassisSeries + "-" + vehicle.ChassisNumber;
         vehicle.marketbasedname = "-";
         if (that.isJS) {
@@ -55,11 +48,9 @@ async function loadAssetData(that) {
         } else {
           vehicle.marketbasedname = vehicle.ChassisSeries + "-" + vehicle.ChassisNumber;
         }
-        vehicle.key = "Connected$" + count + vehicle.name;
+        vehicle.key = "vehicle$" + count + vehicle.name;
         count++;
-        if (vehicle.groupName) {
-          groups.add(vehicle.groupName);
-        }
+        flatVehicleList.push(vehicle);
         triggerType = vehicle.TriggerType ? vehicle.TriggerType : "-";
         vehicle.triggerType_trl = configs.trackEventLabels_translations[triggerType] || "";
         vehicle.triggerType = configs.trackEventLabels[triggerType] || "";
@@ -77,11 +68,11 @@ async function loadAssetData(that) {
         try {
           icon = that.getVehicleStatus(triggerType, ignitionStatus, hours, speed);
         } catch (error) {
-          icon = "NonComm";
+          icon = "NoData";
         }
 
         if (that.isJS && (["05", "16"].includes(vehicle.ProductClass))) {
-          icon = "NonComm";
+          icon = "NoData";
         }
         vehicle.heading_translated = heading_translated;
         vehicle.sidebarIcon = udcs_connectx + "/icons/track_directions/" + icon + ".svg";
@@ -105,6 +96,10 @@ async function loadAssetData(that) {
           vehicle.fleetStatusLabel = label.lbl_non_comm_non_communicating;
           vehicle.backgroundColor = "#EE8C22";
           vehicle.status_cardinal_number = 4;
+        } else if (icon === "NoData") {
+          vehicle.fleetStatusLabel = label.lbl_nodata;
+          vehicle.backgroundColor = "";
+          vehicle.status_cardinal_number = 5;
         }
 
         vehicle.direction_icon = false;
@@ -150,70 +145,32 @@ async function loadAssetData(that) {
         vehicle.address = "Show Address";
         vehicle.vehicleSpec = vehicle.ModelDescription ? vehicle.ModelDescription : "-";
         vehicle.truckId = vehicle.truckId ? vehicle.truckId : "-";
+        vehicle.show = true;
         that.allTrackEvents.push(vehicle);
       } catch (e) {
         that.logToConsoleError(e);
       }
     }
-    groups = Array.from(groups).sort();
 
-    for (let group of groups) {
-      if (!that.categoryvehicles[label.lbl_vehicles][group]) {
-        that.categoryvehicles[label.lbl_vehicles][group] = {
-          name: group,
-          count: 0,
-          key: group,
-          isChurnup: true,
-          vechicles: []
-        };
-      } else {
-        that.categoryvehicles[label.lbl_vehicles][group].vechicles.length = 0;
-      }
-    }
-
-    for (let vehicle of assetsObj) {
-      if (vehicle.groupName) {
-        that.categoryvehicles[label.lbl_vehicles][vehicle.groupName].vechicles.push(vehicle);
-        vehicle.key = vehicle.groupName + "$" + count + vehicle.name;
-        count++;
-      }
-    }
-
-    groups.unshift("Connected");
-    for (let group of groups) {
-      that.categoryvehicles[label.lbl_vehicles][group].vechicles.sort(that.compareName);
-      that.categoryvehicles[label.lbl_vehicles][group].count = that.categoryvehicles[label.lbl_vehicles][group].vechicles.length;
-    }
+    flatVehicleList.sort(that.compareName);
 
     that.trackVehicleCount = JSON.parse(JSON.stringify(that.trackVehicleCount));
     that.showtrackMapMarkers();
 
-    that.selectedcategoryvehicles = that.categoryvehicles[that.selectedcategory] || [];
-    that.selectedcategoryvehicles = Object.values(that.selectedcategoryvehicles);
+    that.selectedcategoryvehicles = flatVehicleList;
     if (that.SelectedvehicleFilter !== undefined) {
-      for (let cat of that.selectedcategoryvehicles) {
-        let tempCount = 0;
-        cat.show = false;
-        for (let vehicle of cat.vechicles) {
-          if (that.SelectedvehicleFilter === vehicle.statusIcon) {
-            vehicle.show = true;
-            cat.show = true;
-            tempCount++;
-          } else {
-            vehicle.show = false;
-          }
-        }
-        cat.count = tempCount;
-      }
-    } else {
-      for (let cat of that.selectedcategoryvehicles) {
-        cat.show = true;
-        let tempCount = 0;
-        for (let vehicle of cat.vechicles) {
+      let tempCount = 0;
+      for (let vehicle of that.selectedcategoryvehicles) {
+        if (that.SelectedvehicleFilter === vehicle.statusIcon) {
           vehicle.show = true;
           tempCount++;
+        } else {
+          vehicle.show = false;
         }
-        cat.count = tempCount;
+      }
+    } else {
+      for (let vehicle of that.selectedcategoryvehicles) {
+        vehicle.show = true;
       }
     }
 
@@ -224,52 +181,10 @@ async function loadAssetData(that) {
     }
 
     if (that.onload) {
-      that.categoryHandleClick({
-        currentTarget: {
-          dataset: {
-            value: label.lbl_vehicles
-          }
-        }
-      });
+      that.istogglSidebar = true;
+      that.enableSidebar();
     }
 
-    if (that.onload && Object.keys(that.categoryvehicles[label.lbl_vehicles]).length === 1) {
-      try {
-        that.istogglSidebar = true;
-        that.enableSidebar();
-        that.categoryHandleClick({
-          currentTarget: {
-            dataset: {
-              value: label.lbl_vehicles
-            }
-          }
-        });
-        that.categoryvehicles[label.lbl_vehicles].Connected.isChurnup = false;
-        if (that.SelectedvehicleFilter !== undefined) {
-          for (let cat of that.selectedcategoryvehicles) {
-            cat.isChurnup = true;
-            let tempCount = 0;
-            cat.show = false;
-            for (let vehicle of cat.vechicles) {
-              if (that.SelectedvehicleFilter === vehicle.statusIcon) {
-                vehicle.show = true;
-                cat.show = true;
-                tempCount++;
-              } else {
-                vehicle.show = false;
-              }
-            }
-            if (cat.name === label.lbl_connected_default) {
-              cat.show = true;
-            }
-            cat.count = tempCount;
-          }
-        }
-        that.categoryvehicles[label.lbl_vehicles].Connected.isChurnup = false;
-      } catch (error) {
-        that.logToConsoleError(error);
-      }
-    }
     that.initialSelectedcategoryvehicles = that.selectedcategoryvehicles;
   }
 

@@ -41,72 +41,6 @@
   width: 100%;
 }
 
-.track_trace_category {
-  width: 310px;
-  padding: 20px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom-width: 0.5vh;
-  border-bottom-style: ridge;
-  background-color: #ffffff;
-  border-bottom: 0.5px solid #cccccc;
-  cursor: pointer;
-}
-
-.track_trace_category.cat-name {
-  font-size: 15px;
-  line-height: 14px;
-  text-transform: uppercase;
-  color: #4d4e53;
-  display: flex;
-  align-items: center;
-  padding: 12px 10px;
-  cursor: pointer;
-}
-
-.track_trace_vehicle_dropdown_header {
-  background-color: #e1e1e1;
-  display: flex;
-  justify-content: center;
-  padding: 12px 10px;
-  text-align: center;
-}
-
-.track_trace_vehicle_dropdown_header_jpn {
-  background-color: #e1e1e1;
-  padding: 12px 10px;
-  text-align: center;
-}
-
-.backbtn {
-  font-size: 15px;
-  line-height: 20px;
-  color: #4d4e53;
-  margin-left: 6.72px;
-  text-decoration: none;
-}
-
-.back-click {
-  display: none;
-  align-items: center;
-  cursor: pointer;
-}
-
-.back-click_jpn {
-  display: flex;
-  cursor: pointer;
-}
-
-.view-list {
-  line-height: 26px;
-  letter-spacing: 0.4375px;
-  color: #00829b;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
 .track_trace_ffs_sidebar_search_container {
   text-align: center;
   background-color: #ececec;
@@ -211,19 +145,14 @@
   border-bottom: 0.5px solid #a6a6a6;
 }
 
-.track_trace_category_group {
-  justify-content: space-between;
-  font-size: 15px;
-  color: #4d4e53;
-  cursor: pointer;
-  display: block;
-}
-
-.track_trace_sub_category {
-  border-bottom: 0.5px solid #cccccc;
-}
-
 .track_trace_vehicle_category_group {
+  overflow-y: scroll;
+  height: calc(100vh - 315px);
+  overflow: overlay;
+  background-color: #fff;
+}
+
+.track_trace_vehicle_list_container {
   overflow-y: scroll;
   height: calc(100vh - 315px);
   overflow: overlay;
@@ -235,7 +164,17 @@
   background: transparent;
 }
 
+.track_trace_vehicle_list_container::-webkit-scrollbar {
+  width: 5px;
+  background: transparent;
+}
+
 .track_trace_vehicle_category_group::-webkit-scrollbar-thumb {
+  background-color: #a6a6a6;
+  border-radius: 102.5px;
+}
+
+.track_trace_vehicle_list_container::-webkit-scrollbar-thumb {
   background-color: #a6a6a6;
   border-radius: 102.5px;
 }
@@ -268,7 +207,24 @@
   border-bottom: 0.5px solid #cccccc;
 }
 
+.track_trace_vehicle_item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 14px;
+  color: #4d4e53;
+  border-bottom: 0.5px solid #cccccc;
+  cursor: pointer;
+}
+
 .track_trace_categoryvehicle:hover {
+  background-color: #edf8ff;
+}
+
+.track_trace_vehicle_item:hover {
   background-color: #edf8ff;
 }
 
@@ -852,7 +808,8 @@ border: 1.5px white solid;
 
   .track_trace_vehicle_dropdown_body,
   .track_trace_dropdown_body,
-  .track_trace_vehicle_category_group {
+  .track_trace_vehicle_category_group,
+  .track_trace_vehicle_list_container {
     display: none;
   }
 
