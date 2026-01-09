@@ -121,60 +121,7 @@
                 </template>
 
                 <div class="track_trace_vehiclecontainer">
-                    <template if:false={isShowcategoryvehicles}>
-                        <template for:each={categories} for:item="cat">
-                            <div class="slds-media_center track_trace_category" data-value={cat.name} key={cat.name}
-                                onclick={categoryHandleClick}>
-                                <div class="cat-name">
-                                    <span style="padding-right: 0.75rem">
-                                        <img src={icons.vehicle.details.free_search_light_gray} width="22"
-                                            height="18"></img>
-                                    </span>
-                                    {cat.name}
-                                </div>
-                                <span>
-                                    <div class="track_trace_d-inline-block">
-                                        <div class="track_trace_cal_green_circle">{cat.count}</div>
-                                    </div>
-                                    <span>
-                                        <img src={icons.common.right_arrow.right_arrow_light_dark_gray}
-                                            style="margin-left: 0.5rem" width="20" height="20"></img>
-                                    </span>
-                                </span>
-                            </div>
-                        </template>
-                    </template>
-                    <template if:true={isShowcategoryvehicles}>
-                        <div class="track_trace_vehicle_dropdown">
-                            <template if:false={isMobile}>
-                                <template if:false={isJapan.data}>
-                                    <div class="track_trace_vehicle_dropdown_header">
-                                        <div class="back-click" onclick={showcategorypanel}>
-                                            <img src={icons.common.left_arrow.left_arrow_dark_gray} width="9"
-                                                height="15"></img>
-                                            <div class="backbtn">
-                                                {label.lbl_back}
-                                            </div>
-                                        </div>
-                                        <div class="view-list">
-                                            <c-udcs_lwc_fleet_status_overview all-track-events={allTrackEvents}
-                                                style="padding-left: 0.4375rem;"></c-udcs_lwc_fleet_status_overview>
-                                        </div>
-                                    </div>
-                                </template>
-                            </template>
-                            <template if:true={isJapan.data}>
-                                <div class="track_trace_vehicle_dropdown_header_jpn">
-                                    <!-- <div class="back-click_jpn" onclick={backFn}>
-                                        <img src={icons.common.left_arrow.left_arrow_dark_gray}></img>
-                                        <div class="backbtn">
-                                            {label.lbl_back}
-                                        </div>
-                                    </div> -->
-                                    
-                                    <div class="view-list" style="display: none;"></div>
-                                </div>
-                            </template>
+                    <div class="track_trace_vehicle_dropdown">
                             <template if:false={isMobile}>
                                 <div class="track_trace_ffs_sidebar_search_container">
                                     <div class="searchbox_container">
@@ -241,7 +188,7 @@
                                 </template>
                             </template>
                         </div>
-                    </template>
+                    </div>
                 </div>
             </template>
             <template if:true={showtracehistory}>
